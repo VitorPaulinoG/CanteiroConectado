@@ -1,0 +1,22 @@
+# Perfil prod: nenhum padrão para variável obrigatória. A API não sobe se faltar alguma destas
+# (a mensagem de falha nomeia a variável):
+#   BANCO_URL, BANCO_USUARIO, BANCO_SENHA, JWT_SEGREDO, ADMIN_NOME, ADMIN_EMAIL, ADMIN_SENHA
+# Têm padrão também em prod: PORT (8080), JWT_VALIDADE_HORAS (12) e LOG_NIVEL (INFO).
+server:
+  # O TLS termina no proxy do Render.
+  forward-headers-strategy: framework
+  error:
+    include-message: never
+    include-stacktrace: never
+    include-binding-errors: never
+
+management:
+  endpoint:
+    health:
+      show-details: never
+
+spring:
+  banner:
+    location: classpath:banner-prod.txt
+  jpa:
+    show-sql: false

@@ -1,0 +1,8 @@
+${AnsiColor.BRIGHT_GREEN}
+  ╔═════════════════════════════════════════════════════════════════════╗
+  ║  CANTEIRO CONECTADO · API                                           ║
+  ║  Ambiente: LOCAL                                                    ║
+  ║  Padrões de desenvolvimento ativos (Postgres local, admin de dev).  ║
+  ╚═════════════════════════════════════════════════════════════════════╝
+${AnsiColor.DEFAULT}  Spring Boot ${spring-boot.version}
+
