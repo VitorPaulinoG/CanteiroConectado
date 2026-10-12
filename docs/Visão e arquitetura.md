@@ -217,7 +217,7 @@ apps/api/src/main/java/br/com/canteiroconectado/
 │                      SaldoEstoque · Requisicao · ItemRequisicao · StatusRequisicao · LogAuditoria
 ├─ dto/               LoginRequest · LoginResponse · MovimentacaoRequest ... (mesmas pastas)
 ├─ seguranca/         SegurancaConfig · JwtService · UsuarioLogado · CanteiroAcessoService
-├─ config/            OpenApiConfig · PropriedadesJwt · PropriedadesAdmin
+├─ config/            OpenApiConfig · JwtProperties · AdminProperties · DbProperties · AmbienteValidator
 ├─ filtro/            RequestIdFilter
 ├─ excecao/           RegraDeNegocioException · CodigoErro · TratadorGlobalDeErros
 └─ inicializacao/     AdminInicializador

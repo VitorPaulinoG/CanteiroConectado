@@ -1,0 +1,8 @@
+${AnsiColor.BRIGHT_RED}
+  ╔═════════════════════════════════════════════════════════════╗
+  ║  CANTEIRO CONECTADO · API                                   ║
+  ║  Ambiente: PRODUÇÃO                                         ║
+  ║  Configuração 100% por variáveis de ambiente, sem padrões.  ║
+  ╚═════════════════════════════════════════════════════════════╝
+${AnsiColor.DEFAULT}  Spring Boot ${spring-boot.version}
+
