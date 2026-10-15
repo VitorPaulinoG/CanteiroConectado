@@ -11,7 +11,19 @@ Canteiro Conectado é um aplicativo Android com API própria para controlar o es
 
 ## Como rodar a API
 
-> A ser preenchido na épica E02.
+Com Docker (API + Postgres), na raiz do repositório:
+
+```bash
+cp .env.example .env     # preencha os valores (BANCO_*, JWT_SEGREDO, ADMIN_*)
+docker compose up --build
+curl localhost:8080/actuator/health   # {"status":"UP",...}
+```
+
+- `docker compose down` para; os dados do Postgres ficam no volume `banco-dados`.
+- `docker compose down -v` apaga o volume e zera o banco.
+- A API roda com limite de 512 MB; `JAVA_TOOL_OPTIONS` no `.env` soma às opções de memória da imagem.
+
+> O restante (rodar sem Docker, testes) será preenchido na épica E02.
 
 ## Como rodar o app
 
