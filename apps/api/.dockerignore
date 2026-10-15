@@ -1,0 +1,19 @@
+# Artefatos de build e controle de versão
+target/
+.git
+.gitignore
+.gitattributes
+
+# Arquivos locais e segredos
+.env
+.env.*
+.idea/
+.vscode/
+*.iml
+
+# Fora da imagem
+.mvn/wrapper/maven-wrapper.jar
+HELP.md
+*.md
+Dockerfile
+.dockerignore
