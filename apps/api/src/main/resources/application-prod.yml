@@ -18,5 +18,9 @@ management:
 spring:
   banner:
     location: classpath:banner-prod.txt
+  datasource:
+    hikari:
+      data-source-properties:
+        sslmode: require
   jpa:
     show-sql: false
