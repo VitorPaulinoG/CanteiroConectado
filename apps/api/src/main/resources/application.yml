@@ -13,6 +13,13 @@ spring:
     url: ${canteiro.banco.url}
     username: ${canteiro.banco.usuario}
     password: ${canteiro.banco.senha}
+    hikari:
+      maximum-pool-size: 5
+      connection-timeout: 30000
+      max-lifetime: 1800000
+  jpa:
+    hibernate:
+      ddl-auto: validate
 
 server:
   port: ${PORT:8080}
