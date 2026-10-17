@@ -1,6 +1,6 @@
 import { render } from '@testing-library/react-native';
 
-import TelaInicial from '../index';
+import TelaInicial from '../../app/index';
 
 describe('TelaInicial', () => {
   it('mostra o nome do app', async () => {

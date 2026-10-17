@@ -3,19 +3,19 @@ const fs = require('node:fs');
 const path = require('node:path');
 const expoConfig = require('eslint-config-expo/flat');
 
-const FEATURE_DIR = path.join(__dirname, 'src', 'feature');
+const FEATURE_DIR = path.join(__dirname, 'src', 'features');
 const features = fs
   .readdirSync(FEATURE_DIR, { withFileTypes: true })
   .filter((entry) => entry.isDirectory())
   .map((entry) => entry.name);
 
 // Uma feature só pode importar de `shared` (e de si mesma): imports para outra feature são proibidos,
-// tanto pelo alias `@/feature/<outra>` quanto por caminho relativo (`../<outra>`).
+// tanto pelo alias `@/features/<outra>` quanto por caminho relativo (`../<outra>`).
 const featureBoundaries = features.map((feature) => {
   const others = features.filter((other) => other !== feature);
   const patterns = others.flatMap((other) => [
-    `@/feature/${other}`,
-    `@/feature/${other}/**`,
+    `@/features/${other}`,
+    `@/features/${other}/**`,
     ...[1, 2, 3, 4, 5].flatMap((depth) => {
       const up = '../'.repeat(depth);
       return [`${up}${other}`, `${up}${other}/**`];
@@ -23,7 +23,7 @@ const featureBoundaries = features.map((feature) => {
   ]);
 
   return {
-    files: [`src/feature/${feature}/**/*.{ts,tsx}`],
+    files: [`src/features/${feature}/**/*.{ts,tsx}`],
     rules: {
       'no-restricted-imports': [
         'error',
