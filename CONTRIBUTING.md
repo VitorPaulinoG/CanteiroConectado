@@ -6,9 +6,9 @@ Este guia vale para todo o grupo. A visão geral do projeto está em [Visão e a
 
 1. Pegue uma issue (`[E08-H2-T2] Resumo`) e atribua a você.
 2. Crie a branch a partir de `develop`.
-3. Faça commits pequenos, abra o PR para `develop` e peça revisão.
+3. Faça commits pequenos, abra o PR **para `develop`** e peça revisão. Todo PR de trabalho abre para `develop`, nunca direto para `main`.
 4. Depois da aprovação e do CI verde, faça o merge (squash). A branch é apagada automaticamente.
-5. Quando `develop` estiver estável e conferida na nuvem, abra um PR de `develop` para `main`.
+5. `main` só recebe **PR de release**, aberto de `develop` para `main` quando `develop` estiver estável e conferida na nuvem. Esse merge dispara o deploy da API.
 
 `main` e `develop` são protegidas: ninguém faz push direto, e toda mudança entra por PR com uma aprovação.
 
@@ -23,7 +23,7 @@ Formato: `tipo/CODIGO-DA-ISSUE-resumo-em-minusculas`, com hifens, sem acento nem
 | `docs` | Só documentação | `docs/E01-H2-T1-contributing` |
 | `chore` | Configuração, dependências, CI | `chore/E01-H1-T2-editorconfig` |
 
-Branches de trabalho nascem de `develop` e voltam para `develop`.
+Branches de trabalho nascem de `develop` e voltam para `develop`. A única branch que chega à `main` é a própria `develop`, pelo PR de release.
 
 ## Mensagens de commit
 
@@ -45,7 +45,7 @@ fix(mobile): corrige saldo exibido após estorno [E08-H2-T3]
 docs: cria CONTRIBUTING.md [E01-H2-T1]
 ```
 
-Como o merge é sempre squash, **o título do PR vira a mensagem do commit** em `develop`. Escreva o título do PR neste mesmo formato.
+Como o merge é sempre squash, **o título do PR vira a mensagem do commit** em `develop`. No PR de release (`develop` → `main`), use `chore: release vX.Y.Z`. Escreva o título do PR neste mesmo formato.
 
 ## Pull requests
 

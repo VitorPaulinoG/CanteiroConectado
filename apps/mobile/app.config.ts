@@ -6,7 +6,7 @@ const config: ExpoConfig = {
   version: '1.0.0',
   orientation: 'portrait',
   scheme: 'canteiroconectado',
-  userInterfaceStyle: 'automatic',
+  userInterfaceStyle: 'light',
   icon: './assets/images/icon.png',
   android: {
     package: 'br.com.canteiroconectado',
@@ -28,9 +28,6 @@ const config: ExpoConfig = {
       },
     ],
   ],
-  extra: {
-    apiUrl: process.env.EXPO_PUBLIC_API_URL,
-  },
 };
 
 export default config;

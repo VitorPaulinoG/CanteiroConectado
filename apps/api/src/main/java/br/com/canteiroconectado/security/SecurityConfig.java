@@ -1,4 +1,4 @@
-package br.com.canteiroconectado.config;
+package br.com.canteiroconectado.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
