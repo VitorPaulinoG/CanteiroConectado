@@ -21,7 +21,7 @@ import org.springframework.validation.ObjectError;
 import org.springframework.validation.Validator;
 import org.springframework.validation.beanvalidation.SpringValidatorAdapter;
 
-public class AmbienteValidator implements EnvironmentPostProcessor, Ordered {
+public class EnvironmentValidator implements EnvironmentPostProcessor, Ordered {
 
     private static final Map<String, Class<?>> PROPRIEDADES = new LinkedHashMap<>();
 

@@ -1,4 +1,4 @@
-package br.com.canteiroconectado.filtro;
+package br.com.canteiroconectado.filter;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -61,6 +61,21 @@ class RequestIdFilterTest {
             filtro.doFilter(requisicao, resposta, (req, res) -> { });
 
             assertThat(resposta.getHeader(RequestIdFilter.HEADER)).isEqualTo("id-recebido-123");
+        }
+
+        @Test
+        @DisplayName("deve gerar um requestId novo quando o cabeçalho recebido tem formato inválido")
+        void deve_gerarRequestId_quando_cabecalhoInvalido() throws Exception {
+            MockHttpServletRequest requisicao = new MockHttpServletRequest("GET", "/api/v1/ping");
+            requisicao.addHeader(RequestIdFilter.HEADER, "valor com espaços e <script>");
+            MockHttpServletResponse resposta = new MockHttpServletResponse();
+
+            filtro.doFilter(requisicao, resposta, (req, res) -> { });
+
+            assertThat(resposta.getHeader(RequestIdFilter.HEADER))
+                .isNotBlank()
+                .matches("[A-Za-z0-9_-]{1,64}")
+                .isNotEqualTo("valor com espaços e <script>");
         }
 
         @Test

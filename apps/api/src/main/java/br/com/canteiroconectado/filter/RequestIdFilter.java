@@ -1,7 +1,8 @@
-package br.com.canteiroconectado.filtro;
+package br.com.canteiroconectado.filter;
 
 import java.io.IOException;
 import java.util.UUID;
+import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +23,8 @@ public class RequestIdFilter extends OncePerRequestFilter {
 
     public static final String HEADER = "X-Request-Id";
     public static final String MDC_KEY = "requestId";
+
+    private static final Pattern FORMATO_VALIDO = Pattern.compile("[A-Za-z0-9_-]{1,64}");
 
     private static final Logger ACESSO = LoggerFactory.getLogger("acesso");
 
@@ -44,7 +47,7 @@ public class RequestIdFilter extends OncePerRequestFilter {
 
     private static String resolverRequestId(HttpServletRequest requisicao) {
         String recebido = requisicao.getHeader(HEADER);
-        if (recebido != null && !recebido.isBlank()) {
+        if (recebido != null && FORMATO_VALIDO.matcher(recebido).matches()) {
             return recebido;
         }
         return UUID.randomUUID().toString();

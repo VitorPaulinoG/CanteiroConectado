@@ -1,4 +1,4 @@
-package br.com.canteiroconectado.excecao;
+package br.com.canteiroconectado.exception;
 
 import org.springframework.http.HttpStatus;
 
