@@ -2,7 +2,8 @@ import type { ExpoConfig } from 'expo/config';
 
 const config: ExpoConfig = {
   name: 'Canteiro Conectado',
-  slug: 'canteiro-conectado',
+  slug: 'canteiroconectado',
+  owner: 'vitorpaulinogs-team',
   version: '1.0.0',
   orientation: 'portrait',
   scheme: 'canteiroconectado',
@@ -28,6 +29,11 @@ const config: ExpoConfig = {
       },
     ],
   ],
+  extra: {
+    eas: {
+      projectId: '9e8ff013-c33f-4add-8837-f58baa2c41d9',
+    },
+  },
 };
 
 export default config;
