@@ -1,0 +1,27 @@
+# Perfil local: padrões SOMENTE para desenvolvimento, pensados para o Postgres do Docker Compose
+# (banco canteiroconectado, usuário/senha canteiro, porta 5432 publicada no host).
+# Qualquer variável de ambiente definida continua tendo precedência sobre estes padrões.
+
+spring:
+  banner:
+    location: classpath:banner-local.txt
+  config:
+    import: optional:file:../../.env[.properties]
+
+canteiro:
+  banco:
+    url: ${BANCO_URL:jdbc:postgresql://localhost:5432/canteiroconectado}
+    usuario: ${BANCO_USUARIO:canteiro}
+    senha: ${BANCO_SENHA:canteiro}
+  jwt:
+    # Sorteado a cada subida (256 bits): nada versionado; os tokens deixam de valer ao reiniciar.
+    segredo: ${JWT_SEGREDO:${random.value}${random.value}}
+  admin:
+    nome: ${ADMIN_NOME:Administrador Local}
+    email: ${ADMIN_EMAIL:admin@canteiro.local}
+    # Somente desenvolvimento local. Nunca reutilizar fora do perfil local.
+    senha: ${ADMIN_SENHA:admin-local-123}
+
+logging:
+  level:
+    br.com.canteiroconectado: DEBUG

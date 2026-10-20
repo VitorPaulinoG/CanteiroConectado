@@ -1,0 +1,1 @@
+org.springframework.boot.EnvironmentPostProcessor=br.com.canteiroconectado.config.EnvironmentValidator

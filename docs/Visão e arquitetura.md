@@ -68,12 +68,6 @@ Dez pontos do PDF são ambíguos ou incompletos para virar código. Cada linha t
 | D-09 | A Jornada 1 pede o colaborador responsável pela retirada | Cadastro simples de colaborador (nome e canteiro), sem login, criado por ALMOXARIFE ou GESTOR, inclusive direto no seletor | E06, E08 |
 | D-10 | A saída deve ser vinculada a uma frente de obra | Campo de texto curto "frente de obra", sem cadastro próprio; vira cadastro se sobrar tempo | E08, E10 |
 
-## Arquitetura de ponta a ponta
-
-&#91;embedded content: arquitetura ponta a ponta · app, API, banco e GitHub\]
-
-A API é a única que fala com o banco; toda gravação do app leva o `id` do registro, gerado no próprio app, e a API grava movimento e saldo numa só transação.
-
 ## Monorepo e fluxo de trabalho
 
 Um repositório com duas aplicações independentes, cada uma com o próprio gerenciador de dependências, e uma pasta `docs/` para decisões e protótipos. Não há `package.json` na raiz: o app é o único projeto JavaScript.
@@ -223,7 +217,7 @@ apps/api/src/main/java/br/com/canteiroconectado/
 │                      SaldoEstoque · Requisicao · ItemRequisicao · StatusRequisicao · LogAuditoria
 ├─ dto/               LoginRequest · LoginResponse · MovimentacaoRequest ... (mesmas pastas)
 ├─ seguranca/         SegurancaConfig · JwtService · UsuarioLogado · CanteiroAcessoService
-├─ config/            OpenApiConfig · PropriedadesJwt · PropriedadesAdmin
+├─ config/            OpenApiConfig · JwtProperties · AdminProperties · DbProperties · AmbienteValidator
 ├─ filtro/            RequestIdFilter
 ├─ excecao/           RegraDeNegocioException · CodigoErro · TratadorGlobalDeErros
 └─ inicializacao/     AdminInicializador
@@ -321,61 +315,3 @@ Regras que valem para toda a matriz:
 - O ALMOXARIFE só enxerga o próprio canteiro; o GESTOR enxerga todos e escolhe o canteiro ativo no app.
 - A senha temporária só aparece para o administrador, e só enquanto o funcionário não trocou a senha; depois da troca ela deixa de existir no banco.
 - O app esconde o que o perfil não pode fazer, mas a API sempre revalida: esconder botão não é segurança.
-
-## Nuvem grátis e deploy
-
-O caminho mais curto é **Render** para a API em Docker, **Neon** para o Postgres e **EAS Build** para o APK. O Render hospeda um serviço web gratuito direto do GitHub, mas o Postgres gratuito dele expira 30 dias após a criação ([livemy.app](https://livemy.app/blog/render-pricing)); por isso o banco fica na Neon, que tem plano gratuito permanente e sem cartão ([Neon](https://neon.com/faqs/managed-postgres-databases-free-tier)). Limites conferidos em 08/10/2026; planos gratuitos mudam, então revalidar ao criar as contas.
-
-| Serviço | Papel | Limites que importam | Cuidado |
-| --- | --- | --- | --- |
-| Render, Web Service gratuito | Roda a imagem Docker da API; novo deploy a cada push na `main` | Dorme após 15 minutos sem tráfego; 750 horas gratuitas por mês; sistema de arquivos efêmero ([Render](https://render.com/docs/free)); 512 MB de RAM e 0,1 CPU, e cerca de 1 minuto para acordar ([SnapDeploy](https://snapdeploy.dev/blog/render-free-tier-migration-docker-host)) | Acordar a API antes de qualquer demonstração; validar a memória do Spring cedo (E04) |
-| Neon, Postgres gratuito | Banco gerenciado | 100 CU-horas por mês e 0,5 GB por projeto, com escala a zero em repouso ([Neon](https://neon.com/pricing)); a Neon anunciou 1 GB, confirmar no painel ([Neon](https://neon.com/blog/neon-free-plan-1-gb-per-project)) | A primeira consulta após o repouso é mais lenta; pool pequeno e `sslmode=require` |
-| EAS Build (Expo), plano gratuito | Gera o APK de distribuição interna (perfil `preview`) | Cota mensal de builds e fila de baixa prioridade (conferir no painel) | Plano B: `eas build --local` na máquina de quem tiver Android SDK |
-| GitHub Actions | Testes de API e app | Cota gratuita mensal para repositórios privados (conferir) | Filtrar por caminho para economizar minutos |
-
-Uma API gratuita ligada 24 horas por dia consome cerca de 744 das 750 horas mensais; só dá para manter um serviço sempre acordado. Para a demonstração, o roteiro mais seguro é acordar a API cinco minutos antes e testar o login. Plano B: Google Cloud Run para a API (escala a zero, exige conta de faturamento com cartão) e Supabase para o Postgres (pausa projetos gratuitos após cerca de uma semana ociosos, segundo a [comparação da Neon](https://neon.com/faqs/managed-postgres-databases-free-tier)).
-
-### Variáveis de ambiente
-
-| Variável | Onde | Exemplo ou observação |
-| --- | --- | --- |
-| `SPRING_PROFILES_ACTIVE` | API | `local` no Docker Compose, `prod` no Render |
-| `PORT` | API | O Render injeta; `server.port=${PORT:8080}` |
-| `BANCO_URL`, `BANCO_USUARIO`, `BANCO_SENHA` | API | `jdbc:postgresql://<host>/<banco>?sslmode=require` (dados da Neon) |
-| `JWT_SEGREDO` | API | 32 bytes ou mais, gerado aleatoriamente, nunca no repositório |
-| `JWT_VALIDADE_HORAS` | API | `12` |
-| `CHAVE_SENHA_TEMPORARIA` | API | 32 bytes em Base64, para cifrar as senhas temporárias |
-| `ADMIN_NOME`, `ADMIN_EMAIL`, `ADMIN_SENHA` | API | Criam o primeiro GESTOR administrador na primeira subida |
-| `LOG_NIVEL` | API | `INFO` |
-| `JAVA_TOOL_OPTIONS` | API | `-XX:MaxRAMPercentage=70 -XX:+UseSerialGC -Xss512k` para caber em 512 MB |
-| `EXPO_PUBLIC_API_URL` | App | URL da API; vai embutida no APK, então nunca recebe segredo |
-
-## Ordem de execução em oito semanas
-
-O caminho crítico é E01, depois E02 e E03 em paralelo, E04 (esqueleto na nuvem), E05 (login), E06 e E07 (cadastros), E12-H1 junto de E08 (movimentações) e E09 (consulta). Se o tempo apertar, o corte começa por: bloqueio de tentativas (E05-H1-T3), trilha de auditoria (E11-H3) e teste de uso (E13-H4).
-
-| Semana | Objetivo | Mobile | API | Design e DevOps |
-| --- | --- | --- | --- | --- |
-| 1 | Repositório e esqueletos | E03-H1 e H2 | E02-H1 a H3 | E01 completo; kit do Figma e protótipos da Jornada 1; contas da nuvem (E04-H1) |
-| 2 | Esqueleto andando na nuvem | E03-H3 e H4 | E02-H4 e H5 | E04-H2 a H5: deploy, CI e primeiro APK; protótipos de login e estoque |
-| 3 | Entrar no app | E05: telas e abas por perfil | E05: login, administrador, troca de senha | Protótipos de cadastros |
-| 4 | Cadastros | E06 e E07: telas | E06 e E07: endpoints | Dados de teste |
-| 5 | Núcleo do almoxarife | E08 e E09-H1: telas; E12-H2 | E12-H1, E08 e E09-H1 | Protótipos da Jornada 2 |
-| 6 | Requisições | E09-H2 e E10: telas | E09-H2 e E10 | Pipeline de testes |
-| 7 | Histórico e auditoria | E11: telas | E11 | Correção de achados; roteiro de falhas de rede (E12-H3) |
-| 8 | Fechamento | E13: ajustes e APK final | E13: dados de demonstração e revisão | Documentação, ensaio da demonstração, tag `v1.0.0` |
-
-Sugestão de trabalho em duplas: cada história técnica (E02, E03, E05-H1, E08-H1) é puxada por alguém com experiência e acompanhada por alguém iniciante, que assume a história de telas seguinte. Assim quem aprende já entrega código na semana seguinte, e a revisão de PR vira o principal momento de ensino.
-
-## Fontes
-
-Páginas abertas para os limites de nuvem e as versões, conferidas em Oct 10, 2026. Os números de planos gratuitos mudam com frequência: reconfirmar ao criar as contas (E04-H1).
-
-- [Render: Deploy for Free](https://render.com/docs/free): desligamento após 15 minutos, 750 horas por mês, sistema de arquivos efêmero
-- [Render pricing explained (livemy.app)](https://livemy.app/blog/render-pricing): Postgres gratuito do Render expira em 30 dias
-- [Render free tier migration (SnapDeploy)](https://snapdeploy.dev/blog/render-free-tier-migration-docker-host): 512 MB de RAM, 0,1 CPU e cerca de 1 minuto para acordar
-- [Neon pricing](https://neon.com/pricing): plano gratuito de 100 CU-horas e 0,5 GB por projeto
-- [Neon: 1 GB por projeto](https://neon.com/blog/neon-free-plan-1-gb-per-project): anúncio do aumento de armazenamento do plano gratuito
-- [Neon: bancos Postgres com plano gratuito](https://neon.com/faqs/managed-postgres-databases-free-tier): sem cartão, escala a zero em 5 minutos, comparação com Supabase
-- [Spring Boot: ciclo de suporte](https://versionlog.com/spring-boot/): linha 3.5 fora do suporte OSS em 30/06/2026; 4.1 lançada em 10/06/2026
-- [Expo SDK 56](https://expo.dev/changelog/sdk-56.md): a nota de agosto indica que o SDK 57 corrige uma regressão do Hermes V1; usar o SDK estável mais recente e fixar a versão no bootstrap

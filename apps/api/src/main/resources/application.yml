@@ -1,0 +1,44 @@
+# Contrato de configuração da API: toda variável de ambiente lida pela API aparece aqui
+# e deve estar documentada no .env.example (conferido por EnvExampleTest).
+#
+# Os padrões deste arquivo são vazios de propósito: nenhum segredo é versionado e a
+# obrigatoriedade é verificada pelas classes *Properties (@Validated). Os padrões de
+# desenvolvimento ficam em application-local.yml; o perfil prod não define padrão algum.
+spring:
+  application:
+    name: canteiroconectado
+  profiles:
+    default: local
+  datasource:
+    url: ${canteiro.banco.url}
+    username: ${canteiro.banco.usuario}
+    password: ${canteiro.banco.senha}
+    hikari:
+      maximum-pool-size: 5
+      connection-timeout: 30000
+      max-lifetime: 1800000
+  jpa:
+    hibernate:
+      ddl-auto: validate
+
+server:
+  port: ${PORT:8080}
+
+logging:
+  level:
+    root: ${LOG_NIVEL:INFO}
+  pattern:
+    console: "%d{yyyy-MM-dd'T'HH:mm:ss.SSSXXX} %-5level [%X{requestId}] %logger{35} - %msg%n"
+
+canteiro:
+  banco:
+    url: ${BANCO_URL:}
+    usuario: ${BANCO_USUARIO:}
+    senha: ${BANCO_SENHA:}
+  jwt:
+    segredo: ${JWT_SEGREDO:}
+    validade-horas: ${JWT_VALIDADE_HORAS:12}
+  admin:
+    nome: ${ADMIN_NOME:}
+    email: ${ADMIN_EMAIL:}
+    senha: ${ADMIN_SENHA:}
