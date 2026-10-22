@@ -1,0 +1,46 @@
+name: Mobile
+
+on:
+  push:
+    branches: [main]
+    paths: ['apps/mobile/**', '.github/workflows/mobile.yml']
+  pull_request:
+    branches: [main]
+    paths: ['apps/mobile/**', '.github/workflows/mobile.yml']
+
+jobs:
+  check:
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: apps/mobile
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm, cache-dependency-path: apps/mobile/package-lock.json }
+
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm test
+
+  build:
+    needs: check
+    if: github.event_name == 'push'
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: apps/mobile
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm, cache-dependency-path: apps/mobile/package-lock.json }
+
+      - run: npm ci
+
+      - uses: expo/expo-github-action@v8
+        with: { eas-version: latest, token: '${{ secrets.EXPO_TOKEN }}' }
+
+      - run: eas build --platform android --profile preview --non-interactive --no-wait
