@@ -14,6 +14,8 @@ Fonte: `br.com.canteiroconectado.exception.ErrorCode`.
 | `RECURSO_NAO_ENCONTRADO` | 404 | Identificador informado não corresponde a um registro existente, ou o endereço não existe. |
 | `METODO_NAO_PERMITIDO` | 405 | O método HTTP usado não existe para o endereço. |
 | `CONFLITO` | 409 | Estado atual do recurso impede a operação, inclusive violação de integridade no banco (ex.: `ID_JA_UTILIZADO`, tratado por feature). |
+| `CREDENCIAIS_INVALIDAS` | 401 | Login com e-mail inexistente ou senha errada. A resposta é a mesma nos dois casos: "E-mail ou senha incorretos". |
+| `USUARIO_INATIVO` | 403 | Login correto de um usuário desativado pelo administrador. |
 | `ERRO_INESPERADO` | 500 | Falha não prevista. O cliente recebe mensagem genérica, sem stack trace; o detalhe completo fica no log, correlacionado pelo `requestId`. |
 
 Códigos específicos de regra de negócio (ex.: `SALDO_INSUFICIENTE`, `ITEM_INATIVO`) são adicionados
