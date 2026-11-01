@@ -34,7 +34,7 @@ logging:
   level:
     root: ${LOG_NIVEL:INFO}
   pattern:
-    console: "%d{yyyy-MM-dd'T'HH:mm:ss.SSSXXX} %-5level [%X{requestId}] %logger{35} - %msg%n"
+    console: "%d{yyyy-MM-dd'T'HH:mm:ss.SSSXXX} %-5level [%X{requestId}] [%X{usuarioId:-}] %logger{35} - %msg%n"
 
 canteiro:
   banco:

@@ -8,6 +8,7 @@ import javax.crypto.spec.SecretKeySpec;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -18,6 +19,8 @@ import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
+import org.springframework.security.oauth2.server.resource.web.authentication.BearerTokenAuthenticationFilter;
 import org.springframework.security.web.SecurityFilterChain;
 
 import com.nimbusds.jose.jwk.source.ImmutableSecret;
@@ -27,9 +30,11 @@ import br.com.canteiroconectado.config.JwtProperties;
 /**
  * Resource server com JWT simétrico (HS256) assinado com o {@code JWT_SEGREDO} (32 caracteres ou
  * mais, validado em {@link JwtProperties}). São públicos o login, o ping, o health do Actuator e o
- * Swagger; o resto exige token válido.
+ * Swagger; o resto exige token válido. As falhas de autenticação e de autorização saem em Problem
+ * Details com {@code NAO_AUTENTICADO} (401) e {@code ACESSO_NEGADO} (403).
  */
 @Configuration
+@EnableMethodSecurity
 public class SecurityConfig {
 
     static final String[] ROTAS_PUBLICAS = {
@@ -42,9 +47,11 @@ public class SecurityConfig {
     };
 
     private final JwtProperties propriedades;
+    private final ErrosDeSegurancaHandler errosDeSeguranca;
 
-    public SecurityConfig(JwtProperties propriedades) {
+    public SecurityConfig(JwtProperties propriedades, ErrosDeSegurancaHandler errosDeSeguranca) {
         this.propriedades = propriedades;
+        this.errosDeSeguranca = errosDeSeguranca;
     }
 
     @Bean
@@ -56,8 +63,21 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.POST, "/api/v1/autenticacao/login").permitAll()
                 .requestMatchers(HttpMethod.GET, ROTAS_PUBLICAS).permitAll()
                 .anyRequest().authenticated())
-            .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> { }));
+            .oauth2ResourceServer(oauth2 -> oauth2
+                .jwt(jwt -> jwt.jwtAuthenticationConverter(conversorDeAutenticacao()))
+                .authenticationEntryPoint(errosDeSeguranca)
+                .accessDeniedHandler(errosDeSeguranca))
+            .exceptionHandling(erros -> erros
+                .authenticationEntryPoint(errosDeSeguranca)
+                .accessDeniedHandler(errosDeSeguranca))
+            .addFilterAfter(new UsuarioNoMdcFilter(), BearerTokenAuthenticationFilter.class);
         return http.build();
+    }
+
+    private static JwtAuthenticationConverter conversorDeAutenticacao() {
+        JwtAuthenticationConverter conversor = new JwtAuthenticationConverter();
+        conversor.setJwtGrantedAuthoritiesConverter(new PapeisDoJwtConverter());
+        return conversor;
     }
 
     private SecretKey chaveHmac() {
