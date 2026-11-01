@@ -25,9 +25,11 @@ import jakarta.validation.Valid;
 public class RequisicaoController {
 
     private final RequisicaoService servico;
+    private final AndamentoDaRequisicaoService andamento;
 
-    public RequisicaoController(RequisicaoService servico) {
+    public RequisicaoController(RequisicaoService servico, AndamentoDaRequisicaoService andamento) {
         this.servico = servico;
+        this.andamento = andamento;
     }
 
     @Operation(summary = "Cria uma requisição de material (ALMOXARIFE ou GESTOR)")
@@ -54,5 +56,18 @@ public class RequisicaoController {
     @GetMapping("/{id}")
     public RequisicaoResponse buscar(@PathVariable UUID id) {
         return servico.buscar(id);
+    }
+
+    @Operation(summary = "Aprova a requisição pendente do outro perfil, com previsão de chegada opcional")
+    @PostMapping("/{id}/aprovar")
+    public RequisicaoResponse aprovar(@PathVariable UUID id,
+            @Valid @RequestBody(required = false) AprovacaoRequest pedido) {
+        return andamento.aprovar(id, pedido);
+    }
+
+    @Operation(summary = "Recusa a requisição pendente do outro perfil, com o motivo")
+    @PostMapping("/{id}/recusar")
+    public RequisicaoResponse recusar(@PathVariable UUID id, @Valid @RequestBody RecusaRequest pedido) {
+        return andamento.recusar(id, pedido);
     }
 }
