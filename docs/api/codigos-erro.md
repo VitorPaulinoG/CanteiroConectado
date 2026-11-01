@@ -41,6 +41,7 @@ Fonte: `br.com.canteiroconectado.exception.ErrorCode`.
 | `COLABORADOR_OBRIGATORIO` | 422 | Saída por retirada (ou entrada por devolução) sem colaborador. O corpo traz `campo: "colaboradorId"`. |
 | `FRENTE_OBRA_OBRIGATORIA` | 422 | Saída por retirada sem frente de obra. O corpo traz `campo: "frenteObra"`. |
 | `OBSERVACAO_OBRIGATORIA` | 422 | Ajuste (de entrada ou de saída) sem observação explicando o motivo. O corpo traz `campo: "observacao"`. |
+| `DEVOLUCAO_SO_FERRAMENTA` | 422 | Entrada por devolução de um item do tipo material. O corpo traz `campo: "itemId"`. |
 | `ERRO_INESPERADO` | 500 | Falha não prevista. O cliente recebe mensagem genérica, sem stack trace; o detalhe completo fica no log, correlacionado pelo `requestId`. |
 
 Códigos específicos de regra de negócio (ex.: `SALDO_INSUFICIENTE`, `ITEM_INATIVO`) são adicionados
