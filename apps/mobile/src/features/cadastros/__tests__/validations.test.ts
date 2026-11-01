@@ -1,4 +1,4 @@
-import { temErros, validarCanteiro } from '../validations';
+import { temErros, validarCanteiro, validarFuncionario } from '../validations';
 
 describe('validarCanteiro', () => {
   it('exige o nome', () => {
@@ -13,5 +13,28 @@ describe('validarCanteiro', () => {
 
   it('aceita nome com endereço vazio', () => {
     expect(temErros(validarCanteiro('Residencial Aurora', ''))).toBe(false);
+  });
+});
+
+describe('validarFuncionario', () => {
+  it('exige nome, e-mail válido e canteiro do almoxarife', () => {
+    expect(
+      validarFuncionario({ nome: '', email: 'x', perfil: 'ALMOXARIFE', canteiroId: null }),
+    ).toEqual({
+      nome: 'Informe o nome.',
+      email: 'Informe um e-mail válido.',
+      canteiroId: 'Escolha o canteiro do almoxarife.',
+    });
+  });
+
+  it('não exige canteiro do gestor', () => {
+    expect(
+      validarFuncionario({
+        nome: 'Camila',
+        email: 'c@obra.com',
+        perfil: 'GESTOR',
+        canteiroId: null,
+      }),
+    ).toEqual({});
   });
 });
