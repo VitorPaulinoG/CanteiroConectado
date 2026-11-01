@@ -47,7 +47,8 @@ Fonte: `br.com.canteiroconectado.exception.ErrorCode`.
 | `ITEM_REPETIDO` | 422 | O mesmo item aparece em duas linhas da requisição. O corpo traz `campo: "itens[i].itemId"`. |
 | `DATA_NO_PASSADO` | 422 | Data de necessidade (ou previsão de chegada) anterior a hoje, no fuso de São Paulo. O corpo traz o `campo`. |
 | `AUTOAPROVACAO_PROIBIDA` | 403 | Quem criou a requisição tentou aprová-la ou recusá-la. |
-| `REQUISICAO_NAO_PENDENTE` | 409 | A requisição já foi decidida, atendida ou cancelada. O corpo traz o `status` atual. |
+| `REQUISICAO_NAO_PENDENTE` | 409 | A requisição já foi decidida, atendida ou cancelada, então não pode ser decidida nem cancelada. Ao cancelar uma aprovada, a mensagem diz quem aprovou. O corpo traz o `status` atual. |
+| `REQUISICAO_NAO_APROVADA` | 409 | Só requisições aprovadas podem ser marcadas como atendidas. O corpo traz o `status` atual. |
 | `MOTIVO_DA_RECUSA_OBRIGATORIO` | 422 | Recusa sem motivo ou com menos de 5 caracteres. O corpo traz `campo: "motivo"`. |
 | `ERRO_INESPERADO` | 500 | Falha não prevista. O cliente recebe mensagem genérica, sem stack trace; o detalhe completo fica no log, correlacionado pelo `requestId`. |
 

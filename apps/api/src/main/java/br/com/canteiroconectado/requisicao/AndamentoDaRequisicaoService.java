@@ -95,6 +95,50 @@ public class AndamentoDaRequisicaoService {
             detalhes);
     }
 
+    /**
+     * Marca a requisição aprovada como atendida quando o material chega. Não cria entrada de
+     * estoque: a entrada continua sendo registrada pela tela de entrada.
+     *
+     * @throws BusinessException {@code REQUISICAO_NAO_APROVADA} ou {@code ACESSO_NEGADO}
+     */
+    @PreAuthorize(Permissoes.ALMOXARIFE)
+    @Transactional
+    public RequisicaoResponse atender(UUID id) {
+        UsuarioLogado usuario = UsuarioLogado.atual();
+        Requisicao requisicao = travar(id);
+        exigirStatus(requisicao, StatusRequisicao.APROVADA, ErrorCode.REQUISICAO_NAO_APROVADA,
+            "Só requisições aprovadas podem ser marcadas como atendidas. Esta está "
+                + rotulo(requisicao.getStatus()) + ".");
+        return mudar(requisicao, StatusRequisicao.ATENDIDA, usuario, null, requisicao.getPrevisaoChegada(),
+            AcaoAuditoria.REQUISICAO_ATENDIDA, detalhes(requisicao));
+    }
+
+    /**
+     * Cancela a requisição pendente criada pelo próprio usuário.
+     *
+     * @throws BusinessException {@code ACESSO_NEGADO} (não é o autor) ou
+     *     {@code REQUISICAO_NAO_PENDENTE} (já decidida; a mensagem orienta falar com quem decidiu)
+     */
+    @PreAuthorize(Permissoes.ALMOXARIFE_OU_GESTOR)
+    @Transactional
+    public RequisicaoResponse cancelar(UUID id) {
+        UsuarioLogado usuario = UsuarioLogado.atual();
+        Requisicao requisicao = travar(id);
+        if (!requisicao.getSolicitanteId().equals(usuario.id())) {
+            throw new BusinessException(ErrorCode.ACESSO_NEGADO, "Só quem criou a requisição pode cancelá-la.");
+        }
+        if (requisicao.getStatus() != StatusRequisicao.PENDENTE) {
+            String quem = consulta.detalhar(requisicao.getId(), usuario).decididoPorNome();
+            String mensagem = requisicao.getStatus() == StatusRequisicao.APROVADA && quem != null
+                ? "Esta requisição já foi aprovada por " + quem + ". Para desistir, fale com quem aprovou."
+                : "Esta requisição já foi " + rotulo(requisicao.getStatus()) + " e não pode ser cancelada.";
+            throw new BusinessException(ErrorCode.REQUISICAO_NAO_PENDENTE, mensagem)
+                .com("status", requisicao.getStatus().name());
+        }
+        return mudar(requisicao, StatusRequisicao.CANCELADA, usuario, null, null, AcaoAuditoria.REQUISICAO_CANCELADA,
+            detalhes(requisicao));
+    }
+
     private Requisicao travarParaDecidir(UUID id, UsuarioLogado usuario) {
         Requisicao requisicao = travar(id);
         if (requisicao.getSolicitanteId().equals(usuario.id())) {
