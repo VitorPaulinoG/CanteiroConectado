@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, View } from 'react-native';
 import { Button, HelperText, SegmentedButtons, Text, TextInput } from 'react-native-paper';
 
-import { AcessoNegado, CampoQuantidade, FaixaEstadoEnvio, TelaComCabecalho } from '@/shared';
+import { AcessoNegado, CampoQuantidade, TelaComCabecalho } from '@/shared';
 import { erroDoCampo, erroSemCampo } from '@/shared/api';
 import { useCanteiroAtivo, useCanteiroIdAtivo } from '@/shared/canteiro';
 import { SeletorColaborador, type Colaborador } from '@/shared/colaborador';
@@ -14,6 +14,7 @@ import { SomentePerfil } from '@/shared/sessao';
 import { lerQuantidade } from '@/shared/utils/quantidade';
 import { gerarId } from '@/shared/utils/uuid';
 
+import { Comprovante, type ResumoDoPedido } from '../componentes/Comprovante';
 import { useRegistrarMovimentacao } from '../hooks';
 import {
   TAMANHO_MAXIMO_FRENTE,
@@ -65,6 +66,7 @@ function Formulario({ itemIdInicial }: Props) {
   const [frenteObra, setFrenteObra] = useState('');
   const [observacao, setObservacao] = useState('');
   const [erros, setErros] = useState<ErrosMovimentacao>({});
+  const [resumo, setResumo] = useState<ResumoDoPedido | null>(null);
 
   const inicial = useQuery({
     queryKey: chavesEstoque.detalhe(canteiroId, itemIdInicial ?? ''),
@@ -74,7 +76,7 @@ function Formulario({ itemIdInicial }: Props) {
   const item =
     itemEscolhido !== undefined ? itemEscolhido : inicial.data ? doDetalhe(inicial.data) : null;
 
-  const envio = useRegistrarMovimentacao(canteiroId, () => router.back());
+  const envio = useRegistrarMovimentacao(canteiroId);
   const erroDaApi = envio.falhou && !envio.semResposta ? envio.erro : null;
   const erroDe = (campo: keyof ErrosMovimentacao) => erros[campo] ?? erroDoCampo(erroDaApi, campo);
   const erroGeral = erroSemCampo(erroDaApi, CAMPOS) ?? erroDoCampo(erroDaApi, 'motivo');
@@ -103,16 +105,41 @@ function Formulario({ itemIdInicial }: Props) {
     if (temErros(encontrados) || !item) {
       return;
     }
-    envio.enviar({
+    const pedido = {
       id,
-      tipo: 'SAIDA',
+      tipo: 'SAIDA' as const,
       motivo,
       itemId: item.itemId,
       quantidade: lerQuantidade(quantidade) as number,
       colaboradorId: colaborador?.id,
       frenteObra: textoOpcional(frenteObra),
       observacao: textoOpcional(observacao),
+    };
+    setResumo({
+      titulo: 'Comprovante de saída',
+      itemDescricao: item.descricao,
+      itemCodigo: item.codigo,
+      unidadeSimbolo: item.unidadeSimbolo,
+      motivo,
+      quantidade: pedido.quantidade,
+      colaboradorNome: colaborador?.nome,
+      frenteObra: pedido.frenteObra,
+      observacao: pedido.observacao,
     });
+    envio.enviar(pedido);
+  }
+
+  if (resumo && !(envio.falhou && !envio.semResposta)) {
+    return (
+      <Comprovante
+        resumo={resumo}
+        envio={envio}
+        aoCorrigir={() => setResumo(null)}
+        aoNovoRegistro={() => router.replace('/movimentar/saida')}
+        aoConcluir={() => router.back()}
+        rotuloNovoRegistro="Nova saída"
+      />
+    );
   }
 
   return (
@@ -191,13 +218,6 @@ function Formulario({ itemIdInicial }: Props) {
           <HelperText type="error" visible>
             {erroGeral}
           </HelperText>
-        ) : null}
-        {envio.enviando || (envio.falhou && envio.semResposta) ? (
-          <FaixaEstadoEnvio
-            estado={envio.estado}
-            erro={envio.erro}
-            aoTentarDeNovo={envio.tentarDeNovo}
-          />
         ) : null}
       </ScrollView>
       <View style={styles.rodape}>
