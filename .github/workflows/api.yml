@@ -11,6 +11,17 @@ on:
 jobs:
   coverage: 
     runs-on: ubuntu-24.04
+    services:
+      db:
+        image: postgres:16
+        env:
+          POSTGRES_DB: canteiroconectado
+          POSTGRES_USER: canteiro
+          POSTGRES_PASSWORD: canteiro
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U canteiro -d canteiroconectado"
+          --health-interval 5s --health-timeout 5s --health-retries 10
     defaults:
       run:
         working-directory: apps/api
@@ -24,5 +35,22 @@ jobs:
           cache: maven
       
       - run: ./mvnw -B verify
+
+      - name: Resumo da cobertura
+        if: always() && hashFiles('apps/api/target/site/jacoco/jacoco.csv') != ''
+        run: |
+          awk -F, 'NR > 1 { lm += $8; lc += $9; bm += $6; bc += $7 }
+            END { printf "### Cobertura da API\n\n| Linhas | Ramos |\n| --- | --- |\n| %.1f%% | %.1f%% |\n",
+              100 * lc / (lm + lc), 100 * bc / (bm + bc) }' target/site/jacoco/jacoco.csv >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Publicar relatórios
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: relatorios-api
+          path: |
+            apps/api/target/surefire-reports/
+            apps/api/target/site/jacoco/
+          retention-days: 14
 
 
