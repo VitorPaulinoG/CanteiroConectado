@@ -7,3 +7,5 @@ export {
   type UsuarioSessao,
   type ValorSessao,
 } from './tipos';
+export { permite, SomentePerfil, usePermite, type Restricao } from './SomentePerfil';
+export { iniciais, rotuloDoPerfil } from './rotulos';
