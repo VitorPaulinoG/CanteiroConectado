@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { RefreshControl, ScrollView, StyleSheet, View } from 'react-native';
-import { Button, Card, Divider, List, Text } from 'react-native-paper';
+import { Button, Card, Dialog, Divider, HelperText, List, Portal, Text } from 'react-native-paper';
 
 import { ErrorState, LoadingState, TelaComCabecalho } from '@/shared';
 import { paraAppError } from '@/shared/api';
@@ -13,6 +13,7 @@ import { useAppTheme } from '@/theme';
 
 import { buscarRequisicao, chavesRequisicoes, type Requisicao } from '../api';
 import { DecisaoModal } from '../componentes/DecisaoModal';
+import { useAtenderOuCancelar, type Andamento } from '../hooks';
 import { SeloDaRequisicao } from '../componentes/SeloDaRequisicao';
 import { DESCRICAO_DO_EVENTO, ICONE_DO_STATUS } from '../status';
 
@@ -59,27 +60,98 @@ export function DetalheRequisicaoTela({ id }: Props) {
   );
 }
 
+const CONFIRMACOES: Record<Andamento, { titulo: string; mensagem: string; botao: string }> = {
+  atender: {
+    titulo: 'Marcar como atendida?',
+    mensagem:
+      'Use quando o material chegar. Isto não lança entrada no estoque: registre a entrada em Movimentar.',
+    botao: 'Marcar como atendida',
+  },
+  cancelar: {
+    titulo: 'Cancelar a requisição?',
+    mensagem: 'A outra pessoa não vai mais poder decidir este pedido.',
+    botao: 'Cancelar requisição',
+  },
+};
+
 function Acoes({ requisicao }: { requisicao: Requisicao }) {
   const [decidindo, setDecidindo] = useState(false);
+  const [confirmando, setConfirmando] = useState<Andamento | null>(null);
+  const andamento = useAtenderOuCancelar(requisicao);
+  const { acoes } = requisicao;
 
-  if (!requisicao.acoes.decidir) {
+  if (!acoes.decidir && !acoes.atender && !acoes.cancelar) {
     return null;
   }
   return (
     <View style={styles.rodape}>
-      <Button
-        mode="contained"
-        icon="gavel"
-        onPress={() => setDecidindo(true)}
-        contentStyle={styles.botao}
-      >
-        Aprovar ou recusar
-      </Button>
+      {andamento.error ? (
+        <HelperText type="error" visible>
+          {paraAppError(andamento.error).message}
+        </HelperText>
+      ) : null}
+      {acoes.decidir ? (
+        <Button
+          mode="contained"
+          icon="gavel"
+          onPress={() => setDecidindo(true)}
+          contentStyle={styles.botao}
+        >
+          Aprovar ou recusar
+        </Button>
+      ) : null}
+      {acoes.atender ? (
+        <Button
+          mode="contained"
+          icon="package-variant-closed-check"
+          onPress={() => setConfirmando('atender')}
+          loading={andamento.isPending}
+          disabled={andamento.isPending}
+          contentStyle={styles.botao}
+        >
+          Marcar como atendida
+        </Button>
+      ) : null}
+      {acoes.cancelar ? (
+        <Button
+          mode="outlined"
+          icon="cancel"
+          onPress={() => setConfirmando('cancelar')}
+          loading={andamento.isPending}
+          disabled={andamento.isPending}
+          contentStyle={styles.botao}
+        >
+          Cancelar requisição
+        </Button>
+      ) : null}
       <DecisaoModal
         requisicao={requisicao}
         visivel={decidindo}
         aoFechar={() => setDecidindo(false)}
       />
+      <Portal>
+        <Dialog visible={confirmando !== null} onDismiss={() => setConfirmando(null)}>
+          {confirmando ? (
+            <>
+              <Dialog.Title>{CONFIRMACOES[confirmando].titulo}</Dialog.Title>
+              <Dialog.Content>
+                <Text variant="bodyLarge">{CONFIRMACOES[confirmando].mensagem}</Text>
+              </Dialog.Content>
+              <Dialog.Actions>
+                <Button onPress={() => setConfirmando(null)}>Voltar</Button>
+                <Button
+                  onPress={() => {
+                    andamento.mutate(confirmando);
+                    setConfirmando(null);
+                  }}
+                >
+                  {CONFIRMACOES[confirmando].botao}
+                </Button>
+              </Dialog.Actions>
+            </>
+          ) : null}
+        </Dialog>
+      </Portal>
     </View>
   );
 }

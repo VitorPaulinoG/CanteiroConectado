@@ -93,3 +93,11 @@ export async function aprovarRequisicao(
 export async function recusarRequisicao(id: string, motivo: string): Promise<Requisicao> {
   return (await api.post<Requisicao>(`${BASE}/${id}/recusar`, { motivo })).data;
 }
+
+export async function atenderRequisicao(id: string): Promise<Requisicao> {
+  return (await api.post<Requisicao>(`${BASE}/${id}/atender`)).data;
+}
+
+export async function cancelarRequisicao(id: string): Promise<Requisicao> {
+  return (await api.post<Requisicao>(`${BASE}/${id}/cancelar`)).data;
+}
