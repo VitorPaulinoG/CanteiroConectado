@@ -12,7 +12,8 @@ public enum ErrorCode {
     CONFLITO(HttpStatus.CONFLICT),
     ERRO_INESPERADO(HttpStatus.INTERNAL_SERVER_ERROR),
     CREDENCIAIS_INVALIDAS(HttpStatus.UNAUTHORIZED),
-    USUARIO_INATIVO(HttpStatus.FORBIDDEN);
+    USUARIO_INATIVO(HttpStatus.FORBIDDEN),
+    CONTA_BLOQUEADA(HttpStatus.LOCKED);
 
     private final HttpStatus statusPadrao;
 
