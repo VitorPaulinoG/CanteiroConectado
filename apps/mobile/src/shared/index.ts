@@ -3,6 +3,7 @@ export { CampoQuantidade } from './components/CampoQuantidade';
 export { ConfiguracaoInvalida } from './components/ConfiguracaoInvalida';
 export { EmptyState } from './components/EmptyState';
 export { ErrorState } from './components/ErrorState';
+export { FaixaEstadoEnvio } from './components/FaixaEstadoEnvio';
 export { FiltroSituacao, situacaoParaAtivo, type Situacao } from './components/FiltroSituacao';
 export { LoadingState } from './components/LoadingState';
 export { QuantityStepper } from './components/QuantityStepper';
