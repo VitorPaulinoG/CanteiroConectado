@@ -27,6 +27,7 @@ Fonte: `br.com.canteiroconectado.exception.ErrorCode`.
 | `CANTEIRO_OBRIGATORIO` | 422 | Funcionário ALMOXARIFE sem canteiro. O corpo traz `campo: "canteiroId"`. |
 | `AUTODESATIVACAO_PROIBIDA` | 422 | O administrador tentou desativar a si mesmo. |
 | `ADMINISTRADOR_PROTEGIDO` | 422 | Tentativa de mudar o perfil do administrador. |
+| `CREDENCIAL_JA_TROCADA` | 409 | O administrador consultou a credencial inicial de um funcionário que já trocou a senha temporária. Para gerar outra, use `POST /usuarios/{id}/redefinir-senha`. |
 | `ERRO_INESPERADO` | 500 | Falha não prevista. O cliente recebe mensagem genérica, sem stack trace; o detalhe completo fica no log, correlacionado pelo `requestId`. |
 
 Códigos específicos de regra de negócio (ex.: `SALDO_INSUFICIENTE`, `ITEM_INATIVO`) são adicionados
