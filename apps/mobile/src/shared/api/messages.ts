@@ -21,6 +21,7 @@ export const MENSAGENS_POR_CODIGO: Record<string, string> = {
   AUTODESATIVACAO_PROIBIDA: 'Você não pode desativar a si mesmo.',
   ADMINISTRADOR_PROTEGIDO: 'O perfil do administrador não pode ser alterado.',
   CREDENCIAL_JA_TROCADA: 'O funcionário já trocou a senha temporária.',
+  COLABORADOR_DUPLICADO: 'Já existe um colaborador com este nome neste canteiro.',
 };
 
 export const MENSAGEM_PADRAO = MENSAGENS_POR_CODIGO.ERRO_INESPERADO;
