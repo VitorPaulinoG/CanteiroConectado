@@ -33,7 +33,7 @@ Fonte: `br.com.canteiroconectado.exception.ErrorCode`.
 | `CODIGO_DUPLICADO` | 409 | Já existe um item com o mesmo código (sem diferenciar maiúsculas nem espaços nas pontas). O corpo traz `campo: "codigo"`. |
 | `ITEM_JA_MOVIMENTADO` | 422 | Tentativa de mudar o código ou a unidade de um item que já teve movimentação. O corpo traz `campo` com o campo recusado. |
 | `ITEM_INATIVO` | 422 | O item informado numa movimentação ou requisição está desativado. O corpo traz `campo: "itemId"`. |
-| `SALDO_INSUFICIENTE` | 422 | A saída (ou o estorno de uma entrada) deixaria o saldo negativo. O corpo traz `saldoAtual` e `campo: "quantidade"`. |
+| `SALDO_INSUFICIENTE` | 422 | A saída (ou o estorno de uma entrada já consumida) deixaria o saldo negativo. O corpo traz `saldoAtual` e `campo: "quantidade"`. |
 | `QUANTIDADE_INVALIDA` | 422 | Quantidade zero, negativa ou com mais de 3 casas decimais. O corpo traz `campo: "quantidade"`. |
 | `ID_INVALIDO` | 400 | O `id` gerado no app (movimentação ou requisição) está ausente ou não é um UUID no formato `8-4-4-4-12`. O corpo traz `campo: "id"`. |
 | `ID_JA_UTILIZADO` | 409 | O `id` já pertence a um registro com conteúdo diferente. Reenviar o mesmo pedido com o mesmo `id` não dá erro: devolve o registro gravado. |
@@ -50,6 +50,9 @@ Fonte: `br.com.canteiroconectado.exception.ErrorCode`.
 | `REQUISICAO_NAO_PENDENTE` | 409 | A requisição já foi decidida, atendida ou cancelada, então não pode ser decidida nem cancelada. Ao cancelar uma aprovada, a mensagem diz quem aprovou. O corpo traz o `status` atual. |
 | `REQUISICAO_NAO_APROVADA` | 409 | Só requisições aprovadas podem ser marcadas como atendidas. O corpo traz o `status` atual. |
 | `MOTIVO_DA_RECUSA_OBRIGATORIO` | 422 | Recusa sem motivo ou com menos de 5 caracteres. O corpo traz `campo: "motivo"`. |
+| `JA_ESTORNADA` | 409 | A movimentação já tem estorno; cada uma só pode ser estornada uma vez. |
+| `ESTORNO_NAO_ESTORNAVEL` | 422 | Tentativa de estornar um estorno. |
+| `MOTIVO_DO_ESTORNO_OBRIGATORIO` | 422 | Estorno sem o motivo. O corpo traz `campo: "motivo"`. |
 | `ERRO_INESPERADO` | 500 | Falha não prevista. O cliente recebe mensagem genérica, sem stack trace; o detalhe completo fica no log, correlacionado pelo `requestId`. |
 
 Códigos específicos de regra de negócio (ex.: `SALDO_INSUFICIENTE`, `ITEM_INATIVO`) são adicionados
