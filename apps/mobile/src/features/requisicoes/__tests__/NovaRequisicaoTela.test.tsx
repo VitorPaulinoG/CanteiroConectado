@@ -20,7 +20,10 @@ jest.mock('@/shared/estoque/api', () => ({
 }));
 
 const mockBack = jest.fn();
-jest.mock('expo-router', () => ({ useRouter: () => ({ push: jest.fn(), back: mockBack }) }));
+const mockReplace = jest.fn();
+jest.mock('expo-router', () => ({
+  useRouter: () => ({ push: jest.fn(), back: mockBack, replace: mockReplace }),
+}));
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;
 
@@ -76,6 +79,8 @@ describe('NovaRequisicaoTela (S13)', () => {
 
     expect(await screen.findByText('Requisição REQ-0001')).toBeTruthy();
     expect(screen.getByText('Salvo no servidor')).toBeTruthy();
+    await fireEvent.press(screen.getByText('Ver requisição'));
+    expect(mockReplace).toHaveBeenCalledWith('/requisicoes/r-1');
     expect(criarRequisicao).toHaveBeenCalledWith({
       id: expect.stringMatching(UUID),
       canteiroId: 'c-aurora',
