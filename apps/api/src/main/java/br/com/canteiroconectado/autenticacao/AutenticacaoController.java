@@ -31,6 +31,13 @@ public class AutenticacaoController {
         return servico.login(requisicao);
     }
 
+    @Operation(summary = "Troca a senha do usuário logado")
+    @PostMapping("/trocar-senha")
+    public UsuarioLogadoResponse trocarSenha(@AuthenticationPrincipal Jwt jwt,
+            @Valid @RequestBody TrocarSenhaRequest requisicao) {
+        return servico.trocarSenha(UUID.fromString(jwt.getSubject()), requisicao);
+    }
+
     @Operation(summary = "Dados do usuário autenticado")
     @GetMapping("/eu")
     public UsuarioLogadoResponse eu(@AuthenticationPrincipal Jwt jwt) {

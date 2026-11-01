@@ -106,6 +106,38 @@ public class AutenticacaoService {
             .orElseThrow(() -> new BusinessException(ErrorCode.NAO_AUTENTICADO, "Sessão inválida."));
     }
 
+    /**
+     * Troca a senha do usuário logado. Apaga a senha temporária cifrada e a marca de troca
+     * obrigatória e registra {@code SENHA_TROCADA}, sem guardar senha alguma no evento.
+     *
+     * @throws BusinessException {@code SENHA_ATUAL_INCORRETA}, {@code SENHA_FRACA} ou
+     *     {@code SENHA_IGUAL_A_ATUAL}
+     */
+    @Transactional
+    public UsuarioLogadoResponse trocarSenha(UUID usuarioId, TrocarSenhaRequest requisicao) {
+        Usuario usuario = usuarios.findById(usuarioId)
+            .orElseThrow(() -> new BusinessException(ErrorCode.NAO_AUTENTICADO, "Sessão inválida."));
+
+        if (!encoderSenha.matches(requisicao.senhaAtual(), usuario.getSenhaHash())) {
+            throw new BusinessException(ErrorCode.SENHA_ATUAL_INCORRETA, "A senha atual está incorreta.");
+        }
+        PoliticaDeSenha.problemaDa(requisicao.novaSenha()).ifPresent(problema -> {
+            throw new BusinessException(ErrorCode.SENHA_FRACA, problema);
+        });
+        if (requisicao.novaSenha().equals(requisicao.senhaAtual())) {
+            throw new BusinessException(ErrorCode.SENHA_IGUAL_A_ATUAL,
+                "A nova senha deve ser diferente da atual.");
+        }
+
+        boolean eraObrigatoria = usuario.isPrecisaTrocarSenha();
+        usuario.setSenhaHash(encoderSenha.encode(requisicao.novaSenha()));
+        usuario.setPrecisaTrocarSenha(false);
+        usuario.setSenhaTemporariaCifrada(null);
+        auditoria.registrar(usuario.getId(), AcaoAuditoria.SENHA_TROCADA, ENTIDADE, usuario.getId(),
+            Map.of("primeiroAcesso", eraObrigatoria));
+        return UsuarioLogadoResponse.de(usuario);
+    }
+
     private static boolean estaBloqueado(Usuario usuario, OffsetDateTime agora) {
         return usuario.getBloqueadoAte() != null && usuario.getBloqueadoAte().isAfter(agora);
     }
