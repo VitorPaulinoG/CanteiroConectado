@@ -19,3 +19,4 @@ export { buscarPing, type Ping } from './ping';
 export { erroDoCampo, erroSemCampo } from './campos';
 export type { Pagina } from './tipos';
 export { juntarPaginas, proximaPagina } from './paginacao';
+export { useEnvio, type Envio, type EstadoDeEnvio } from './envio';

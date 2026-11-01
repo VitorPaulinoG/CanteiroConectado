@@ -5,7 +5,7 @@ import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, View } from 're
 import { Button, HelperText, SegmentedButtons, Text, TextInput } from 'react-native-paper';
 
 import { AcessoNegado, CampoQuantidade, TelaComCabecalho } from '@/shared';
-import { erroDoCampo, erroSemCampo, paraAppError } from '@/shared/api';
+import { erroDoCampo, erroSemCampo } from '@/shared/api';
 import { useCanteiroAtivo, useCanteiroIdAtivo } from '@/shared/canteiro';
 import { SeletorColaborador, type Colaborador } from '@/shared/colaborador';
 import { buscarDetalheEstoque, chavesEstoque, type DetalheEstoque } from '@/shared/estoque';
@@ -74,18 +74,16 @@ function Formulario({ itemIdInicial }: Props) {
   const item =
     itemEscolhido !== undefined ? itemEscolhido : inicial.data ? doDetalhe(inicial.data) : null;
 
-  const envio = useRegistrarMovimentacao(canteiroId);
-  const erroDaApi = envio.error ? paraAppError(envio.error) : null;
+  const envio = useRegistrarMovimentacao(canteiroId, () => router.back());
+  const erroDaApi = envio.falhou && !envio.semResposta ? envio.erro : null;
   const erroDe = (campo: keyof ErrosMovimentacao) => erros[campo] ?? erroDoCampo(erroDaApi, campo);
   const erroGeral = erroSemCampo(erroDaApi, CAMPOS) ?? erroDoCampo(erroDaApi, 'motivo');
-  const enviando = envio.isPending;
+  const enviando = envio.enviando;
 
   function mudar<T>(setter: (valor: T) => void) {
     return (valor: T) => {
       setter(valor);
-      if (!enviando) {
-        envio.reset();
-      }
+      envio.reiniciar();
     };
   }
 
@@ -105,19 +103,16 @@ function Formulario({ itemIdInicial }: Props) {
     if (temErros(encontrados) || !item) {
       return;
     }
-    envio.mutate(
-      {
-        id,
-        tipo: 'SAIDA',
-        motivo,
-        itemId: item.itemId,
-        quantidade: lerQuantidade(quantidade) as number,
-        colaboradorId: colaborador?.id,
-        frenteObra: textoOpcional(frenteObra),
-        observacao: textoOpcional(observacao),
-      },
-      { onSuccess: () => router.back() },
-    );
+    envio.enviar({
+      id,
+      tipo: 'SAIDA',
+      motivo,
+      itemId: item.itemId,
+      quantidade: lerQuantidade(quantidade) as number,
+      colaboradorId: colaborador?.id,
+      frenteObra: textoOpcional(frenteObra),
+      observacao: textoOpcional(observacao),
+    });
   }
 
   return (
@@ -197,6 +192,16 @@ function Formulario({ itemIdInicial }: Props) {
             {erroGeral}
           </HelperText>
         ) : null}
+        {envio.falhou && envio.semResposta ? (
+          <View style={styles.falha}>
+            <HelperText type="error" visible>
+              Não foi possível enviar. {envio.erro?.message}
+            </HelperText>
+            <Button mode="outlined" icon="refresh" onPress={envio.tentarDeNovo}>
+              Tentar de novo
+            </Button>
+          </View>
+        ) : null}
       </ScrollView>
       <View style={styles.rodape}>
         <Button
@@ -206,7 +211,7 @@ function Formulario({ itemIdInicial }: Props) {
           disabled={enviando}
           contentStyle={styles.botao}
         >
-          Confirmar saída
+          {enviando ? 'Enviando…' : 'Confirmar saída'}
         </Button>
       </View>
     </KeyboardAvoidingView>
@@ -217,6 +222,7 @@ const styles = StyleSheet.create({
   tela: { flex: 1 },
   conteudo: { padding: 16, gap: 4 },
   motivo: { marginTop: 8, marginBottom: 16 },
+  falha: { gap: 8 },
   rodape: { padding: 16 },
   botao: { minHeight: 48 },
 });

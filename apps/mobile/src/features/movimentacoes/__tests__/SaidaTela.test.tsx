@@ -2,7 +2,7 @@ import { fireEvent, screen, waitFor } from '@testing-library/react-native';
 
 import { listarColaboradores } from '@/shared/colaborador/api';
 import { buscarDetalheEstoque, listarEstoque } from '@/shared/estoque/api';
-import { erroDaApi } from '@/test-utils/api';
+import { erroDaApi, erroDeRede } from '@/test-utils/api';
 import { furadeiraNoEstoque, joao, pagina } from '@/test-utils/estoque';
 import { renderizar } from '@/test-utils/render';
 import { almoxarife, autenticado, ComSessao, gestor, valorSessao } from '@/test-utils/sessao';
@@ -135,6 +135,36 @@ describe('SaidaTela (S09)', () => {
 
     expect(await screen.findByDisplayValue('Furadeira de impacto 700W (FER-0012)')).toBeTruthy();
     expect(buscarDetalheEstoque).toHaveBeenCalledWith('c-aurora', 'i-furadeira');
+  });
+
+  it('desabilita o botão enquanto envia e envia uma vez só no toque duplo', async () => {
+    jest.mocked(registrarMovimentacao).mockReturnValue(new Promise(() => undefined));
+    await montar();
+    await escolherFuradeiraEJoao();
+    await fireEvent.changeText(screen.getByLabelText('Frente de obra'), 'Fundação');
+
+    await fireEvent.press(screen.getByText('Confirmar saída'));
+    await fireEvent.press(screen.getByText('Enviando…'));
+
+    expect(screen.getByText('Enviando…')).toBeDisabled();
+    expect(registrarMovimentacao).toHaveBeenCalledTimes(1);
+  });
+
+  it('oferece Tentar de novo com o mesmo id quando não houve resposta', async () => {
+    jest
+      .mocked(registrarMovimentacao)
+      .mockRejectedValueOnce(erroDeRede())
+      .mockResolvedValue({} as never);
+    await montar();
+    await escolherFuradeiraEJoao();
+    await fireEvent.changeText(screen.getByLabelText('Frente de obra'), 'Fundação');
+    await fireEvent.press(screen.getByText('Confirmar saída'));
+
+    await fireEvent.press(await screen.findByText('Tentar de novo'));
+
+    await waitFor(() => expect(mockBack).toHaveBeenCalled());
+    const [primeira, segunda] = jest.mocked(registrarMovimentacao).mock.calls;
+    expect(segunda[1].id).toBe(primeira[1].id);
   });
 
   it('mostra acesso negado para o GESTOR', async () => {
