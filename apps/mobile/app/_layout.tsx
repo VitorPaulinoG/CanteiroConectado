@@ -10,13 +10,14 @@ import { SessaoProvider } from '@/features/autenticacao';
 import { ConfiguracaoInvalida } from '@/shared';
 import { criarQueryClient } from '@/shared/api';
 import { AvisoServidor, ServidorProvider } from '@/shared/servidor';
-import { useSessao } from '@/shared/sessao';
+import { trocaDeSenhaPendente, useSessao } from '@/shared/sessao';
 import { appTheme } from '@/theme';
 
 export function Navegacao() {
   const { estado } = useSessao();
   const anonimo = estado.status === 'anonimo';
   const autenticado = estado.status === 'autenticado';
+  const trocaPendente = trocaDeSenhaPendente(estado);
 
   return (
     <Stack screenOptions={{ headerShown: false }}>
@@ -25,6 +26,9 @@ export function Navegacao() {
         <Stack.Screen name="(autenticacao)/login" />
       </Stack.Protected>
       <Stack.Protected guard={autenticado}>
+        <Stack.Screen name="(autenticacao)/trocar-senha" />
+      </Stack.Protected>
+      <Stack.Protected guard={autenticado && !trocaPendente}>
         <Stack.Screen name="(autenticado)" />
       </Stack.Protected>
       <Stack.Screen name="sobre" options={{ headerShown: true, title: 'Sobre' }} />
