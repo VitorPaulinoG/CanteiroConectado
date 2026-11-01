@@ -1,7 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
 import { useRouter } from 'expo-router';
+import { useState } from 'react';
 import { RefreshControl, ScrollView, StyleSheet, View } from 'react-native';
-import { Card, Divider, List, Text } from 'react-native-paper';
+import { Button, Card, Divider, List, Text } from 'react-native-paper';
 
 import { ErrorState, LoadingState, TelaComCabecalho } from '@/shared';
 import { paraAppError } from '@/shared/api';
@@ -11,6 +12,7 @@ import { useAtualizarAoFocar } from '@/shared/utils/useAtualizarAoFocar';
 import { useAppTheme } from '@/theme';
 
 import { buscarRequisicao, chavesRequisicoes, type Requisicao } from '../api';
+import { DecisaoModal } from '../componentes/DecisaoModal';
 import { SeloDaRequisicao } from '../componentes/SeloDaRequisicao';
 import { DESCRICAO_DO_EVENTO, ICONE_DO_STATUS } from '../status';
 
@@ -38,19 +40,47 @@ export function DetalheRequisicaoTela({ id }: Props) {
           onRetry={() => consulta.refetch()}
         />
       ) : (
-        <ScrollView
-          contentContainerStyle={styles.conteudo}
-          refreshControl={
-            <RefreshControl
-              refreshing={consulta.isRefetching}
-              onRefresh={() => void consulta.refetch()}
-            />
-          }
-        >
-          <Conteudo requisicao={consulta.data} />
-        </ScrollView>
+        <>
+          <ScrollView
+            contentContainerStyle={styles.conteudo}
+            refreshControl={
+              <RefreshControl
+                refreshing={consulta.isRefetching}
+                onRefresh={() => void consulta.refetch()}
+              />
+            }
+          >
+            <Conteudo requisicao={consulta.data} />
+          </ScrollView>
+          <Acoes requisicao={consulta.data} />
+        </>
       )}
     </TelaComCabecalho>
+  );
+}
+
+function Acoes({ requisicao }: { requisicao: Requisicao }) {
+  const [decidindo, setDecidindo] = useState(false);
+
+  if (!requisicao.acoes.decidir) {
+    return null;
+  }
+  return (
+    <View style={styles.rodape}>
+      <Button
+        mode="contained"
+        icon="gavel"
+        onPress={() => setDecidindo(true)}
+        contentStyle={styles.botao}
+      >
+        Aprovar ou recusar
+      </Button>
+      <DecisaoModal
+        requisicao={requisicao}
+        visivel={decidindo}
+        aoFechar={() => setDecidindo(false)}
+      />
+    </View>
   );
 }
 
@@ -158,4 +188,6 @@ const styles = StyleSheet.create({
   conteudo: { padding: 16, gap: 12, paddingBottom: 32 },
   topo: { gap: 8 },
   quantidade: { alignSelf: 'center' },
+  rodape: { padding: 16, gap: 8 },
+  botao: { minHeight: 48 },
 });
