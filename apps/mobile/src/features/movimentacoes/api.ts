@@ -22,3 +22,24 @@ export async function registrarMovimentacao(
   );
   return resposta.data;
 }
+
+export const chavesMovimentacao = {
+  detalhe: (id: string) => ['movimentacoes', 'detalhe', id] as const,
+};
+
+export async function buscarMovimentacao(id: string): Promise<Movimentacao> {
+  return (await api.get<Movimentacao>(`/api/v1/movimentacoes/${id}`)).data;
+}
+
+export type PedidoDeEstorno = { id: string; motivo: string };
+
+export async function estornarMovimentacao(
+  movimentacaoId: string,
+  pedido: PedidoDeEstorno,
+): Promise<Movimentacao> {
+  const resposta = await api.post<Movimentacao>(
+    `/api/v1/movimentacoes/${movimentacaoId}/estorno`,
+    pedido,
+  );
+  return resposta.data;
+}

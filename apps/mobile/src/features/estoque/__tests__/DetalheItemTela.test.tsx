@@ -95,6 +95,14 @@ describe('DetalheItemTela (S07)', () => {
     expect(screen.queryByText('Registrar saída')).toBeNull();
   });
 
+  it('abre o registro completo ao tocar numa movimentação', async () => {
+    jest.mocked(buscarDetalheEstoque).mockResolvedValue(furadeira);
+    await montar(gestor);
+
+    await fireEvent.press(await screen.findByText('Saída −1 un'));
+    expect(mockPush).toHaveBeenCalledWith('/movimentacao/m1');
+  });
+
   it('desabilita a saída quando não há saldo', async () => {
     jest
       .mocked(buscarDetalheEstoque)
