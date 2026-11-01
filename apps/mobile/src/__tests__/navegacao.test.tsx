@@ -1,8 +1,13 @@
+import { QueryClientProvider } from '@tanstack/react-query';
+import * as SecureStore from 'expo-secure-store';
 import { renderRouter, screen } from 'expo-router/testing-library';
 import { PaperProvider } from 'react-native-paper';
 import { Text } from 'react-native';
 
+import { buscarCanteiro, listarCanteiros } from '@/shared/canteiro/api';
 import { SessaoContext, type EstadoSessao, type ValorSessao } from '@/shared/sessao';
+import { criarQueryClientDeTeste } from '@/test-utils/render';
+import { aurora } from '@/test-utils/sessao';
 import { appTheme } from '@/theme';
 
 import { Navegacao } from '../../app/_layout';
@@ -11,6 +16,18 @@ import AbasLayout from '../../app/(autenticado)/(abas)/_layout';
 import AreaAutenticadaLayout from '../../app/(autenticado)/_layout';
 
 jest.mock('@expo/vector-icons/MaterialCommunityIcons', () => 'MaterialCommunityIcons');
+jest.mock('@/shared/canteiro/api', () => ({
+  ...jest.requireActual('@/shared/canteiro/api'),
+  buscarCanteiro: jest.fn(),
+  listarCanteiros: jest.fn(),
+}));
+
+beforeEach(async () => {
+  (SecureStore as unknown as { __limpar: () => void }).__limpar();
+  jest.mocked(buscarCanteiro).mockResolvedValue(aurora);
+  jest.mocked(listarCanteiros).mockResolvedValue([aurora]);
+  await SecureStore.setItemAsync('canteiro.ativo.1', aurora.id);
+});
 
 const usuario = {
   id: '1',
@@ -23,6 +40,7 @@ const usuario = {
 };
 
 function rotas(estado: EstadoSessao) {
+  const queryClient = criarQueryClientDeTeste();
   const valor: ValorSessao = {
     estado,
     entrar: jest.fn(),
@@ -32,11 +50,13 @@ function rotas(estado: EstadoSessao) {
   };
   return {
     _layout: () => (
-      <PaperProvider theme={appTheme}>
-        <SessaoContext.Provider value={valor}>
-          <Navegacao />
-        </SessaoContext.Provider>
-      </PaperProvider>
+      <QueryClientProvider client={queryClient}>
+        <PaperProvider theme={appTheme}>
+          <SessaoContext.Provider value={valor}>
+            <Navegacao />
+          </SessaoContext.Provider>
+        </PaperProvider>
+      </QueryClientProvider>
     ),
     index: Abertura,
     '(autenticacao)/login': () => <Text>tela de login</Text>,
@@ -49,6 +69,7 @@ function rotas(estado: EstadoSessao) {
     '(autenticado)/(abas)/requisicoes': () => <Text>tela de requisições</Text>,
     '(autenticado)/(abas)/historico': () => <Text>tela de histórico</Text>,
     '(autenticado)/(abas)/mais': () => <Text>tela mais</Text>,
+    '(autenticado)/canteiro': () => <Text>escolher canteiro</Text>,
     sobre: () => <Text>sobre</Text>,
   };
 }
@@ -140,5 +161,30 @@ describe('Navegação por sessão (S01)', () => {
     );
     expect(await screen.findByText('tela de início')).toBeTruthy();
     expect(screen.queryByText('tela de movimentar')).toBeNull();
+  });
+
+  it('leva o GESTOR sem canteiro escolhido para S05', async () => {
+    (SecureStore as unknown as { __limpar: () => void }).__limpar();
+    await renderRouter(
+      rotas({
+        status: 'autenticado',
+        usuario: { ...usuario, perfil: 'GESTOR', canteiroId: null },
+        trocaAdiada: false,
+      }),
+    );
+    expect(await screen.findByText('escolher canteiro')).toBeTruthy();
+    expect(screen.queryByText('tela de início')).toBeNull();
+  });
+
+  it('volta para S05 quando o canteiro escolhido foi desativado', async () => {
+    jest.mocked(listarCanteiros).mockResolvedValue([]);
+    await renderRouter(
+      rotas({
+        status: 'autenticado',
+        usuario: { ...usuario, perfil: 'GESTOR', canteiroId: null },
+        trocaAdiada: false,
+      }),
+    );
+    expect(await screen.findByText('escolher canteiro')).toBeTruthy();
   });
 });

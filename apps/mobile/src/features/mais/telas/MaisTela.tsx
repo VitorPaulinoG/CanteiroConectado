@@ -4,12 +4,14 @@ import { ScrollView, StyleSheet, View } from 'react-native';
 import { Avatar, Button, Dialog, Divider, List, Portal, Text } from 'react-native-paper';
 
 import { TelaComCabecalho } from '@/shared';
+import { useCanteiroAtivo } from '@/shared/canteiro';
 import { iniciais, rotuloDoPerfil, SomentePerfil, useSessao, useUsuario } from '@/shared/sessao';
 
 export function MaisTela() {
   const router = useRouter();
   const usuario = useUsuario();
   const { sair } = useSessao();
+  const { canteiro, podeEscolher } = useCanteiroAtivo();
   const [confirmandoSaida, setConfirmandoSaida] = useState(false);
 
   return (
@@ -25,6 +27,19 @@ export function MaisTela() {
         </View>
 
         <Divider />
+
+        <List.Section>
+          <List.Subheader>Canteiro</List.Subheader>
+          <List.Item
+            title={canteiro?.nome ?? 'Nenhum canteiro'}
+            description={podeEscolher ? 'Toque para trocar' : 'Seu canteiro de trabalho'}
+            left={(props) => <List.Icon {...props} icon="office-building-marker-outline" />}
+            right={
+              podeEscolher ? (props) => <List.Icon {...props} icon="chevron-right" /> : undefined
+            }
+            onPress={podeEscolher ? () => router.push('/canteiro') : undefined}
+          />
+        </List.Section>
 
         <SomentePerfil administrador>
           <List.Section>

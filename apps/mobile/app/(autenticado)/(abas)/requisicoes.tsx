@@ -1,9 +1,10 @@
-import { EmptyState, TelaComCabecalho } from '@/shared';
+import { EmptyState } from '@/shared';
+import { TelaDoCanteiro } from '@/shared/canteiro';
 
 export default function Requisicoes() {
   return (
-    <TelaComCabecalho titulo="Requisições">
+    <TelaDoCanteiro titulo="Requisições">
       <EmptyState title="Requisições" description="Suas requisições e as que esperam decisão." />
-    </TelaComCabecalho>
+    </TelaDoCanteiro>
   );
 }
