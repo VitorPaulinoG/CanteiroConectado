@@ -1,9 +1,32 @@
 import { Stack } from 'expo-router';
 
-export default function AreaAutenticadaLayout() {
+import { ErrorState, LoadingState } from '@/shared';
+import { CanteiroAtivoProvider, useCanteiroAtivo } from '@/shared/canteiro';
+
+function AreaDoCanteiro() {
+  const { status, tentarDeNovo } = useCanteiroAtivo();
+
+  if (status === 'carregando') {
+    return <LoadingState message="Carregando o canteiro..." />;
+  }
+  if (status === 'erro') {
+    return <ErrorState message="Não foi possível carregar os canteiros." onRetry={tentarDeNovo} />;
+  }
+
   return (
     <Stack screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="(abas)" />
+      <Stack.Protected guard={status === 'pronto'} redirectTo="/canteiro">
+        <Stack.Screen name="(abas)" />
+      </Stack.Protected>
+      <Stack.Screen name="canteiro" />
     </Stack>
+  );
+}
+
+export default function AreaAutenticadaLayout() {
+  return (
+    <CanteiroAtivoProvider>
+      <AreaDoCanteiro />
+    </CanteiroAtivoProvider>
   );
 }

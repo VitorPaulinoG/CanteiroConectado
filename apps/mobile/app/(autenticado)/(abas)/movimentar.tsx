@@ -1,12 +1,13 @@
-import { AcessoNegado, EmptyState, TelaComCabecalho } from '@/shared';
+import { AcessoNegado, EmptyState } from '@/shared';
+import { TelaDoCanteiro } from '@/shared/canteiro';
 import { SomentePerfil } from '@/shared/sessao';
 
 export default function Movimentar() {
   return (
-    <TelaComCabecalho titulo="Movimentar">
+    <TelaDoCanteiro titulo="Movimentar">
       <SomentePerfil perfis={['ALMOXARIFE']} alternativa={<AcessoNegado />}>
         <EmptyState title="Movimentar" description="Registre entradas e saídas por aqui." />
       </SomentePerfil>
-    </TelaComCabecalho>
+    </TelaDoCanteiro>
   );
 }

@@ -1,6 +1,8 @@
 import type { ReactNode } from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
+import type { Canteiro, ValorCanteiroAtivo } from '@/shared/canteiro';
+import { CanteiroAtivoContext } from '@/shared/canteiro/CanteiroAtivoContext';
 import {
   SessaoContext,
   type EstadoSessao,
@@ -54,7 +56,37 @@ export function autenticado(usuario: UsuarioSessao, trocaAdiada = false): Estado
   return { status: 'autenticado', usuario, trocaAdiada };
 }
 
-export function ComSessao({ valor, children }: { valor: ValorSessao; children: ReactNode }) {
+export const aurora: Canteiro = {
+  id: 'c-aurora',
+  nome: 'Residencial Aurora',
+  endereco: 'Rua das Obras, 100',
+  ativo: true,
+};
+
+export function valorCanteiroAtivo(
+  sobrescrever: Partial<ValorCanteiroAtivo> = {},
+): ValorCanteiroAtivo {
+  return {
+    status: 'pronto',
+    canteiroId: aurora.id,
+    canteiro: aurora,
+    podeEscolher: false,
+    escolher: jest.fn(async () => undefined),
+    tentarDeNovo: jest.fn(),
+    ...sobrescrever,
+  };
+}
+
+type PropsComSessao = {
+  valor: ValorSessao;
+  canteiro?: ValorCanteiroAtivo;
+  children: ReactNode;
+};
+
+export function ComSessao({ valor, canteiro, children }: PropsComSessao) {
+  const usuario = valor.estado.status === 'autenticado' ? valor.estado.usuario : null;
+  const canteiroAtivo =
+    canteiro ?? valorCanteiroAtivo({ podeEscolher: usuario?.perfil === 'GESTOR' });
   return (
     <SafeAreaProvider
       initialMetrics={{
@@ -62,7 +94,11 @@ export function ComSessao({ valor, children }: { valor: ValorSessao; children: R
         insets: { top: 0, left: 0, right: 0, bottom: 0 },
       }}
     >
-      <SessaoContext.Provider value={valor}>{children}</SessaoContext.Provider>
+      <SessaoContext.Provider value={valor}>
+        <CanteiroAtivoContext.Provider value={canteiroAtivo}>
+          {children}
+        </CanteiroAtivoContext.Provider>
+      </SessaoContext.Provider>
     </SafeAreaProvider>
   );
 }

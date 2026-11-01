@@ -1,4 +1,5 @@
-import { EmptyState, TelaComCabecalho } from '@/shared';
+import { EmptyState } from '@/shared';
+import { TelaDoCanteiro } from '@/shared/canteiro';
 import { useUsuario } from '@/shared/sessao';
 
 export function InicioTela() {
@@ -6,11 +7,11 @@ export function InicioTela() {
   const primeiroNome = usuario.nome.split(' ')[0];
 
   return (
-    <TelaComCabecalho titulo={`Olá, ${primeiroNome}`}>
+    <TelaDoCanteiro titulo={`Olá, ${primeiroNome}`}>
       <EmptyState
         title="Tudo certo por aqui"
         description="Os alertas de estoque e as requisições aparecem nesta tela."
       />
-    </TelaComCabecalho>
+    </TelaDoCanteiro>
   );
 }
