@@ -1,4 +1,4 @@
-import { validarRequisicao, type LinhaDaRequisicao } from '../validations';
+import { validarDecisao, validarRequisicao, type LinhaDaRequisicao } from '../validations';
 
 const linha = (quantidade: string, itemId = 'i1'): LinhaDaRequisicao => ({
   itemId,
@@ -42,5 +42,24 @@ describe('validarRequisicao', () => {
     expect(validarRequisicao({ ...base, necessarioAte: '2026-10-31' }).necessarioAte).toBe(
       'A data de necessidade não pode ser anterior a hoje.',
     );
+  });
+});
+
+describe('validarDecisao', () => {
+  const base = { previsaoChegada: null, motivo: '', observacao: '', hoje: '2026-11-01' };
+
+  it('aprova sem previsão e recusa previsão no passado', () => {
+    expect(validarDecisao({ ...base, decisao: 'aprovar' })).toEqual({});
+    expect(
+      validarDecisao({ ...base, decisao: 'aprovar', previsaoChegada: '2026-10-31' })
+        .previsaoChegada,
+    ).toBe('A previsão de chegada não pode ser anterior a hoje.');
+  });
+
+  it('exige motivo de 5 caracteres ou mais na recusa', () => {
+    expect(validarDecisao({ ...base, decisao: 'recusar', motivo: ' não ' }).motivo).toBe(
+      'Conte o motivo da recusa (pelo menos 5 caracteres).',
+    );
+    expect(validarDecisao({ ...base, decisao: 'recusar', motivo: 'Sem verba' })).toEqual({});
   });
 });
