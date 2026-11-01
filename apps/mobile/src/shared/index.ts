@@ -1,4 +1,5 @@
 export { AcessoNegado } from './components/AcessoNegado';
+export { CampoQuantidade } from './components/CampoQuantidade';
 export { ConfiguracaoInvalida } from './components/ConfiguracaoInvalida';
 export { EmptyState } from './components/EmptyState';
 export { ErrorState } from './components/ErrorState';
