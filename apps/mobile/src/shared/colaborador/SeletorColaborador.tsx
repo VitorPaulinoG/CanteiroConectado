@@ -29,6 +29,8 @@ type Props = {
   rotulo?: string;
   erro?: string;
   desabilitado?: boolean;
+  permitirCriar?: boolean;
+  incluirInativos?: boolean;
 };
 
 export function SeletorColaborador({
@@ -38,6 +40,8 @@ export function SeletorColaborador({
   rotulo = 'Colaborador',
   erro,
   desabilitado,
+  permitirCriar = true,
+  incluirInativos = false,
 }: Props) {
   const [aberto, setAberto] = useState(false);
 
@@ -77,6 +81,8 @@ export function SeletorColaborador({
           {aberto ? (
             <ListaDeColaboradores
               canteiroId={canteiroId}
+              permitirCriar={permitirCriar}
+              incluirInativos={incluirInativos}
               aoEscolher={(colaborador) => {
                 aoMudar(colaborador);
                 setAberto(false);
@@ -92,16 +98,24 @@ export function SeletorColaborador({
 
 type PropsLista = {
   canteiroId: string;
+  permitirCriar: boolean;
+  incluirInativos: boolean;
   aoEscolher: (colaborador: Colaborador) => void;
   aoFechar: () => void;
 };
 
-function ListaDeColaboradores({ canteiroId, aoEscolher, aoFechar }: PropsLista) {
+function ListaDeColaboradores({
+  canteiroId,
+  permitirCriar,
+  incluirInativos,
+  aoEscolher,
+  aoFechar,
+}: PropsLista) {
   const theme = useAppTheme();
   const [busca, setBusca] = useState('');
   const [criando, setCriando] = useState(false);
   const termo = useAtrasado(busca.trim());
-  const filtro = { q: termo || undefined, ativo: true };
+  const filtro = { q: termo || undefined, ativo: incluirInativos ? undefined : true };
   const consulta = useInfiniteQuery({
     queryKey: chavesColaboradores.lista(canteiroId, filtro),
     queryFn: ({ pageParam }) => listarColaboradores(canteiroId, filtro, pageParam),
@@ -125,11 +139,13 @@ function ListaDeColaboradores({ canteiroId, aoEscolher, aoFechar }: PropsLista) 
           accessibilityLabel="Buscar colaborador"
         />
       </View>
-      <List.Item
-        title={busca.trim() ? `Novo colaborador: ${busca.trim()}` : 'Novo colaborador'}
-        left={(props) => <List.Icon {...props} icon="account-plus-outline" />}
-        onPress={() => setCriando(true)}
-      />
+      {permitirCriar ? (
+        <List.Item
+          title={busca.trim() ? `Novo colaborador: ${busca.trim()}` : 'Novo colaborador'}
+          left={(props) => <List.Icon {...props} icon="account-plus-outline" />}
+          onPress={() => setCriando(true)}
+        />
+      ) : null}
       {consulta.isPending ? (
         <ActivityIndicator style={styles.carregando} accessibilityLabel="Carregando" />
       ) : consulta.isError ? (
@@ -152,7 +168,11 @@ function ListaDeColaboradores({ canteiroId, aoEscolher, aoFechar }: PropsLista) 
           ListEmptyComponent={
             <EmptyState
               title="Nenhum colaborador encontrado"
-              description="Toque em Novo colaborador para cadastrar sem sair da tela."
+              description={
+                permitirCriar
+                  ? 'Toque em Novo colaborador para cadastrar sem sair da tela.'
+                  : 'Tente outro nome.'
+              }
             />
           }
           renderItem={({ item }) => (
