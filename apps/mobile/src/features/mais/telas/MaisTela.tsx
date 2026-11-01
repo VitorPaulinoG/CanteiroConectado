@@ -41,6 +41,17 @@ export function MaisTela() {
           />
         </List.Section>
 
+        <List.Section>
+          <List.Subheader>Cadastros</List.Subheader>
+          <List.Item
+            title="Colaboradores"
+            description="Quem retira material no canteiro"
+            left={(props) => <List.Icon {...props} icon="account-hard-hat-outline" />}
+            right={(props) => <List.Icon {...props} icon="chevron-right" />}
+            onPress={() => router.push('/cadastros/colaboradores')}
+          />
+        </List.Section>
+
         <SomentePerfil administrador>
           <List.Section>
             <List.Subheader>Administração</List.Subheader>
