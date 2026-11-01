@@ -3,6 +3,10 @@
 Checklist para rodar antes de cada apresentação. A API fica no Render (plano gratuito) e o banco na Neon
 (plano gratuito): os dois dormem por inatividade, então a primeira chamada do dia é lenta.
 
+## 0. Se o ambiente já foi usado: reiniciar o banco
+
+Para voltar aos dados de demonstração, siga o [reinício do banco](reinicio-do-banco.md) antes do passo 1.
+
 ## 1. Uma hora antes: acordar a API e o banco
 
 1. Abra no navegador `https://<url-da-api-no-render>/api/v1/ping`.
