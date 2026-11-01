@@ -3,6 +3,7 @@ package br.com.canteiroconectado.estoque;
 import java.math.BigDecimal;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -42,6 +43,19 @@ public class EstoqueService {
         this.saldos = saldos;
         this.canteiros = canteiros;
         this.itens = itens;
+    }
+
+    /**
+     * Alertas de estoque do canteiro para o Início: quantos itens estão zerados e abaixo do mínimo
+     * (só itens ativos com mínimo maior que zero entram nessas contagens) e os mais críticos.
+     */
+    @PreAuthorize(Permissoes.AUTENTICADO)
+    @Transactional(readOnly = true)
+    public AlertasDeEstoque alertas(UUID canteiroId, int quantosCriticos) {
+        canteiros.buscar(canteiroId);
+        Map<StatusEstoque, Long> contagem = consultas.contarPorStatus(canteiroId);
+        return new AlertasDeEstoque(contagem.get(StatusEstoque.ZERADO), contagem.get(StatusEstoque.ABAIXO_DO_MINIMO),
+            consultas.maisCriticos(canteiroId, quantosCriticos));
     }
 
     /**
