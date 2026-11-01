@@ -1,3 +1,5 @@
+import { lerQuantidade } from '@/shared/utils/quantidade';
+
 export type ErrosCanteiro = { nome?: string; endereco?: string };
 
 export const TAMANHO_MAXIMO_NOME = 80;
@@ -43,6 +45,47 @@ export function validarFuncionario(dados: {
   }
   if (dados.perfil === 'ALMOXARIFE' && !dados.canteiroId) {
     erros.canteiroId = 'Escolha o canteiro do almoxarife.';
+  }
+  return erros;
+}
+
+export type ErrosItem = {
+  codigo?: string;
+  descricao?: string;
+  unidade?: string;
+  tipo?: string;
+  quantidadeMinima?: string;
+};
+
+export const TAMANHO_MAXIMO_CODIGO = 30;
+export const TAMANHO_MAXIMO_DESCRICAO = 120;
+
+export function validarItem(dados: {
+  codigo: string;
+  descricao: string;
+  unidade: string | null;
+  tipo: string | null;
+  quantidadeMinima: string;
+}): ErrosItem {
+  const erros: ErrosItem = {};
+  if (!dados.codigo.trim()) {
+    erros.codigo = 'Informe o código.';
+  } else if (dados.codigo.trim().length > TAMANHO_MAXIMO_CODIGO) {
+    erros.codigo = `O código deve ter no máximo ${TAMANHO_MAXIMO_CODIGO} caracteres.`;
+  }
+  if (!dados.descricao.trim()) {
+    erros.descricao = 'Informe a descrição.';
+  } else if (dados.descricao.trim().length > TAMANHO_MAXIMO_DESCRICAO) {
+    erros.descricao = `A descrição deve ter no máximo ${TAMANHO_MAXIMO_DESCRICAO} caracteres.`;
+  }
+  if (!dados.unidade) {
+    erros.unidade = 'Escolha a unidade.';
+  }
+  if (!dados.tipo) {
+    erros.tipo = 'Escolha o tipo.';
+  }
+  if (dados.quantidadeMinima.trim() && lerQuantidade(dados.quantidadeMinima) === null) {
+    erros.quantidadeMinima = 'Informe um número igual ou maior que zero, com até 3 casas decimais.';
   }
   return erros;
 }

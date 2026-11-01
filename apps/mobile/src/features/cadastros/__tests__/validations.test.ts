@@ -1,4 +1,4 @@
-import { temErros, validarCanteiro, validarFuncionario } from '../validations';
+import { temErros, validarCanteiro, validarFuncionario, validarItem } from '../validations';
 
 describe('validarCanteiro', () => {
   it('exige o nome', () => {
@@ -36,5 +36,27 @@ describe('validarFuncionario', () => {
         canteiroId: null,
       }),
     ).toEqual({});
+  });
+});
+
+describe('validarItem', () => {
+  const valido = {
+    codigo: 'FER-0012',
+    descricao: 'Furadeira',
+    unidade: 'UN',
+    tipo: 'FERRAMENTA',
+    quantidadeMinima: '',
+  };
+
+  it('aceita mínimo vazio, zero ou decimal com vírgula', () => {
+    expect(validarItem(valido)).toEqual({});
+    expect(validarItem({ ...valido, quantidadeMinima: '0' })).toEqual({});
+    expect(validarItem({ ...valido, quantidadeMinima: '2,5' })).toEqual({});
+  });
+
+  it('limita o código a 30 caracteres', () => {
+    expect(validarItem({ ...valido, codigo: 'X'.repeat(31) }).codigo).toBe(
+      'O código deve ter no máximo 30 caracteres.',
+    );
   });
 });
