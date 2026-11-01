@@ -4,7 +4,10 @@ import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.EnumMap;
+import java.util.EnumSet;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -72,6 +75,37 @@ public class EstoqueConsultaRepository {
         Long total = jdbc.queryForObject(ESTOQUE_CLASSIFICADO + "SELECT count(*) FROM classificado WHERE status IN (:status)",
             parametros(canteiroId, termo, tipo, status), Long.class);
         return total == null ? 0 : total;
+    }
+
+    /**
+     * Quantos itens ativos do canteiro estão em cada status.
+     */
+    public Map<StatusEstoque, Long> contarPorStatus(UUID canteiroId) {
+        Map<StatusEstoque, Long> contagem = new EnumMap<>(StatusEstoque.class);
+        for (StatusEstoque status : StatusEstoque.values()) {
+            contagem.put(status, 0L);
+        }
+        jdbc.query(ESTOQUE_CLASSIFICADO + "SELECT status, count(*) AS total FROM classificado GROUP BY status",
+            parametros(canteiroId, null, null, EnumSet.allOf(StatusEstoque.class)),
+            resultado -> {
+                contagem.put(StatusEstoque.valueOf(resultado.getString("status")), resultado.getLong("total"));
+            });
+        return contagem;
+    }
+
+    /**
+     * Itens em alerta do mais crítico para o menos: zerados primeiro, depois os abaixo do mínimo
+     * pela menor proporção entre saldo e mínimo.
+     */
+    public List<ItemEstoqueResponse> maisCriticos(UUID canteiroId, int limite) {
+        return jdbc.query(ESTOQUE_CLASSIFICADO + """
+            SELECT * FROM classificado
+            WHERE status IN ('ZERADO', 'ABAIXO_DO_MINIMO')
+            ORDER BY %s, saldo / quantidade_minima, lower(descricao)
+            LIMIT :limite
+            """.formatted(ORDEM_DO_STATUS),
+            parametros(canteiroId, null, null, EnumSet.allOf(StatusEstoque.class)).addValue("limite", limite),
+            EstoqueConsultaRepository::linha);
     }
 
     static MapSqlParameterSource parametros(UUID canteiroId, String termo, TipoItem tipo,
