@@ -1,6 +1,7 @@
 export {
   api,
   criarCliente,
+  definirAoPerderSessao,
   definirLeitorDeToken,
   CABECALHO_REQUEST_ID,
   TIMEOUT_MS,
