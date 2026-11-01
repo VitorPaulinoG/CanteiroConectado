@@ -64,6 +64,35 @@ export function validarSaida(dados: DadosDaSaida): ErrosMovimentacao {
   return limpar(erros);
 }
 
+export type DadosDaEntrada = {
+  item: { tipo: 'MATERIAL' | 'FERRAMENTA' } | null;
+  quantidade: string;
+  motivo: 'RECEBIMENTO' | 'DEVOLUCAO' | 'AJUSTE';
+  colaboradorId: string | null;
+  observacao: string;
+};
+
+export function validarEntrada(dados: DadosDaEntrada): ErrosMovimentacao {
+  const erros: ErrosMovimentacao = {};
+  if (!dados.item) {
+    erros.itemId = 'Escolha o item.';
+  }
+  erros.quantidade = validarQuantidade(dados.quantidade);
+  if (dados.motivo === 'DEVOLUCAO') {
+    if (dados.item && dados.item.tipo !== 'FERRAMENTA') {
+      erros.itemId = 'Só ferramentas podem ser devolvidas. Para material, use Ajuste.';
+    }
+    if (!dados.colaboradorId) {
+      erros.colaboradorId = 'Escolha quem está devolvendo.';
+    }
+  }
+  if (dados.motivo === 'AJUSTE' && !dados.observacao.trim()) {
+    erros.observacao = 'No ajuste, conte o que aconteceu (contagem, sobra...).';
+  }
+  validarTextos('', dados.observacao, erros);
+  return limpar(erros);
+}
+
 export function limpar(erros: ErrosMovimentacao): ErrosMovimentacao {
   return Object.fromEntries(
     Object.entries(erros).filter(([, mensagem]) => Boolean(mensagem)),
