@@ -81,15 +81,13 @@ describe('ItemFormTela (S21)', () => {
   });
 
   it('mostra o código duplicado no próprio campo', async () => {
-    jest
-      .mocked(criarItem)
-      .mockRejectedValue(
-        erroDaApi(409, {
-          codigo: 'CODIGO_DUPLICADO',
-          detail: 'Código já cadastrado.',
-          campo: 'codigo',
-        }),
-      );
+    jest.mocked(criarItem).mockRejectedValue(
+      erroDaApi(409, {
+        codigo: 'CODIGO_DUPLICADO',
+        detail: 'Código já cadastrado.',
+        campo: 'codigo',
+      }),
+    );
     await montar();
     await preencherFuradeira();
     await fireEvent.press(screen.getByText('Salvar'));
