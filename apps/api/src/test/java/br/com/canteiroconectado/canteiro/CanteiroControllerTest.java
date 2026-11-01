@@ -25,6 +25,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.jayway.jsonpath.JsonPath;
+
 import br.com.canteiroconectado.auditoria.AcaoAuditoria;
 import br.com.canteiroconectado.auditoria.LogAuditoria;
 import br.com.canteiroconectado.auditoria.LogAuditoriaRepository;
@@ -68,7 +70,7 @@ class CanteiroControllerTest {
         @Test
         @DisplayName("deve criar o canteiro ativo e registrar CANTEIRO_CRIADO quando o autor é o administrador")
         void deve_criar_quando_administrador() throws Exception {
-            String id = com.jayway.jsonpath.JsonPath.read(
+            String id = JsonPath.read(
                 criar(admin, "{\"nome\":\" Residencial Aurora \",\"endereco\":\"Rua das Obras, 100\"}")
                     .andExpect(status().isCreated())
                     .andExpect(jsonPath("$.nome").value("Residencial Aurora"))

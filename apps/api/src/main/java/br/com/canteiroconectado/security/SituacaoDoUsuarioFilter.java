@@ -1,9 +1,9 @@
 package br.com.canteiroconectado.security;
 
 import java.io.IOException;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import java.util.UUID;
 
 import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.core.Authentication;
@@ -23,8 +23,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 /**
- * Confere no banco, a cada requisição autenticada, se o dono do token continua ativo e se ainda
- * precisa trocar a senha. Token de usuário desativado recebe 401. Funcionário (não administrador)
+ * Confere no banco, a cada requisição autenticada, se o dono do token continua ativo, se o perfil
+ * e o canteiro ainda são os do token e se ainda precisa trocar a senha. Token de usuário
+ * desativado ou alterado pelo administrador recebe 401, e o app pede novo login. Funcionário (não administrador)
  * com troca obrigatória só acessa {@code GET /autenticacao/eu} e {@code POST /autenticacao/trocar-senha};
  * o resto recebe 403 {@code TROCA_DE_SENHA_OBRIGATORIA}.
  */
@@ -51,11 +52,12 @@ class SituacaoDoUsuarioFilter extends OncePerRequestFilter {
             return;
         }
 
-        Optional<SituacaoDoUsuario> situacao = usuarios.buscarSituacao(UUID.fromString(token.getToken().getSubject()));
-        if (situacao.isEmpty() || !situacao.get().ativo()) {
+        UsuarioLogado doToken = UsuarioLogado.de(token.getToken());
+        Optional<SituacaoDoUsuario> situacao = usuarios.buscarSituacao(doToken.id());
+        if (situacao.isEmpty() || !situacao.get().ativo() || mudouDesdeOLogin(doToken, situacao.get())) {
             SecurityContextHolder.clearContext();
             resolvedor.resolveException(requisicao, resposta, null,
-                new InsufficientAuthenticationException("Usuário desativado ou inexistente."));
+                new InsufficientAuthenticationException("Usuário desativado, inexistente ou alterado."));
             return;
         }
         if (situacao.get().precisaTrocarSenha() && !situacao.get().administrador()
@@ -66,5 +68,11 @@ class SituacaoDoUsuarioFilter extends OncePerRequestFilter {
             return;
         }
         cadeia.doFilter(requisicao, resposta);
+    }
+
+    private static boolean mudouDesdeOLogin(UsuarioLogado doToken, SituacaoDoUsuario atual) {
+        return doToken.perfil() != atual.perfil()
+            || doToken.administrador() != atual.administrador()
+            || !Objects.equals(doToken.canteiroId(), atual.canteiroId());
     }
 }
