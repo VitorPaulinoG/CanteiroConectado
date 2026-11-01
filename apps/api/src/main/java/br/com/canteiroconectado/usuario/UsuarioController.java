@@ -64,6 +64,12 @@ public class UsuarioController {
         return servico.redefinirSenha(id);
     }
 
+    @Operation(summary = "E-mail e senha temporária enquanto o funcionário não a trocou (administrador)")
+    @GetMapping("/{id}/credencial-inicial")
+    public CredencialInicialResponse credencialInicial(@PathVariable UUID id) {
+        return servico.credencialInicial(id);
+    }
+
     @Operation(summary = "Desativa o funcionário (administrador)")
     @PostMapping("/{id}/desativar")
     public UsuarioResponse desativar(@PathVariable UUID id) {

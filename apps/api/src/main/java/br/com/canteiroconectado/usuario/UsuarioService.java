@@ -23,7 +23,8 @@ import br.com.canteiroconectado.security.UsuarioLogado;
 
 /**
  * Cadastro de funcionários, usado só pelo administrador. Funcionários nunca são excluídos.
- * ALMOXARIFE pertence a um canteiro ativo; GESTOR não tem canteiro.
+ * ALMOXARIFE pertence a um canteiro ativo; GESTOR não tem canteiro. A senha temporária é
+ * guardada cifrada até a primeira troca, para o administrador poder consultá-la.
  */
 @Service
 public class UsuarioService {
@@ -35,14 +36,16 @@ public class UsuarioService {
     private final CanteiroService canteiros;
     private final PasswordEncoder encoderSenha;
     private final GeradorSenhaTemporaria gerador;
+    private final CifradorSenhaTemporaria cifrador;
     private final AuditoriaService auditoria;
 
     public UsuarioService(UsuarioRepository usuarios, CanteiroService canteiros, PasswordEncoder encoderSenha,
-            GeradorSenhaTemporaria gerador, AuditoriaService auditoria) {
+            GeradorSenhaTemporaria gerador, CifradorSenhaTemporaria cifrador, AuditoriaService auditoria) {
         this.usuarios = usuarios;
         this.canteiros = canteiros;
         this.encoderSenha = encoderSenha;
         this.gerador = gerador;
+        this.cifrador = cifrador;
         this.auditoria = auditoria;
     }
 
@@ -84,6 +87,7 @@ public class UsuarioService {
         Usuario usuario = new Usuario(requisicao.nome().strip(), email, encoderSenha.encode(senhaTemporaria),
             requisicao.perfil(), false, canteiroId);
         usuario.setPrecisaTrocarSenha(true);
+        usuario.setSenhaTemporariaCifrada(cifrador.cifrar(senhaTemporaria, usuario.getId()));
         usuarios.save(usuario);
 
         Map<String, Object> detalhes = new LinkedHashMap<>();
@@ -160,9 +164,30 @@ public class UsuarioService {
         usuario.setPrecisaTrocarSenha(true);
         usuario.setTentativasFalhas(0);
         usuario.setBloqueadoAte(null);
+        usuario.setSenhaTemporariaCifrada(cifrador.cifrar(senhaTemporaria, usuario.getId()));
         auditoria.registrar(UsuarioLogado.atual().id(), AcaoAuditoria.SENHA_REDEFINIDA, ENTIDADE, usuario.getId(),
             Map.of("email", usuario.getEmail()));
         return UsuarioResponse.de(usuario);
+    }
+
+    /**
+     * Devolve o e-mail e a senha temporária enquanto o funcionário não a trocou, e registra
+     * {@code CREDENCIAL_CONSULTADA} com quem consultou (sem a senha).
+     *
+     * @throws BusinessException {@code CREDENCIAL_JA_TROCADA}
+     */
+    @PreAuthorize(Permissoes.ADMIN)
+    @Transactional
+    public CredencialInicialResponse credencialInicial(UUID id) {
+        Usuario usuario = encontrar(id);
+        if (usuario.getSenhaTemporariaCifrada() == null) {
+            throw new BusinessException(ErrorCode.CREDENCIAL_JA_TROCADA,
+                "O funcionário já trocou a senha temporária. Para gerar outra, redefina a senha.");
+        }
+        String senha = cifrador.decifrar(usuario.getSenhaTemporariaCifrada(), usuario.getId());
+        auditoria.registrar(UsuarioLogado.atual().id(), AcaoAuditoria.CREDENCIAL_CONSULTADA, ENTIDADE,
+            usuario.getId(), Map.of("email", usuario.getEmail()));
+        return new CredencialInicialResponse(usuario.getEmail(), senha);
     }
 
     /**

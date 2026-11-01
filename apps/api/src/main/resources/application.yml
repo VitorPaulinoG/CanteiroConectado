@@ -48,3 +48,5 @@ canteiro:
     nome: ${ADMIN_NOME:}
     email: ${ADMIN_EMAIL:}
     senha: ${ADMIN_SENHA:}
+  senha-temporaria:
+    chave: ${CHAVE_SENHA_TEMPORARIA:}
