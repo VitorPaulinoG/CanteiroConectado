@@ -47,8 +47,31 @@ npx expo start
 ```
 
 - Escaneie o QR code com o Expo Go (Android) ou pressione `a` para abrir num emulador Android.
-- A API é lida de `EXPO_PUBLIC_API_URL` (ver `.env.example` na raiz); sem essa variável no ambiente,
-  o app sobe mas não encontra a API.
+- A API é lida de `EXPO_PUBLIC_API_URL` (ver `.env.example` na raiz); sem essa variável o app abre uma tela
+  de configuração incompleta.
+
+### Apontar o app para a API local
+
+O Expo lê o `.env` da pasta `apps/mobile` (o `.env` da raiz é da API). Crie `apps/mobile/.env` com a URL
+que o aparelho consegue alcançar e reinicie o Expo limpando o cache (`npx expo start -c`), porque o valor é
+embutido no bundle:
+
+| Onde o app roda | `EXPO_PUBLIC_API_URL` | Observação |
+| --- | --- | --- |
+| Emulador Android | `http://10.0.2.2:8080` | `10.0.2.2` é o `localhost` do computador visto de dentro do emulador |
+| Celular físico na mesma rede Wi-Fi | `http://<ip-do-computador>:8080` | Descubra o IP com `ip -4 addr` (Linux), `ipconfig` (Windows) ou `ipconfig getifaddr en0` (macOS) |
+| APK `preview` | URL pública da API no Render | Vem do ambiente `preview` do EAS, não do `.env` local |
+
+```bash
+echo "EXPO_PUBLIC_API_URL=http://10.0.2.2:8080" > apps/mobile/.env
+cd apps/mobile && npx expo start -c
+```
+
+- Confira no próprio aparelho: abra `http://<ip-do-computador>:8080/api/v1/ping` no navegador do celular.
+  Se não abrir, libere a porta 8080 no firewall do computador e confirme que os dois estão na mesma rede
+  (redes de visitantes costumam isolar os aparelhos).
+- A tela Sobre do app mostra a versão da API e a hora do servidor quando a conexão funciona.
+- Nunca coloque segredo em variável `EXPO_PUBLIC_*`: o valor vai dentro do APK e pode ser extraído.
 - SDK do Expo fixo em `~58.0.14` (`apps/mobile/package.json`).
 - Qualidade: `npm run lint`, `npm run typecheck` e `npm test` (ESLint com `eslint-config-expo`,
   TypeScript em modo estrito e Jest com `jest-expo`).
