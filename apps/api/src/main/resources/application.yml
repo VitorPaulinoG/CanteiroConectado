@@ -50,3 +50,5 @@ canteiro:
     senha: ${ADMIN_SENHA:}
   senha-temporaria:
     chave: ${CHAVE_SENHA_TEMPORARIA:}
+  demo:
+    senha: ${DEMO_SENHA:}
