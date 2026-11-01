@@ -136,7 +136,8 @@ class MovimentacaoControllerTest {
         @Test
         @DisplayName("deve recusar com 422 SALDO_INSUFICIENTE e o saldo atual")
         void deve_recusar_quando_saldoInsuficiente() throws Exception {
-            registrar(sebastiao, aurora.getId(), corpo(UUID.randomUUID().toString(), "SAIDA", "RETIRADA", "1", ""))
+            registrar(sebastiao, aurora.getId(), corpo(UUID.randomUUID().toString(), "SAIDA", "AJUSTE", "1",
+                    ",\"observacao\":\"Perda\""))
                 .andExpect(status().isUnprocessableContent())
                 .andExpect(jsonPath("$.codigo").value("SALDO_INSUFICIENTE"))
                 .andExpect(jsonPath("$.saldoAtual").value(0));
