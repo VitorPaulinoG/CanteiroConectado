@@ -4,7 +4,7 @@ import { ScrollView, StyleSheet, View } from 'react-native';
 import { Avatar, Button, Dialog, Divider, List, Portal, Text } from 'react-native-paper';
 
 import { TelaComCabecalho } from '@/shared';
-import { iniciais, rotuloDoPerfil, useSessao, useUsuario } from '@/shared/sessao';
+import { iniciais, rotuloDoPerfil, SomentePerfil, useSessao, useUsuario } from '@/shared/sessao';
 
 export function MaisTela() {
   const router = useRouter();
@@ -25,6 +25,19 @@ export function MaisTela() {
         </View>
 
         <Divider />
+
+        <SomentePerfil administrador>
+          <List.Section>
+            <List.Subheader>Administração</List.Subheader>
+            <List.Item
+              title="Canteiros"
+              description="Obras e situação"
+              left={(props) => <List.Icon {...props} icon="office-building-outline" />}
+              right={(props) => <List.Icon {...props} icon="chevron-right" />}
+              onPress={() => router.push('/cadastros/canteiros')}
+            />
+          </List.Section>
+        </SomentePerfil>
 
         <List.Section>
           <List.Subheader>Conta</List.Subheader>
