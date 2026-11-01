@@ -25,10 +25,29 @@ public class MovimentacaoController {
 
     private final RegistroDeMovimentacaoService registro;
     private final HistoricoService historico;
+    private final EstornoService estornos;
 
-    public MovimentacaoController(RegistroDeMovimentacaoService registro, HistoricoService historico) {
+    public MovimentacaoController(RegistroDeMovimentacaoService registro, HistoricoService historico,
+            EstornoService estornos) {
         this.registro = registro;
         this.historico = historico;
+        this.estornos = estornos;
+    }
+
+    @Operation(summary = "Registro completo de uma movimentação, com os vínculos de estorno")
+    @GetMapping("/api/v1/movimentacoes/{id}")
+    public MovimentacaoResponse buscar(@PathVariable UUID id) {
+        return estornos.buscar(id);
+    }
+
+    @Operation(summary = "Estorna uma movimentação lançada por engano (ALMOXARIFE do canteiro)")
+    @ApiResponse(responseCode = "201", description = "Estorno gravado agora")
+    @ApiResponse(responseCode = "200", description = "O mesmo pedido já tinha sido gravado; devolve o estorno existente")
+    @PostMapping("/api/v1/movimentacoes/{id}/estorno")
+    public ResponseEntity<MovimentacaoResponse> estornar(@PathVariable UUID id,
+            @Valid @RequestBody EstornoRequest pedido) {
+        ResultadoDaGravacao<MovimentacaoResponse> resultado = estornos.estornar(id, pedido);
+        return ResponseEntity.status(resultado.novo() ? HttpStatus.CREATED : HttpStatus.OK).body(resultado.registro());
     }
 
     @Operation(summary = "Histórico de movimentações do canteiro, da mais recente para a mais antiga (GESTOR)")
