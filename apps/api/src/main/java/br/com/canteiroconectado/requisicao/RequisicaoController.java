@@ -70,4 +70,16 @@ public class RequisicaoController {
     public RequisicaoResponse recusar(@PathVariable UUID id, @Valid @RequestBody RecusaRequest pedido) {
         return andamento.recusar(id, pedido);
     }
+
+    @Operation(summary = "Marca a requisição aprovada como atendida (ALMOXARIFE do canteiro)")
+    @PostMapping("/{id}/atender")
+    public RequisicaoResponse atender(@PathVariable UUID id) {
+        return andamento.atender(id);
+    }
+
+    @Operation(summary = "Cancela a própria requisição enquanto está pendente")
+    @PostMapping("/{id}/cancelar")
+    public RequisicaoResponse cancelar(@PathVariable UUID id) {
+        return andamento.cancelar(id);
+    }
 }
