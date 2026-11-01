@@ -45,15 +45,19 @@ class AdminInitializerIntegracaoTest {
     class Subida {
 
         @Test
-        @DisplayName("deve deixar exatamente um administrador com a senha das variáveis e o evento ADMIN_CRIADO")
+        @DisplayName("deve ter criado o administrador das variáveis na subida, com o evento ADMIN_CRIADO, e não criar outro")
         void deve_existirUmAdministrador_quando_apiSobe() {
+            Integer antes = jdbc.queryForObject("SELECT count(*) FROM usuario WHERE administrador", Integer.class);
+
             inicializador.run(null);
 
             Usuario admin = usuarios.findByEmailIgnoreCase(propriedades.email()).orElseThrow();
             assertThat(admin.isAdministrador()).isTrue();
             assertThat(encoderSenha.matches(propriedades.senha(), admin.getSenhaHash())).isTrue();
             assertThat(jdbc.queryForObject("SELECT count(*) FROM usuario WHERE administrador", Integer.class))
-                .isEqualTo(1);
+                .isEqualTo(antes);
+            assertThat(jdbc.queryForObject("SELECT count(*) FROM usuario WHERE lower(email) = lower(?)", Integer.class,
+                propriedades.email())).isEqualTo(1);
             assertThat(logs.findByEntidadeIdOrderByCriadoEmAsc(admin.getId()))
                 .extracting(log -> log.getAcao())
                 .containsExactly(AcaoAuditoria.ADMIN_CRIADO);
