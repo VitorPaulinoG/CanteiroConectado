@@ -161,7 +161,14 @@ function Formulario({ linhasIniciais }: { linhasIniciais: LinhaDaRequisicao[] })
           </Text>
         </ScrollView>
         <View style={styles.rodape}>
-          <Button mode="contained" onPress={() => router.back()} contentStyle={styles.botao}>
+          <Button
+            mode="contained"
+            onPress={() => router.replace(`/requisicoes/${criada.id}`)}
+            contentStyle={styles.botao}
+          >
+            Ver requisição
+          </Button>
+          <Button mode="outlined" onPress={() => router.back()} contentStyle={styles.botao}>
             Concluir
           </Button>
         </View>
@@ -292,6 +299,6 @@ const styles = StyleSheet.create({
   tela: { flex: 1 },
   conteudo: { padding: 16, gap: 8 },
   adicionar: { alignSelf: 'flex-start', marginTop: 4 },
-  rodape: { padding: 16 },
+  rodape: { padding: 16, gap: 8 },
   botao: { minHeight: 48 },
 });
