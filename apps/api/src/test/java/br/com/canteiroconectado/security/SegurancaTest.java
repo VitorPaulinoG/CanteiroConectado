@@ -133,7 +133,7 @@ class SegurancaTest {
             mockMvc.perform(get("/api/v1/teste-seguranca/admin").header("Authorization", tokens.bearer(tokens.admin())))
                 .andExpect(status().isOk());
             mockMvc.perform(get("/api/v1/teste-seguranca/almoxarife")
-                    .header("Authorization", tokens.bearer(tokens.almoxarife(UUID.randomUUID()))))
+                    .header("Authorization", tokens.bearer(tokens.almoxarife())))
                 .andExpect(status().isOk());
         }
     }
@@ -145,7 +145,7 @@ class SegurancaTest {
         @Test
         @DisplayName("deve ler id, perfil, administrador e canteiro do token")
         void deve_lerClaims_quando_tokenValido() throws Exception {
-            UUID canteiro = UUID.randomUUID();
+            UUID canteiro = tokens.canteiro().getId();
             Usuario almoxarife = tokens.almoxarife(canteiro);
 
             mockMvc.perform(get("/api/v1/teste-seguranca/eu").header("Authorization", tokens.bearer(almoxarife)))
