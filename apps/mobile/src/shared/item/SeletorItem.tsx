@@ -112,21 +112,32 @@ export function SeletorItem({
             ? `Saldo no canteiro: ${formatarQuantidade(valor.saldo, valor.unidadeSimbolo)}`
             : '')}
       </HelperText>
-      <Portal>
-        <Modal visible={aberto} onDismiss={() => setAberto(false)} style={styles.modal}>
-          {aberto ? (
-            <Lista
-              {...modo}
-              aoEscolher={(item) => {
-                aoMudar(item);
-                setAberto(false);
-              }}
-              aoFechar={() => setAberto(false)}
-            />
-          ) : null}
-        </Modal>
-      </Portal>
+      <SeletorItemModal
+        {...modo}
+        visivel={aberto}
+        aoEscolher={(item) => {
+          aoMudar(item);
+          setAberto(false);
+        }}
+        aoFechar={() => setAberto(false)}
+      />
     </View>
+  );
+}
+
+type PropsModal = Modo & {
+  visivel: boolean;
+  aoEscolher: (item: ItemSelecionado) => void;
+  aoFechar: () => void;
+};
+
+export function SeletorItemModal({ visivel, aoEscolher, aoFechar, ...modo }: PropsModal) {
+  return (
+    <Portal>
+      <Modal visible={visivel} onDismiss={aoFechar} style={styles.modal}>
+        {visivel ? <Lista {...modo} aoEscolher={aoEscolher} aoFechar={aoFechar} /> : null}
+      </Modal>
+    </Portal>
   );
 }
 

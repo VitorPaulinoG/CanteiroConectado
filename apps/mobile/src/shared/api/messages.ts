@@ -34,6 +34,11 @@ export const MENSAGENS_POR_CODIGO: Record<string, string> = {
   ID_JA_UTILIZADO: 'Este registro já foi usado. Abra o formulário de novo.',
   ID_INVALIDO: 'O registro chegou sem identificação válida. Abra o formulário de novo.',
   MOTIVO_INVALIDO: 'Este motivo não vale para este tipo de movimentação.',
+  REQUISICAO_SEM_ITENS: 'Adicione pelo menos um item.',
+  LIMITE_DE_ITENS: 'Uma requisição aceita no máximo 20 itens.',
+  ITEM_REPETIDO: 'Este item já está na requisição.',
+  DATA_NO_PASSADO: 'A data não pode ser anterior a hoje.',
+  MOTIVO_DA_RECUSA_OBRIGATORIO: 'Conte o motivo da recusa (pelo menos 5 caracteres).',
 };
 
 export const MENSAGEM_PADRAO = MENSAGENS_POR_CODIGO.ERRO_INESPERADO;
