@@ -30,6 +30,9 @@ Fonte: `br.com.canteiroconectado.exception.ErrorCode`.
 | `CREDENCIAL_JA_TROCADA` | 409 | O administrador consultou a credencial inicial de um funcionário que já trocou a senha temporária. Para gerar outra, use `POST /usuarios/{id}/redefinir-senha`. |
 | `COLABORADOR_DUPLICADO` | 409 | Já existe um colaborador com o mesmo nome no canteiro (sem diferenciar maiúsculas). O corpo traz `campo: "nome"`. |
 | `COLABORADOR_INVALIDO` | 422 | O colaborador informado numa movimentação não existe, está desativado ou é de outro canteiro. O corpo traz `campo: "colaboradorId"`. |
+| `CODIGO_DUPLICADO` | 409 | Já existe um item com o mesmo código (sem diferenciar maiúsculas nem espaços nas pontas). O corpo traz `campo: "codigo"`. |
+| `ITEM_JA_MOVIMENTADO` | 422 | Tentativa de mudar o código ou a unidade de um item que já teve movimentação. O corpo traz `campo` com o campo recusado. |
+| `ITEM_INATIVO` | 422 | O item informado numa movimentação ou requisição está desativado. O corpo traz `campo: "itemId"`. |
 | `ERRO_INESPERADO` | 500 | Falha não prevista. O cliente recebe mensagem genérica, sem stack trace; o detalhe completo fica no log, correlacionado pelo `requestId`. |
 
 Códigos específicos de regra de negócio (ex.: `SALDO_INSUFICIENTE`, `ITEM_INATIVO`) são adicionados
