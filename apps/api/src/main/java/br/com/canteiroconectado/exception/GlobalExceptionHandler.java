@@ -41,7 +41,9 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(BusinessException.class)
     public ProblemDetail handleRegraNegocio(BusinessException excecao) {
-        return problemaBase(excecao.status(), excecao.codigo(), excecao.getMessage());
+        ProblemDetail problema = problemaBase(excecao.status(), excecao.codigo(), excecao.getMessage());
+        excecao.propriedades().forEach(problema::setProperty);
+        return problema;
     }
 
     @ExceptionHandler(AccessDeniedException.class)

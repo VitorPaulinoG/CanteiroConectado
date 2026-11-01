@@ -16,6 +16,7 @@ Fonte: `br.com.canteiroconectado.exception.ErrorCode`.
 | `CONFLITO` | 409 | Estado atual do recurso impede a operação, inclusive violação de integridade no banco (ex.: `ID_JA_UTILIZADO`, tratado por feature). |
 | `CREDENCIAIS_INVALIDAS` | 401 | Login com e-mail inexistente ou senha errada. A resposta é a mesma nos dois casos: "E-mail ou senha incorretos". |
 | `USUARIO_INATIVO` | 403 | Login correto de um usuário desativado pelo administrador. |
+| `CONTA_BLOQUEADA` | 423 | A quinta senha errada seguida bloqueia a conta por 15 minutos; enquanto durar, todo login recebe este código. O corpo traz `bloqueadoAte` (instante UTC) para o app mostrar o tempo restante. |
 | `ERRO_INESPERADO` | 500 | Falha não prevista. O cliente recebe mensagem genérica, sem stack trace; o detalhe completo fica no log, correlacionado pelo `requestId`. |
 
 Códigos específicos de regra de negócio (ex.: `SALDO_INSUFICIENTE`, `ITEM_INATIVO`) são adicionados
