@@ -39,7 +39,7 @@ cd apps/api && ./mvnw spring-boot:run
   letra e número). Em banco vazio, a API cria o canteiro Residencial Aurora com 22 itens, o almoxarife Sebastião
   (`sebastiao@canteiro.demo`) e a gestora Camila (`camila@canteiro.demo`), os dois com a senha de `DEMO_SENHA`.
   O perfil `demo` nunca roda por padrão.
-- Swagger UI em `http://localhost:8080/swagger-ui.html`, saúde em `http://localhost:8080/actuator/health` e
+- Swagger UI em `http://localhost:8080/swagger-ui.html` (desligado no perfil `prod`), saúde em `http://localhost:8080/actuator/health` e
   `http://localhost:8080/api/v1/ping` (público) devolve nome, versão e hora do servidor em UTC.
 - Testes: `./mvnw verify` em `apps/api`. Os testes de contexto e o de trigger do banco **precisam do Postgres no ar**
   (`docker compose up -d db`). O `EnvExampleTest` falha se a API ler uma variável que não esteja no `.env.example`.
