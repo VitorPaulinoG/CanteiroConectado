@@ -19,3 +19,14 @@ export async function buscarEu(): Promise<UsuarioSessao> {
   const resposta = await api.get<UsuarioSessao>('/api/v1/autenticacao/eu');
   return resposta.data;
 }
+
+export async function postarTrocaDeSenha(
+  senhaAtual: string,
+  novaSenha: string,
+): Promise<UsuarioSessao> {
+  const resposta = await api.post<UsuarioSessao>('/api/v1/autenticacao/trocar-senha', {
+    senhaAtual,
+    novaSenha,
+  });
+  return resposta.data;
+}

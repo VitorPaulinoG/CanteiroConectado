@@ -1,7 +1,7 @@
 import { Redirect } from 'expo-router';
 
 import { AberturaTela } from '@/features/autenticacao';
-import { useSessao } from '@/shared/sessao';
+import { trocaDeSenhaPendente, useSessao } from '@/shared/sessao';
 
 export default function Abertura() {
   const { estado } = useSessao();
@@ -11,6 +11,9 @@ export default function Abertura() {
   }
   if (estado.status === 'anonimo') {
     return <Redirect href="/login" />;
+  }
+  if (trocaDeSenhaPendente(estado)) {
+    return <Redirect href="/trocar-senha" />;
   }
   return <Redirect href="/inicio" />;
 }

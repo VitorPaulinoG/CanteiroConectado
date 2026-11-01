@@ -33,6 +33,7 @@ function rotas(estado: EstadoSessao) {
     ),
     index: Abertura,
     '(autenticacao)/login': () => <Text>tela de login</Text>,
+    '(autenticacao)/trocar-senha': () => <Text>tela de troca de senha</Text>,
     '(autenticado)/_layout': AreaAutenticadaLayout,
     '(autenticado)/inicio': () => <Text>tela de início</Text>,
     sobre: () => <Text>sobre</Text>,
@@ -54,5 +55,40 @@ describe('Navegação por sessão (S01)', () => {
     await renderRouter(rotas({ status: 'anonimo' }), { initialUrl: '/inicio' });
     expect(await screen.findByText('tela de login')).toBeTruthy();
     expect(screen.queryByText('tela de início')).toBeNull();
+  });
+
+  it('leva à troca de senha quando ela é obrigatória', async () => {
+    await renderRouter(
+      rotas({
+        status: 'autenticado',
+        usuario: { ...usuario, precisaTrocarSenha: true },
+        trocaAdiada: false,
+      }),
+    );
+    expect(await screen.findByText('tela de troca de senha')).toBeTruthy();
+  });
+
+  it('não deixa abrir a área autenticada com a troca pendente', async () => {
+    await renderRouter(
+      rotas({
+        status: 'autenticado',
+        usuario: { ...usuario, precisaTrocarSenha: true },
+        trocaAdiada: false,
+      }),
+      { initialUrl: '/inicio' },
+    );
+    expect(await screen.findByText('tela de troca de senha')).toBeTruthy();
+    expect(screen.queryByText('tela de início')).toBeNull();
+  });
+
+  it('leva ao início quando o administrador adiou a troca', async () => {
+    await renderRouter(
+      rotas({
+        status: 'autenticado',
+        usuario: { ...usuario, precisaTrocarSenha: true },
+        trocaAdiada: true,
+      }),
+    );
+    expect(await screen.findByText('tela de início')).toBeTruthy();
   });
 });
