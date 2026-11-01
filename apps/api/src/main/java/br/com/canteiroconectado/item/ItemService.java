@@ -38,12 +38,20 @@ public class ItemService {
     }
 
     /**
-     * Lista o catálogo em ordem de descrição, com filtro por tipo e situação.
+     * Busca no catálogo por código ou descrição, sem diferenciar maiúsculas e sem tratar acentos.
+     * Primeiro vêm os itens cujo código começa com o termo, depois os de descrição que começa com
+     * ele e por fim os que só o contêm; dentro de cada grupo, em ordem de descrição.
+     *
+     * @param busca termo digitado; vazio lista o catálogo inteiro em ordem de descrição
+     * @param ativo filtra pela situação; os seletores das telas de movimentação pedem {@code true}
      */
     @PreAuthorize(Permissoes.AUTENTICADO)
     @Transactional(readOnly = true)
-    public PaginaResponse<ItemResponse> listar(TipoItem tipo, Boolean ativo, Integer pagina, Integer tamanho) {
-        return PaginaResponse.de(itens.listar(tipo, ativo, Paginacao.de(pagina, tamanho)), ItemResponse::de);
+    public PaginaResponse<ItemResponse> listar(String busca, TipoItem tipo, Boolean ativo, Integer pagina,
+            Integer tamanho) {
+        return PaginaResponse.de(
+            itens.buscar(Paginacao.termoDeBusca(busca), tipo, ativo, Paginacao.de(pagina, tamanho)),
+            ItemResponse::de);
     }
 
     @PreAuthorize(Permissoes.AUTENTICADO)

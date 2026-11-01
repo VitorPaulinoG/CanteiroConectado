@@ -28,14 +28,15 @@ public class ItemController {
         this.servico = servico;
     }
 
-    @Operation(summary = "Lista o catálogo de itens")
+    @Operation(summary = "Busca no catálogo por código ou descrição, com quem começa pelo termo primeiro")
     @GetMapping
     public PaginaResponse<ItemResponse> listar(
+            @RequestParam(required = false) String q,
             @RequestParam(required = false) TipoItem tipo,
             @RequestParam(required = false) Boolean ativo,
             @RequestParam(required = false) Integer pagina,
             @RequestParam(required = false) Integer tamanho) {
-        return servico.listar(tipo, ativo, pagina, tamanho);
+        return servico.listar(q, tipo, ativo, pagina, tamanho);
     }
 
     @Operation(summary = "Detalhe de um item")
