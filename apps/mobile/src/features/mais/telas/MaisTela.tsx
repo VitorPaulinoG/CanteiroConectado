@@ -36,6 +36,13 @@ export function MaisTela() {
               right={(props) => <List.Icon {...props} icon="chevron-right" />}
               onPress={() => router.push('/cadastros/canteiros')}
             />
+            <List.Item
+              title="Funcionários"
+              description="Acessos, senhas temporárias e desativação"
+              left={(props) => <List.Icon {...props} icon="account-group-outline" />}
+              right={(props) => <List.Icon {...props} icon="chevron-right" />}
+              onPress={() => router.push('/cadastros/usuarios')}
+            />
           </List.Section>
         </SomentePerfil>
 
