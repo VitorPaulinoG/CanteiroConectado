@@ -143,10 +143,12 @@ describe('SaidaTela (S09)', () => {
     await escolherFuradeiraEJoao();
     await fireEvent.changeText(screen.getByLabelText('Frente de obra'), 'Fundação');
 
-    await fireEvent.press(screen.getByText('Confirmar saída'));
-    await fireEvent.press(screen.getByText('Enviando…'));
+    const botao = screen.getByText('Confirmar saída');
+    await fireEvent.press(botao);
+    await fireEvent.press(botao);
 
-    expect(screen.getByText('Enviando…')).toBeDisabled();
+    expect(await screen.findAllByText('Enviando…')).toHaveLength(2);
+    expect(screen.getByRole('button', { name: 'Enviando…' })).toBeDisabled();
     expect(registrarMovimentacao).toHaveBeenCalledTimes(1);
   });
 

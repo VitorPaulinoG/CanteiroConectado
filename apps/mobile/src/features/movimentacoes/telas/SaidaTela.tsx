@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, View } from 'react-native';
 import { Button, HelperText, SegmentedButtons, Text, TextInput } from 'react-native-paper';
 
-import { AcessoNegado, CampoQuantidade, TelaComCabecalho } from '@/shared';
+import { AcessoNegado, CampoQuantidade, FaixaEstadoEnvio, TelaComCabecalho } from '@/shared';
 import { erroDoCampo, erroSemCampo } from '@/shared/api';
 import { useCanteiroAtivo, useCanteiroIdAtivo } from '@/shared/canteiro';
 import { SeletorColaborador, type Colaborador } from '@/shared/colaborador';
@@ -192,15 +192,12 @@ function Formulario({ itemIdInicial }: Props) {
             {erroGeral}
           </HelperText>
         ) : null}
-        {envio.falhou && envio.semResposta ? (
-          <View style={styles.falha}>
-            <HelperText type="error" visible>
-              Não foi possível enviar. {envio.erro?.message}
-            </HelperText>
-            <Button mode="outlined" icon="refresh" onPress={envio.tentarDeNovo}>
-              Tentar de novo
-            </Button>
-          </View>
+        {envio.enviando || (envio.falhou && envio.semResposta) ? (
+          <FaixaEstadoEnvio
+            estado={envio.estado}
+            erro={envio.erro}
+            aoTentarDeNovo={envio.tentarDeNovo}
+          />
         ) : null}
       </ScrollView>
       <View style={styles.rodape}>
@@ -222,7 +219,6 @@ const styles = StyleSheet.create({
   tela: { flex: 1 },
   conteudo: { padding: 16, gap: 4 },
   motivo: { marginTop: 8, marginBottom: 16 },
-  falha: { gap: 8 },
   rodape: { padding: 16 },
   botao: { minHeight: 48 },
 });
