@@ -33,6 +33,8 @@ Fonte: `br.com.canteiroconectado.exception.ErrorCode`.
 | `CODIGO_DUPLICADO` | 409 | Já existe um item com o mesmo código (sem diferenciar maiúsculas nem espaços nas pontas). O corpo traz `campo: "codigo"`. |
 | `ITEM_JA_MOVIMENTADO` | 422 | Tentativa de mudar o código ou a unidade de um item que já teve movimentação. O corpo traz `campo` com o campo recusado. |
 | `ITEM_INATIVO` | 422 | O item informado numa movimentação ou requisição está desativado. O corpo traz `campo: "itemId"`. |
+| `SALDO_INSUFICIENTE` | 422 | A saída (ou o estorno de uma entrada) deixaria o saldo negativo. O corpo traz `saldoAtual` e `campo: "quantidade"`. |
+| `QUANTIDADE_INVALIDA` | 422 | Quantidade zero, negativa ou com mais de 3 casas decimais. O corpo traz `campo: "quantidade"`. |
 | `ERRO_INESPERADO` | 500 | Falha não prevista. O cliente recebe mensagem genérica, sem stack trace; o detalhe completo fica no log, correlacionado pelo `requestId`. |
 
 Códigos específicos de regra de negócio (ex.: `SALDO_INSUFICIENTE`, `ITEM_INATIVO`) são adicionados
