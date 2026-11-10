@@ -138,6 +138,7 @@ class MatrizDePermissoesTest {
 
         new Linha("GET /colaboradores", "PNPP",
             c -> get("/api/v1/colaboradores").param("canteiroId", c.canteiroA().toString())),
+        new Linha("GET /colaboradores/{id}", "PNPP", c -> get("/api/v1/colaboradores/" + c.colaboradorA())),
         new Linha("POST /colaboradores", "PNPP", c -> json(post("/api/v1/colaboradores"),
             "{\"nome\":\"Colaborador " + UUID.randomUUID() + "\",\"canteiroId\":\"" + c.canteiroA() + "\"}")),
         new Linha("PATCH /colaboradores/{id}", "PNPP", c -> json(patch("/api/v1/colaboradores/" + c.colaboradorA()),
