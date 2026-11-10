@@ -1,7 +1,14 @@
 import { fireEvent, screen } from '@testing-library/react-native';
 
 import { renderizar } from '@/test-utils/render';
-import { administrador, autenticado, ComSessao, gestor, valorSessao } from '@/test-utils/sessao';
+import {
+  administrador,
+  almoxarife,
+  autenticado,
+  ComSessao,
+  gestor,
+  valorSessao,
+} from '@/test-utils/sessao';
 
 import { MaisTela } from '../telas/MaisTela';
 
@@ -30,6 +37,25 @@ describe('MaisTela (S19)', () => {
     );
     await fireEvent.press(screen.getByText('Canteiros'));
     expect(mockPush).toHaveBeenCalledWith('/cadastros/canteiros');
+  });
+
+  it('mostra a trilha de auditoria só para o GESTOR', async () => {
+    await renderizar(
+      <ComSessao valor={valorSessao(autenticado(gestor))}>
+        <MaisTela />
+      </ComSessao>,
+    );
+    await fireEvent.press(screen.getByText('Trilha de auditoria'));
+    expect(mockPush).toHaveBeenCalledWith('/auditoria');
+  });
+
+  it('esconde a trilha de auditoria do ALMOXARIFE', async () => {
+    await renderizar(
+      <ComSessao valor={valorSessao(autenticado(almoxarife))}>
+        <MaisTela />
+      </ComSessao>,
+    );
+    expect(screen.queryByText('Trilha de auditoria')).toBeNull();
   });
 
   it('esconde a administração do gestor comum', async () => {
