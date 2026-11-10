@@ -7,6 +7,7 @@ import java.util.UUID;
  * Funcionário devolvido ao administrador.
  *
  * @param precisaTrocarSenha verdadeiro enquanto a senha temporária não for trocada
+ * @param credencialInicialDisponivel verdadeiro enquanto a senha temporária pode ser consultada
  */
 public record UsuarioResponse(
     UUID id,
@@ -17,12 +18,13 @@ public record UsuarioResponse(
     UUID canteiroId,
     boolean ativo,
     boolean precisaTrocarSenha,
+    boolean credencialInicialDisponivel,
     OffsetDateTime criadoEm
 ) {
 
     static UsuarioResponse de(Usuario usuario) {
         return new UsuarioResponse(usuario.getId(), usuario.getNome(), usuario.getEmail(),
             usuario.getPerfil(), usuario.isAdministrador(), usuario.getCanteiroId(), usuario.isAtivo(),
-            usuario.isPrecisaTrocarSenha(), usuario.getCriadoEm());
+            usuario.isPrecisaTrocarSenha(), usuario.getSenhaTemporariaCifrada() != null, usuario.getCriadoEm());
     }
 }
