@@ -5,6 +5,8 @@ import { chavesEstoque } from '@/shared/estoque';
 
 import {
   aprovarRequisicao,
+  atenderRequisicao,
+  cancelarRequisicao,
   chavesRequisicoes,
   criarRequisicao,
   recusarRequisicao,
@@ -66,5 +68,13 @@ export function useDecidirRequisicao(requisicao: Requisicao) {
           observacao: decisao.observacao,
         })
       : recusarRequisicao(requisicao.id, decisao.motivo),
+  );
+}
+
+export type Andamento = 'atender' | 'cancelar';
+
+export function useAtenderOuCancelar(requisicao: Requisicao) {
+  return useAndamentoDaRequisicao<Andamento>(requisicao, (acao) =>
+    acao === 'atender' ? atenderRequisicao(requisicao.id) : cancelarRequisicao(requisicao.id),
   );
 }
