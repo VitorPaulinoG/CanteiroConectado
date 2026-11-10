@@ -7,4 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface MovimentacaoEstoqueRepository extends JpaRepository<MovimentacaoEstoque, UUID> {
 
     boolean existsByItemId(UUID itemId);
+
+    boolean existsByEstornaId(UUID estornaId);
 }
