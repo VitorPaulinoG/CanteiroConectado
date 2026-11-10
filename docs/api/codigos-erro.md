@@ -10,7 +10,7 @@ Fonte: `br.com.canteiroconectado.exception.ErrorCode`.
 | --- | --- | --- |
 | `VALIDACAO_INVALIDA` | 400 | Campo obrigatório ausente ou formato inválido no corpo da requisição; corpo ilegível ou parâmetro ausente ou de tipo errado. O corpo traz também a lista `campos` com o detalhe de cada violação. |
 | `NAO_AUTENTICADO` | 401 | Requisição sem token válido em um endpoint que exige login, token de usuário desativado ou token emitido antes de o administrador mudar o perfil ou o canteiro do usuário. |
-| `ACESSO_NEGADO` | 403 | Usuário autenticado sem permissão para a ação (ex.: perfil errado, canteiro de outra pessoa). |
+| `ACESSO_NEGADO` | 403 | Usuário autenticado sem permissão para a ação (ex.: perfil errado, canteiro de outra pessoa, GESTOR decidindo a requisição de outro GESTOR). |
 | `RECURSO_NAO_ENCONTRADO` | 404 | Identificador informado não corresponde a um registro existente, ou o endereço não existe. |
 | `METODO_NAO_PERMITIDO` | 405 | O método HTTP usado não existe para o endereço. |
 | `CONFLITO` | 409 | Estado atual do recurso impede a operação, inclusive violação de integridade no banco não tratada por uma regra específica. |
@@ -46,6 +46,9 @@ Fonte: `br.com.canteiroconectado.exception.ErrorCode`.
 | `LIMITE_DE_ITENS` | 422 | Requisição com mais de 20 itens. |
 | `ITEM_REPETIDO` | 422 | O mesmo item aparece em duas linhas da requisição. O corpo traz `campo: "itens[i].itemId"`. |
 | `DATA_NO_PASSADO` | 422 | Data de necessidade (ou previsão de chegada) anterior a hoje, no fuso de São Paulo. O corpo traz o `campo`. |
+| `AUTOAPROVACAO_PROIBIDA` | 403 | Quem criou a requisição tentou aprová-la ou recusá-la. |
+| `REQUISICAO_NAO_PENDENTE` | 409 | A requisição já foi decidida, atendida ou cancelada. O corpo traz o `status` atual. |
+| `MOTIVO_DA_RECUSA_OBRIGATORIO` | 422 | Recusa sem motivo ou com menos de 5 caracteres. O corpo traz `campo: "motivo"`. |
 | `ERRO_INESPERADO` | 500 | Falha não prevista. O cliente recebe mensagem genérica, sem stack trace; o detalhe completo fica no log, correlacionado pelo `requestId`. |
 
 Códigos específicos de regra de negócio (ex.: `SALDO_INSUFICIENTE`, `ITEM_INATIVO`) são adicionados
