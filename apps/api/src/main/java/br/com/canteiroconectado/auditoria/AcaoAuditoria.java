@@ -7,5 +7,6 @@ public enum AcaoAuditoria {
     ADMIN_CRIADO,
     LOGIN_SUCESSO,
     LOGIN_FALHOU,
-    CONTA_BLOQUEADA
+    CONTA_BLOQUEADA,
+    SENHA_TROCADA
 }

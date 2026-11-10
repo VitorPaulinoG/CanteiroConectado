@@ -5,6 +5,7 @@ import java.nio.charset.StandardCharsets;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -22,10 +23,12 @@ import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.web.authentication.BearerTokenAuthenticationFilter;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.servlet.HandlerExceptionResolver;
 
 import com.nimbusds.jose.jwk.source.ImmutableSecret;
 
 import br.com.canteiroconectado.config.JwtProperties;
+import br.com.canteiroconectado.usuario.UsuarioRepository;
 
 /**
  * Resource server com JWT simétrico (HS256) assinado com o {@code JWT_SEGREDO} (32 caracteres ou
@@ -48,10 +51,16 @@ public class SecurityConfig {
 
     private final JwtProperties propriedades;
     private final ErrosDeSegurancaHandler errosDeSeguranca;
+    private final UsuarioRepository usuarios;
+    private final HandlerExceptionResolver resolvedor;
 
-    public SecurityConfig(JwtProperties propriedades, ErrosDeSegurancaHandler errosDeSeguranca) {
+    public SecurityConfig(JwtProperties propriedades, ErrosDeSegurancaHandler errosDeSeguranca,
+            UsuarioRepository usuarios,
+            @Qualifier("handlerExceptionResolver") HandlerExceptionResolver resolvedor) {
         this.propriedades = propriedades;
         this.errosDeSeguranca = errosDeSeguranca;
+        this.usuarios = usuarios;
+        this.resolvedor = resolvedor;
     }
 
     @Bean
@@ -70,7 +79,8 @@ public class SecurityConfig {
             .exceptionHandling(erros -> erros
                 .authenticationEntryPoint(errosDeSeguranca)
                 .accessDeniedHandler(errosDeSeguranca))
-            .addFilterAfter(new UsuarioNoMdcFilter(), BearerTokenAuthenticationFilter.class);
+            .addFilterAfter(new UsuarioNoMdcFilter(), BearerTokenAuthenticationFilter.class)
+            .addFilterAfter(new SituacaoDoUsuarioFilter(usuarios, resolvedor), UsuarioNoMdcFilter.class);
         return http.build();
     }
 
