@@ -32,7 +32,8 @@ cd apps/api && ./mvnw spring-boot:run
 
 - O perfil `local` é o padrão e já traz valores de desenvolvimento (banco `canteiroconectado`, usuário e senha `canteiro`).
   Variáveis definidas no `.env` da raiz ou no ambiente têm precedência.
-- Swagger UI em `http://localhost:8080/swagger-ui.html` e saúde em `http://localhost:8080/actuator/health`.
+- Swagger UI em `http://localhost:8080/swagger-ui.html`, saúde em `http://localhost:8080/actuator/health` e
+  `http://localhost:8080/api/v1/ping` (público) devolve nome, versão e hora do servidor em UTC.
 - Testes: `./mvnw verify` em `apps/api`. Os testes de contexto e o de trigger do banco **precisam do Postgres no ar**
   (`docker compose up -d db`). O `EnvExampleTest` falha se a API ler uma variável que não esteja no `.env.example`.
 
