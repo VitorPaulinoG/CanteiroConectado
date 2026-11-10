@@ -130,13 +130,11 @@ describe('FuncionarioFormTela (S25)', () => {
   });
 
   it('não mostra o bloco de credencial quando a senha já foi trocada', async () => {
-    jest
-      .mocked(buscarFuncionario)
-      .mockResolvedValue({
-        ...camila,
-        precisaTrocarSenha: false,
-        credencialInicialDisponivel: false,
-      });
+    jest.mocked(buscarFuncionario).mockResolvedValue({
+      ...camila,
+      precisaTrocarSenha: false,
+      credencialInicialDisponivel: false,
+    });
     await montar('u2');
 
     expect(await screen.findByDisplayValue('Camila Souza')).toBeTruthy();

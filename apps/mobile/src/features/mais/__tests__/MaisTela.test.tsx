@@ -41,6 +41,17 @@ describe('MaisTela (S19)', () => {
     expect(screen.queryByText('Administração')).toBeNull();
   });
 
+  it('mostra o canteiro e deixa o gestor trocar', async () => {
+    await renderizar(
+      <ComSessao valor={valorSessao(autenticado(gestor))}>
+        <MaisTela />
+      </ComSessao>,
+    );
+    expect(screen.getByText('Residencial Aurora')).toBeTruthy();
+    await fireEvent.press(screen.getByText('Toque para trocar'));
+    expect(mockPush).toHaveBeenCalledWith('/canteiro');
+  });
+
   it('abre Sobre e Trocar senha', async () => {
     await renderizar(
       <ComSessao valor={valorSessao(autenticado(administrador))}>
