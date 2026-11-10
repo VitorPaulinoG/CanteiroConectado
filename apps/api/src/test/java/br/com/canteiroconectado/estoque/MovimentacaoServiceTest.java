@@ -34,6 +34,7 @@ import br.com.canteiroconectado.exception.BusinessException;
 import br.com.canteiroconectado.exception.ErrorCode;
 import br.com.canteiroconectado.item.ItemService;
 import br.com.canteiroconectado.support.RelogioAjustavel;
+import br.com.canteiroconectado.support.TransacaoFalsa;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -62,10 +63,10 @@ class MovimentacaoServiceTest {
     @BeforeEach
     void montar() {
         servico = new MovimentacaoService(movimentacoes, saldos, canteiros, itens,
-            new RelogioAjustavel(Instant.parse("2026-11-01T12:00:00Z")));
+            new RelogioAjustavel(Instant.parse("2026-11-01T12:00:00Z")), new TransacaoFalsa());
         saldo = saldoCom("2");
         when(saldos.travar(CANTEIRO, ITEM)).thenReturn(Optional.of(saldo));
-        when(movimentacoes.save(any())).thenAnswer(chamada -> chamada.getArgument(0));
+        when(movimentacoes.saveAndFlush(any())).thenAnswer(chamada -> chamada.getArgument(0));
     }
 
     private static SaldoEstoque saldoCom(String quantidade) {
@@ -102,7 +103,7 @@ class MovimentacaoServiceTest {
             InOrder ordem = inOrder(saldos, movimentacoes);
             ordem.verify(saldos).criarSeAusente(CANTEIRO, ITEM);
             ordem.verify(saldos).travar(CANTEIRO, ITEM);
-            ordem.verify(movimentacoes).save(any());
+            ordem.verify(movimentacoes).saveAndFlush(any());
             assertThat(gravada.getSaldoApos()).isEqualByComparingTo("1");
             assertThat(gravada.getQuantidade()).isEqualByComparingTo("1");
             assertThat(gravada.getCriadoEm().toInstant()).isEqualTo(Instant.parse("2026-11-01T12:00:00Z"));
@@ -129,7 +130,7 @@ class MovimentacaoServiceTest {
                     assertThat(excecao.codigo()).isEqualTo(ErrorCode.SALDO_INSUFICIENTE);
                     assertThat(excecao.propriedades()).containsEntry("saldoAtual", new BigDecimal("2"));
                 });
-            verify(movimentacoes, never()).save(any());
+            verify(movimentacoes, never()).saveAndFlush(any());
             assertThat(saldo.getQuantidade()).isEqualByComparingTo("2");
         }
 
