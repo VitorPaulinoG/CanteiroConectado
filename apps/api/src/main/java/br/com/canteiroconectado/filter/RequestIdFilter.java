@@ -23,6 +23,7 @@ public class RequestIdFilter extends OncePerRequestFilter {
 
     public static final String HEADER = "X-Request-Id";
     public static final String MDC_KEY = "requestId";
+    public static final String MDC_USUARIO = "usuarioId";
 
     private static final Pattern FORMATO_VALIDO = Pattern.compile("[A-Za-z0-9_-]{1,64}");
 
@@ -42,6 +43,7 @@ public class RequestIdFilter extends OncePerRequestFilter {
             ACESSO.info("{} {} {} {}ms", requisicao.getMethod(), requisicao.getRequestURI(),
                 resposta.getStatus(), duracaoMs);
             MDC.remove(MDC_KEY);
+            MDC.remove(MDC_USUARIO);
         }
     }
 
