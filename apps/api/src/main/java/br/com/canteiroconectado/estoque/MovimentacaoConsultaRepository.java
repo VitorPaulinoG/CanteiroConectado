@@ -61,6 +61,53 @@ public class MovimentacaoConsultaRepository {
             MovimentacaoConsultaRepository::linha);
     }
 
+    /**
+     * Página do histórico, da movimentação mais recente para a mais antiga.
+     */
+    public List<MovimentacaoResponse> historico(FiltroDoHistorico filtro, int limite, long deslocamento) {
+        return jdbc.query(SELECAO + condicoes(filtro) + """
+             ORDER BY m.criado_em DESC, m.id
+            LIMIT :limite OFFSET :deslocamento
+            """, parametros(filtro).addValue("limite", limite).addValue("deslocamento", deslocamento),
+            MovimentacaoConsultaRepository::linha);
+    }
+
+    public long contarHistorico(FiltroDoHistorico filtro) {
+        Long total = jdbc.queryForObject("SELECT count(*) FROM movimentacao_estoque m" + condicoes(filtro),
+            parametros(filtro), Long.class);
+        return total == null ? 0 : total;
+    }
+
+    private static String condicoes(FiltroDoHistorico filtro) {
+        StringBuilder sql = new StringBuilder(" WHERE m.canteiro_id = :canteiroId");
+        if (filtro.de() != null) {
+            sql.append(" AND m.criado_em >= :de");
+        }
+        if (filtro.ate() != null) {
+            sql.append(" AND m.criado_em < :ate");
+        }
+        if (filtro.tipo() != null) {
+            sql.append(" AND m.tipo = :tipo");
+        }
+        if (filtro.itemId() != null) {
+            sql.append(" AND m.item_id = :itemId");
+        }
+        if (filtro.colaboradorId() != null) {
+            sql.append(" AND m.colaborador_id = :colaboradorId");
+        }
+        return sql.toString();
+    }
+
+    private static MapSqlParameterSource parametros(FiltroDoHistorico filtro) {
+        return new MapSqlParameterSource()
+            .addValue("canteiroId", filtro.canteiroId())
+            .addValue("de", filtro.de() == null ? null : OffsetDateTime.ofInstant(filtro.de(), ZoneOffset.UTC))
+            .addValue("ate", filtro.ate() == null ? null : OffsetDateTime.ofInstant(filtro.ate(), ZoneOffset.UTC))
+            .addValue("tipo", filtro.tipo() == null ? null : filtro.tipo().name())
+            .addValue("itemId", filtro.itemId())
+            .addValue("colaboradorId", filtro.colaboradorId());
+    }
+
     static MovimentacaoResponse linha(ResultSet resultado, int numero) throws SQLException {
         return new MovimentacaoResponse(
             resultado.getObject("id", UUID.class),
