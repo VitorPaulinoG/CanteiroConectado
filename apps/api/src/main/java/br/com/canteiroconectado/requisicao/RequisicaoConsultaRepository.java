@@ -52,6 +52,69 @@ public class RequisicaoConsultaRepository {
             (resultado, numero) -> linha(resultado, itens, historico)).stream().findFirst();
     }
 
+    /**
+     * Página da lista: pendentes primeiro, depois da mais recente para a mais antiga.
+     */
+    public List<RequisicaoResumoResponse> listar(FiltroDeRequisicoes filtro, int limite, long deslocamento) {
+        MapSqlParameterSource parametros = parametros(filtro)
+            .addValue("limite", limite)
+            .addValue("deslocamento", deslocamento);
+        List<RequisicaoResumoResponse> pagina = jdbc.query("""
+            SELECT r.id, r.numero, r.canteiro_id, r.status, r.solicitante_id, s.nome AS solicitante_nome,
+                   r.solicitante_perfil, r.frente_obra, r.necessario_ate, r.previsao_chegada, r.criado_em
+            FROM requisicao r
+            JOIN usuario s ON s.id = r.solicitante_id
+            """ + condicoes(filtro) + """
+            ORDER BY CASE WHEN r.status = 'PENDENTE' THEN 0 ELSE 1 END, r.criado_em DESC, r.numero DESC
+            LIMIT :limite OFFSET :deslocamento
+            """, parametros, (resultado, numero) -> new RequisicaoResumoResponse(
+                resultado.getObject("id", UUID.class),
+                NumeracaoDeRequisicao.formatar(resultado.getInt("numero")),
+                resultado.getObject("canteiro_id", UUID.class),
+                StatusRequisicao.valueOf(resultado.getString("status")),
+                resultado.getObject("solicitante_id", UUID.class),
+                resultado.getString("solicitante_nome"),
+                Perfil.valueOf(resultado.getString("solicitante_perfil")),
+                resultado.getString("frente_obra"),
+                resultado.getObject("necessario_ate", LocalDate.class),
+                resultado.getObject("previsao_chegada", LocalDate.class),
+                utc(resultado, "criado_em"),
+                List.of()));
+        Map<UUID, List<ItemDaRequisicaoResponse>> itensPorRequisicao =
+            itens(pagina.stream().map(RequisicaoResumoResponse::id).toList());
+        return pagina.stream().map(resumo -> new RequisicaoResumoResponse(resumo.id(), resumo.numero(),
+            resumo.canteiroId(), resumo.status(), resumo.solicitanteId(), resumo.solicitanteNome(),
+            resumo.solicitantePerfil(), resumo.frenteObra(), resumo.necessarioAte(), resumo.previsaoChegada(),
+            resumo.criadoEm(), itensPorRequisicao.getOrDefault(resumo.id(), List.of()))).toList();
+    }
+
+    public long contar(FiltroDeRequisicoes filtro) {
+        Long total = jdbc.queryForObject("SELECT count(*) FROM requisicao r " + condicoes(filtro), parametros(filtro),
+            Long.class);
+        return total == null ? 0 : total;
+    }
+
+    private static String condicoes(FiltroDeRequisicoes filtro) {
+        StringBuilder sql = new StringBuilder(" WHERE r.canteiro_id = :canteiroId");
+        if (filtro.escopo() == EscopoDeRequisicoes.MINHAS) {
+            sql.append(" AND r.solicitante_id = :usuarioId");
+        } else {
+            sql.append(" AND r.status = 'PENDENTE' AND r.solicitante_perfil = :perfil AND r.solicitante_id <> :usuarioId");
+        }
+        if (!filtro.status().isEmpty()) {
+            sql.append(" AND r.status IN (:status)");
+        }
+        return sql.append(' ').toString();
+    }
+
+    private static MapSqlParameterSource parametros(FiltroDeRequisicoes filtro) {
+        return new MapSqlParameterSource()
+            .addValue("canteiroId", filtro.canteiroId())
+            .addValue("usuarioId", filtro.usuarioId())
+            .addValue("perfil", filtro.perfilQueEuDecido() == null ? null : filtro.perfilQueEuDecido().name())
+            .addValue("status", filtro.status().stream().map(Enum::name).toList());
+    }
+
     Map<UUID, List<ItemDaRequisicaoResponse>> itens(Collection<UUID> requisicoes) {
         Map<UUID, List<ItemDaRequisicaoResponse>> porRequisicao = new LinkedHashMap<>();
         if (requisicoes.isEmpty()) {

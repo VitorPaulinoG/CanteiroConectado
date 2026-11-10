@@ -14,9 +14,11 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import br.com.canteiroconectado.auditoria.AcaoAuditoria;
@@ -24,6 +26,8 @@ import br.com.canteiroconectado.auditoria.AuditoriaService;
 import br.com.canteiroconectado.canteiro.CanteiroService;
 import br.com.canteiroconectado.comum.Fuso;
 import br.com.canteiroconectado.comum.IdDoCliente;
+import br.com.canteiroconectado.comum.PaginaResponse;
+import br.com.canteiroconectado.comum.Paginacao;
 import br.com.canteiroconectado.comum.Quantidades;
 import br.com.canteiroconectado.comum.ResultadoDaGravacao;
 import br.com.canteiroconectado.exception.BusinessException;
@@ -32,10 +36,12 @@ import br.com.canteiroconectado.item.ItemService;
 import br.com.canteiroconectado.security.CanteiroAcessoService;
 import br.com.canteiroconectado.security.Permissoes;
 import br.com.canteiroconectado.security.UsuarioLogado;
+import br.com.canteiroconectado.usuario.Perfil;
 
 /**
- * Criação de requisições pelo ALMOXARIFE (no próprio canteiro) ou pelo GESTOR (no canteiro
- * ativo). O {@code id} vem do app: o mesmo pedido enviado de novo devolve a requisição já criada.
+ * Criação e consulta de requisições pelo ALMOXARIFE (no próprio canteiro) e pelo GESTOR (no
+ * canteiro ativo). O {@code id} vem do app: o mesmo pedido enviado de novo devolve a requisição já
+ * criada.
  */
 @Service
 public class RequisicaoService {
@@ -196,6 +202,48 @@ public class RequisicaoService {
             && existente.getNecessarioAte().equals(pedido.necessarioAte())
             && Objects.equals(existente.getFrenteObra(), pedido.frenteObra())
             && Objects.equals(existente.getObservacao(), pedido.observacao());
+    }
+
+    /**
+     * Lista as requisições do canteiro na aba pedida, com os pendentes primeiro.
+     *
+     * @param canteiroId canteiro ativo; o ALMOXARIFE pode omitir
+     * @param status filtro opcional de status
+     */
+    @PreAuthorize(Permissoes.ALMOXARIFE_OU_GESTOR)
+    @Transactional(readOnly = true)
+    public PaginaResponse<RequisicaoResumoResponse> listar(UUID canteiroId, String escopo,
+            List<StatusRequisicao> status, Integer pagina, Integer tamanho) {
+        UsuarioLogado usuario = UsuarioLogado.atual();
+        FiltroDeRequisicoes filtro = new FiltroDeRequisicoes(acesso.resolver(canteiroId), usuario.id(),
+            perfilQueDecide(usuario), EscopoDeRequisicoes.ler(escopo), status == null ? List.of() : List.copyOf(status));
+        Pageable paginacao = Paginacao.de(pagina, tamanho);
+        long total = consultas.contar(filtro);
+        int totalPaginas = (int) Math.ceil((double) total / paginacao.getPageSize());
+        return new PaginaResponse<>(consultas.listar(filtro, paginacao.getPageSize(), paginacao.getOffset()),
+            paginacao.getPageNumber(), paginacao.getPageSize(), total, totalPaginas);
+    }
+
+    /**
+     * Requisição completa com itens, linha do tempo e as ações permitidas ao usuário logado.
+     *
+     * @throws BusinessException {@code RECURSO_NAO_ENCONTRADO} ou {@code ACESSO_NEGADO}
+     */
+    @PreAuthorize(Permissoes.ALMOXARIFE_OU_GESTOR)
+    @Transactional(readOnly = true)
+    public RequisicaoResponse buscar(UUID id) {
+        UsuarioLogado usuario = UsuarioLogado.atual();
+        RequisicaoResponse requisicao = detalhar(id, usuario);
+        acesso.conferir(requisicao.canteiroId());
+        return requisicao;
+    }
+
+    /**
+     * Perfil cujas requisições o usuário decide: o ALMOXARIFE decide as do GESTOR e o GESTOR as do
+     * ALMOXARIFE.
+     */
+    static Perfil perfilQueDecide(UsuarioLogado usuario) {
+        return usuario.isAlmoxarife() ? Perfil.GESTOR : Perfil.ALMOXARIFE;
     }
 
     RequisicaoResponse detalhar(UUID id, UsuarioLogado usuario) {
