@@ -53,3 +53,30 @@ export function validarRequisicao({ linhas, necessarioAte, frenteObra, observaca
 export function temErros(erros: object): boolean {
   return Object.values(erros).some(Boolean);
 }
+
+export const TAMANHO_MINIMO_DO_MOTIVO = 5;
+
+export type ErrosDecisao = { previsaoChegada?: string; motivo?: string; observacao?: string };
+
+export function validarDecisao(dados: {
+  decisao: 'aprovar' | 'recusar';
+  previsaoChegada: string | null;
+  motivo: string;
+  observacao: string;
+  hoje: string;
+}): ErrosDecisao {
+  const erros: ErrosDecisao = {};
+  if (dados.decisao === 'aprovar') {
+    if (dados.previsaoChegada && dados.previsaoChegada < dados.hoje) {
+      erros.previsaoChegada = 'A previsão de chegada não pode ser anterior a hoje.';
+    }
+    if (dados.observacao.trim().length > TAMANHO_MAXIMO_OBSERVACAO) {
+      erros.observacao = `A observação deve ter no máximo ${TAMANHO_MAXIMO_OBSERVACAO} caracteres.`;
+    }
+  } else if (dados.motivo.trim().length < TAMANHO_MINIMO_DO_MOTIVO) {
+    erros.motivo = `Conte o motivo da recusa (pelo menos ${TAMANHO_MINIMO_DO_MOTIVO} caracteres).`;
+  } else if (dados.motivo.trim().length > TAMANHO_MAXIMO_OBSERVACAO) {
+    erros.motivo = `O motivo deve ter no máximo ${TAMANHO_MAXIMO_OBSERVACAO} caracteres.`;
+  }
+  return erros;
+}

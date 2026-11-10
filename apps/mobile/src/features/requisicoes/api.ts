@@ -82,3 +82,14 @@ export async function listarRequisicoes(
 export async function buscarRequisicao(id: string): Promise<Requisicao> {
   return (await api.get<Requisicao>(`${BASE}/${id}`)).data;
 }
+
+export async function aprovarRequisicao(
+  id: string,
+  dados: { previsaoChegada?: string; observacao?: string },
+): Promise<Requisicao> {
+  return (await api.post<Requisicao>(`${BASE}/${id}/aprovar`, dados)).data;
+}
+
+export async function recusarRequisicao(id: string, motivo: string): Promise<Requisicao> {
+  return (await api.post<Requisicao>(`${BASE}/${id}/recusar`, { motivo })).data;
+}
