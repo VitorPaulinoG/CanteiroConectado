@@ -98,7 +98,11 @@ function Conteudo({ detalhe, atualizando, aoAtualizar }: PropsConteudo) {
             />
           ) : (
             detalhe.ultimasMovimentacoes.map((movimentacao) => (
-              <LinhaDeMovimentacao key={movimentacao.id} movimentacao={movimentacao} />
+              <LinhaDeMovimentacao
+                key={movimentacao.id}
+                movimentacao={movimentacao}
+                aoTocar={() => router.push(`/movimentacao/${movimentacao.id}`)}
+              />
             ))
           )}
         </List.Section>
