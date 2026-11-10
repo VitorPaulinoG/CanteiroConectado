@@ -41,7 +41,9 @@ export type ItemSelecionado = {
   status?: StatusEstoque;
 };
 
-type Modo = { modo: 'catalogo' } | { modo: 'estoque'; canteiroId: string; exigirSaldo?: boolean };
+type Modo =
+  | { modo: 'catalogo'; incluirInativos?: boolean }
+  | { modo: 'estoque'; canteiroId: string; exigirSaldo?: boolean };
 
 type Props = Modo & {
   valor: ItemSelecionado | null;
@@ -149,18 +151,19 @@ type PropsLista = Modo & {
 function useBusca(modo: Modo, termo: string) {
   const q = termo || undefined;
   const canteiroId = modo.modo === 'estoque' ? modo.canteiroId : '';
+  const ativo = modo.modo === 'catalogo' && modo.incluirInativos ? undefined : true;
   return useInfiniteQuery<Pagina<ItemSelecionado>>({
     queryKey:
       modo.modo === 'estoque'
         ? [...chavesEstoque.lista(canteiroId, { q }), 'seletor']
-        : [...chavesItens.lista({ q, ativo: true }), 'seletor'],
+        : [...chavesItens.lista({ q, ativo }), 'seletor'],
     queryFn: async ({ pageParam }) => {
       const pagina = pageParam as number;
       if (modo.modo === 'estoque') {
         const resultado = await listarEstoque(canteiroId, { q }, pagina);
         return { ...resultado, conteudo: resultado.conteudo.map(doEstoque) };
       }
-      const resultado = await listarItens({ q, ativo: true }, pagina);
+      const resultado = await listarItens({ q, ativo }, pagina);
       return { ...resultado, conteudo: resultado.conteudo.map(doCatalogo) };
     },
     initialPageParam: 0,
