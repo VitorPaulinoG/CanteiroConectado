@@ -46,3 +46,15 @@ export const saidaGravada: Movimentacao = {
   registradoPorNome: 'Sebastião Lima',
   criadoEm: '2026-11-01T15:30:00Z',
 };
+
+export const cimentoNoEstoque: ItemEstoque = {
+  itemId: 'i-cimento',
+  codigo: 'MAT-0001',
+  descricao: 'Cimento CP-II 50kg',
+  unidade: 'SACO',
+  unidadeSimbolo: 'saco',
+  tipo: 'MATERIAL',
+  quantidadeMinima: 50,
+  saldo: 30,
+  status: 'ABAIXO_DO_MINIMO',
+};

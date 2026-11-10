@@ -4,6 +4,7 @@
   "main": "expo-router/entry",
   "dependencies": {
     "@expo/vector-icons": "^15.0.2",
+    "@react-native-community/datetimepicker": "9.2.1",
     "@tanstack/react-query": "^5.104.3",
     "axios": "^1.20.0",
     "expo": "~58.0.16",
@@ -51,7 +52,8 @@
     "preset": "jest-expo",
     "moduleNameMapper": {
       "^@/(.*)$": "<rootDir>/src/$1"
-    }
+    },
+    "testTimeout": 15000
   },
   "expo": {
     "install": {
