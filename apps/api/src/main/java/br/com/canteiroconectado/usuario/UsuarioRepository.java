@@ -17,6 +17,8 @@ public interface UsuarioRepository extends JpaRepository<Usuario, UUID>, JpaSpec
 
     boolean existsByAdministradorTrue();
 
+    Optional<Usuario> findFirstByAdministradorTrueOrderByCriadoEmAsc();
+
     @Query("""
         select new br.com.canteiroconectado.usuario.SituacaoDoUsuario(
             u.ativo, u.perfil, u.administrador, u.canteiroId, u.precisaTrocarSenha)
