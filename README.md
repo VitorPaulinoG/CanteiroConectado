@@ -2,6 +2,14 @@
 
 Canteiro Conectado é um aplicativo Android com API própria para controlar o estoque de materiais e ferramentas de canteiros de obra. O almoxarife registra entradas e saídas (com o colaborador responsável e a frente de obra) e corrige lançamentos errados por estorno; o gestor acompanha o saldo de todos os canteiros, decide requisições de material e consulta o histórico e a trilha de auditoria, que é imutável. O MVP tem dois perfis (ALMOXARIFE e GESTOR) e é composto por um app React Native com Expo, uma API Spring Boot e um banco PostgreSQL, tudo em um único monorepo.
 
+## O que cada perfil faz
+
+| Perfil | Abas | Principais tarefas | Guia |
+| --- | --- | --- | --- |
+| ALMOXARIFE | Início, Estoque, Movimentar, Requisições, Mais | Registrar entradas e saídas, estornar, decidir as requisições do gestor, marcar como atendida | [almoxarife](docs/guias/almoxarife.md) |
+| GESTOR | Início, Estoque, Requisições, Histórico, Mais | Acompanhar o estoque de todos os canteiros, pedir material, decidir as requisições do almoxarife, auditar | [gestor](docs/guias/gestor.md) |
+| GESTOR administrador | As do gestor | Tudo do gestor, mais canteiros e funcionários, com a senha temporária de cada um | [administrador](docs/guias/administrador.md) |
+
 ## Pré-requisitos
 
 - JDK 21
@@ -143,6 +151,12 @@ eas build --platform android --profile preview --local
 ## Documentação
 
 - [Visão e arquitetura](docs/Vis%C3%A3o%20e%20arquitetura.md): decisões, escopo do MVP, estrutura do monorepo, contrato da API e modelo de dados
+- [API](docs/api/README.md): regras gerais e endpoints, com [exemplos prontos](docs/api/exemplos.http) e os [códigos de erro](docs/api/codigos-erro.md)
+- Guias de uma página: [almoxarife](docs/guias/almoxarife.md), [gestor](docs/guias/gestor.md) e [administrador](docs/guias/administrador.md)
 - [Roteiro de demonstração](docs/roteiro-demonstracao.md): como acordar a API e o banco, validar login e APK e o plano B
 - [Reinício do banco](docs/reinicio-do-banco.md): como zerar o banco da Neon e recarregar os dados de demonstração
+- [Matriz de rastreabilidade](docs/rastreabilidade.md): cada funcionalidade e requisito ligado às issues, aos PRs e aos testes
+- Qualidade: [testes da API](docs/qa/testes-da-api.md), [testes do app](docs/qa/testes-do-app.md), [verificação de segurança](docs/qa/verificacao-de-seguranca.md), [desempenho](docs/qa/desempenho.md) e [Jornada 2](docs/qa/jornada-2.md)
+- [Riscos aceitos](docs/decisoes/riscos-aceitos.md) e [limitações e evoluções](docs/limitacoes-e-evolucoes.md)
+- [Pendências manuais](docs/pendencias-manuais.md): protótipos no Figma, testes em aparelho, sessões de usabilidade e a entrega da versão 1.0
 - [Protótipos no Figma](https://www.figma.com/design/ECl5KwGt8IQcdXNRebLEuD/CanteiroConectado?node-id=0-1&t=aKGlq4yb4zU1bGhc-1)
