@@ -12,6 +12,7 @@ import static org.mockito.Mockito.when;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.time.OffsetDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -27,6 +28,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import br.com.canteiroconectado.canteiro.CanteiroService;
@@ -162,6 +164,95 @@ class MovimentacaoServiceTest {
             assertThat(codigo(() -> servico.aplicar(nova(TipoMovimentacao.ENTRADA, MotivoMovimentacao.RECEBIMENTO, "1"))))
                 .isEqualTo(ErrorCode.CANTEIRO_INATIVO);
             verify(saldos, never()).travar(any(), any());
+        }
+    }
+
+    @Nested
+    @DisplayName("aplicarUmaVez")
+    class AplicarUmaVez {
+
+        private final NovaMovimentacao saida = nova(TipoMovimentacao.SAIDA, MotivoMovimentacao.RETIRADA, "1");
+
+        private MovimentacaoEstoque gravada(NovaMovimentacao base, String quantidade) {
+            return new MovimentacaoEstoque(base.id(), base.canteiroId(), base.itemId(), base.tipo(), base.motivo(),
+                new BigDecimal(quantidade), new BigDecimal("1"), base.colaboradorId(), base.frenteObra(),
+                base.observacao(), base.estornaId(), base.registradoPor(), OffsetDateTime.now());
+        }
+
+        @Test
+        @DisplayName("deve gravar e marcar como novo quando o id ainda não existe")
+        void deve_gravar_quando_idNovo() {
+            when(movimentacoes.findById(saida.id())).thenReturn(Optional.empty());
+
+            var resultado = servico.aplicarUmaVez(saida);
+
+            assertThat(resultado.novo()).isTrue();
+            assertThat(resultado.registro().getId()).isEqualTo(saida.id());
+            verify(movimentacoes).saveAndFlush(any());
+            assertThat(saldo.getQuantidade()).isEqualByComparingTo("1");
+        }
+
+        @Test
+        @DisplayName("deve devolver o registro gravado sem tocar no saldo quando o mesmo pedido se repete")
+        void deve_devolverGravado_quando_mesmoConteudo() {
+            MovimentacaoEstoque existente = gravada(saida, "1.000");
+            when(movimentacoes.findById(saida.id())).thenReturn(Optional.of(existente));
+
+            var resultado = servico.aplicarUmaVez(saida);
+
+            assertThat(resultado.novo()).isFalse();
+            assertThat(resultado.registro()).isSameAs(existente);
+            verify(saldos, never()).travar(any(), any());
+            verify(movimentacoes, never()).saveAndFlush(any());
+        }
+
+        @Test
+        @DisplayName("deve recusar com ID_JA_UTILIZADO quando o id já tem outro conteúdo")
+        void deve_recusar_quando_conteudoDivergente() {
+            when(movimentacoes.findById(saida.id())).thenReturn(Optional.of(gravada(saida, "5")));
+
+            assertThat(codigo(() -> servico.aplicarUmaVez(saida))).isEqualTo(ErrorCode.ID_JA_UTILIZADO);
+            verify(movimentacoes, never()).saveAndFlush(any());
+        }
+
+        @Test
+        @DisplayName("deve devolver o registro da outra gravação quando perde a corrida pela chave primária")
+        void deve_devolverOutraGravacao_quando_violacaoDeChave() {
+            MovimentacaoEstoque daOutra = gravada(saida, "1");
+            when(movimentacoes.findById(saida.id()))
+                .thenReturn(Optional.empty(), Optional.empty(), Optional.of(daOutra));
+            when(movimentacoes.saveAndFlush(any()))
+                .thenThrow(new DataIntegrityViolationException("pk"));
+
+            var resultado = servico.aplicarUmaVez(saida);
+
+            assertThat(resultado.novo()).isFalse();
+            assertThat(resultado.registro()).isSameAs(daOutra);
+        }
+
+        @Test
+        @DisplayName("deve repassar a violação quando ela não é do id")
+        void deve_repassar_quando_violacaoNaoEhDoId() {
+            when(movimentacoes.findById(saida.id())).thenReturn(Optional.empty());
+            when(movimentacoes.saveAndFlush(any()))
+                .thenThrow(new DataIntegrityViolationException("fk"));
+
+            assertThatThrownBy(() -> servico.aplicarUmaVez(saida))
+                .isInstanceOf(DataIntegrityViolationException.class);
+        }
+
+        @Test
+        @DisplayName("deve considerar o mesmo pedido só com os mesmos campos e autor")
+        void deve_compararTodosOsCampos_quando_verificaConteudo() {
+            MovimentacaoEstoque existente = gravada(saida, "1");
+            NovaMovimentacao outroAutor = new NovaMovimentacao(saida.id(), CANTEIRO, ITEM, saida.tipo(),
+                saida.motivo(), saida.quantidade(), null, null, null, null, UUID.randomUUID());
+            NovaMovimentacao outraFrente = new NovaMovimentacao(saida.id(), CANTEIRO, ITEM, saida.tipo(),
+                saida.motivo(), saida.quantidade(), null, "Fundação", null, null, USUARIO);
+
+            assertThat(MovimentacaoService.mesmoConteudo(existente, saida)).isTrue();
+            assertThat(MovimentacaoService.mesmoConteudo(existente, outroAutor)).isFalse();
+            assertThat(MovimentacaoService.mesmoConteudo(existente, outraFrente)).isFalse();
         }
     }
 }
