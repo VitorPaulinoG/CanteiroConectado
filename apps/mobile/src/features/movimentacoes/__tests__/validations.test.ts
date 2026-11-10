@@ -1,4 +1,10 @@
-import { validarEntrada, validarSaida, type DadosDaSaida } from '../validations';
+import {
+  textoOpcional,
+  validarEntrada,
+  validarMotivoDoEstorno,
+  validarSaida,
+  type DadosDaSaida,
+} from '../validations';
 
 const base: DadosDaSaida = {
   item: { saldo: 2, unidadeSimbolo: 'un' },
@@ -111,5 +117,36 @@ describe('validarEntrada', () => {
         observacao: '',
       }).quantidade,
     ).toBeDefined();
+  });
+});
+
+describe('validarEntrada sem item', () => {
+  it('pede o item', () => {
+    expect(
+      validarEntrada({
+        item: null,
+        quantidade: '1',
+        motivo: 'RECEBIMENTO',
+        colaboradorId: null,
+        observacao: '',
+      }).itemId,
+    ).toBe('Escolha o item.');
+  });
+});
+
+describe('validarMotivoDoEstorno', () => {
+  it('exige o motivo e limita a 200 caracteres', () => {
+    expect(validarMotivoDoEstorno('   ')).toBe('Conte por que o lançamento está errado.');
+    expect(validarMotivoDoEstorno('e'.repeat(201))).toBe(
+      'O motivo deve ter no máximo 200 caracteres.',
+    );
+    expect(validarMotivoDoEstorno(' Lançado em dobro ')).toBeUndefined();
+  });
+});
+
+describe('textoOpcional', () => {
+  it('tira os espaços e manda vazio como ausente', () => {
+    expect(textoOpcional('  Fundação ')).toBe('Fundação');
+    expect(textoOpcional('   ')).toBeUndefined();
   });
 });

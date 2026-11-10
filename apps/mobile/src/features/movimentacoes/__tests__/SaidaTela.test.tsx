@@ -24,7 +24,10 @@ jest.mock('@/shared/colaborador/api', () => ({
 }));
 
 const mockBack = jest.fn();
-jest.mock('expo-router', () => ({ useRouter: () => ({ push: jest.fn(), back: mockBack }) }));
+const mockReplace = jest.fn();
+jest.mock('expo-router', () => ({
+  useRouter: () => ({ push: jest.fn(), back: mockBack, replace: mockReplace }),
+}));
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;
 
@@ -195,5 +198,38 @@ describe('SaidaTela (S09)', () => {
   it('mostra acesso negado para o GESTOR', async () => {
     await montar(gestor);
     expect(screen.getByText('Você não tem acesso a esta área')).toBeTruthy();
+  });
+
+  it('abre uma saída nova pelo comprovante salvo', async () => {
+    jest.mocked(registrarMovimentacao).mockResolvedValue(saidaGravada);
+    await montar();
+    await escolherFuradeiraEJoao();
+    await fireEvent.changeText(screen.getByLabelText('Frente de obra'), 'Fundação');
+    await fireEvent.press(screen.getByText('Confirmar saída'));
+
+    await fireEvent.press(await screen.findByText('Nova saída'));
+
+    expect(mockReplace).toHaveBeenCalledWith('/movimentar/saida');
+  });
+
+  it('tira a recusa da API do campo quando o almoxarife corrige o valor', async () => {
+    jest.mocked(registrarMovimentacao).mockRejectedValue(
+      erroDaApi(422, {
+        codigo: 'SALDO_INSUFICIENTE',
+        detail: 'Saldo insuficiente: há 1 no canteiro.',
+        campo: 'quantidade',
+        saldoAtual: 1,
+      }),
+    );
+    await montar();
+    await escolherFuradeiraEJoao();
+    await fireEvent.changeText(screen.getByLabelText('Quantidade'), '2');
+    await fireEvent.changeText(screen.getByLabelText('Frente de obra'), 'Fundação');
+    await fireEvent.press(screen.getByText('Confirmar saída'));
+    await screen.findByText('Saldo insuficiente: há 1 no canteiro.');
+
+    await fireEvent.changeText(screen.getByLabelText('Quantidade'), '1');
+
+    expect(screen.queryByText('Saldo insuficiente: há 1 no canteiro.')).toBeNull();
   });
 });

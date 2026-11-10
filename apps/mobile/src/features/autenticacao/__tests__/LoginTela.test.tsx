@@ -111,4 +111,30 @@ describe('LoginTela (S02)', () => {
     await fireEvent.press(screen.getByLabelText('Mostrar senha'));
     expect(screen.getByLabelText('Senha').props.secureTextEntry).toBe(false);
   });
+
+  it('usa o singular quando falta menos de um minuto para desbloquear', async () => {
+    const bloqueadoAte = new Date(Date.now() + 20_000).toISOString();
+    const entrar = jest
+      .fn()
+      .mockRejectedValue(erroDaApi(423, { codigo: 'CONTA_BLOQUEADA', bloqueadoAte }));
+    await montar(entrar);
+
+    await preencher('sebastiao@obra.com', 'errada1');
+
+    expect(
+      await screen.findByText(
+        'Conta bloqueada por excesso de tentativas. Tente de novo em 1 minuto.',
+      ),
+    ).toBeTruthy();
+  });
+
+  it('não envia de novo enquanto o primeiro login está em andamento', async () => {
+    const entrar = jest.fn(() => new Promise<void>(() => {}));
+    await montar(entrar);
+
+    await preencher('camila@obra.com', 'senha-forte-1');
+    await fireEvent.press(screen.getByText('Entrar'));
+
+    expect(entrar).toHaveBeenCalledTimes(1);
+  });
 });
