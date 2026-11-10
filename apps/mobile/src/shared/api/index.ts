@@ -16,3 +16,5 @@ export {
   TEMPO_DE_DADO_FRESCO_MS,
 } from './queryClient';
 export { buscarPing, type Ping } from './ping';
+export { erroDoCampo, erroSemCampo } from './campos';
+export type { Pagina } from './tipos';
