@@ -236,4 +236,68 @@ class ItemControllerTest {
                 .andExpect(jsonPath("$.descricao").value("Furadeira de impacto 700W"));
         }
     }
+
+    @Nested
+    @DisplayName("GET /api/v1/itens?q=")
+    class Buscar {
+
+        private void cadastrar(String codigo, String descricao) {
+            itens.saveAndFlush(new Item(codigo, descricao, Unidade.UN, TipoItem.FERRAMENTA, BigDecimal.ZERO));
+        }
+
+        @Test
+        @DisplayName("deve achar as furadeiras digitando furad, sem diferenciar maiúsculas")
+        void deve_acharPorDescricao_quando_termoParcial() throws Exception {
+            cadastrar("FER-0012", "Furadeira de impacto 700W");
+            cadastrar("FER-0020", "FURADEIRA de bancada");
+            cadastrar("FER-0030", "Martelo");
+
+            mockMvc.perform(get("/api/v1/itens").param("q", "furad").param("ativo", "true")
+                    .header("Authorization", tokens.bearer(tokens.almoxarife())))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.totalElementos").value(2))
+                .andExpect(jsonPath("$.conteudo[*].codigo", contains("FER-0020", "FER-0012")));
+        }
+
+        @Test
+        @DisplayName("deve trazer primeiro quem tem o código começando pelo termo, depois a descrição")
+        void deve_ordenarPorPrefixo_quando_buscaPorCodigo() throws Exception {
+            cadastrar("ABC-1", "Chave para FER-001 antiga");
+            cadastrar("FER-0015", "Serra circular");
+            cadastrar("FER-0011", "Alicate");
+            cadastrar("XYZ-9", "fer-001 em destaque");
+
+            mockMvc.perform(get("/api/v1/itens").param("q", "FER-001")
+                    .header("Authorization", tokens.bearer(tokens.gestor())))
+                .andExpect(jsonPath("$.conteudo[*].codigo", contains("FER-0011", "FER-0015", "XYZ-9", "ABC-1")));
+        }
+
+        @Test
+        @DisplayName("deve esconder itens inativos quando o seletor pede ativo=true")
+        void deve_esconderInativos_quando_ativoTrue() throws Exception {
+            cadastrar("FER-0012", "Furadeira de impacto 700W");
+            Item inativa = itens.saveAndFlush(new Item("FER-0099", "Furadeira velha", Unidade.UN, TipoItem.FERRAMENTA,
+                BigDecimal.ZERO));
+            inativa.setAtivo(false);
+
+            mockMvc.perform(get("/api/v1/itens").param("q", "furadeira").param("ativo", "true")
+                    .header("Authorization", tokens.bearer(tokens.almoxarife())))
+                .andExpect(jsonPath("$.conteudo[*].codigo", contains("FER-0012")));
+        }
+
+        @Test
+        @DisplayName("deve paginar o resultado")
+        void deve_paginar_quando_tamanhoInformado() throws Exception {
+            for (int i = 1; i <= 5; i++) {
+                cadastrar("PAG-" + i, "Parafuso " + i);
+            }
+
+            mockMvc.perform(get("/api/v1/itens").param("q", "parafuso").param("pagina", "1").param("tamanho", "2")
+                    .header("Authorization", tokens.bearer(tokens.almoxarife())))
+                .andExpect(jsonPath("$.totalElementos").value(5))
+                .andExpect(jsonPath("$.totalPaginas").value(3))
+                .andExpect(jsonPath("$.pagina").value(1))
+                .andExpect(jsonPath("$.conteudo[*].codigo", contains("PAG-3", "PAG-4")));
+        }
+    }
 }
