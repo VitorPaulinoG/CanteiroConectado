@@ -37,6 +37,7 @@ Fonte: `br.com.canteiroconectado.exception.ErrorCode`.
 | `QUANTIDADE_INVALIDA` | 422 | Quantidade zero, negativa ou com mais de 3 casas decimais. O corpo traz `campo: "quantidade"`. |
 | `ID_INVALIDO` | 400 | O `id` gerado no app (movimentação ou requisição) está ausente ou não é um UUID no formato `8-4-4-4-12`. O corpo traz `campo: "id"`. |
 | `ID_JA_UTILIZADO` | 409 | O `id` já pertence a um registro com conteúdo diferente. Reenviar o mesmo pedido com o mesmo `id` não dá erro: devolve o registro gravado. |
+| `MOTIVO_INVALIDO` | 422 | O motivo não vale para o tipo: entrada aceita Recebimento, Devolução e Ajuste; saída aceita Retirada e Ajuste; Estorno só nasce pela correção de um lançamento. O corpo traz `campo: "motivo"`. |
 | `ERRO_INESPERADO` | 500 | Falha não prevista. O cliente recebe mensagem genérica, sem stack trace; o detalhe completo fica no log, correlacionado pelo `requestId`. |
 
 Códigos específicos de regra de negócio (ex.: `SALDO_INSUFICIENTE`, `ITEM_INATIVO`) são adicionados

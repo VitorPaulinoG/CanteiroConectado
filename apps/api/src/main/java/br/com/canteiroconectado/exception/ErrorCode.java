@@ -33,7 +33,8 @@ public enum ErrorCode {
     SALDO_INSUFICIENTE(HttpStatus.UNPROCESSABLE_CONTENT),
     QUANTIDADE_INVALIDA(HttpStatus.UNPROCESSABLE_CONTENT),
     ID_INVALIDO(HttpStatus.BAD_REQUEST),
-    ID_JA_UTILIZADO(HttpStatus.CONFLICT);
+    ID_JA_UTILIZADO(HttpStatus.CONFLICT),
+    MOTIVO_INVALIDO(HttpStatus.UNPROCESSABLE_CONTENT);
 
     private final HttpStatus statusPadrao;
 
