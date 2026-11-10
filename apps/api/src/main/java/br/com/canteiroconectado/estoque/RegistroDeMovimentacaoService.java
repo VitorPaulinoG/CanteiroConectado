@@ -24,19 +24,21 @@ public class RegistroDeMovimentacaoService {
     private final MovimentacaoService movimentacoes;
     private final MovimentacaoConsultaRepository consultas;
     private final CanteiroAcessoService acesso;
+    private final RegrasDaMovimentacao regras;
 
     public RegistroDeMovimentacaoService(MovimentacaoService movimentacoes, MovimentacaoConsultaRepository consultas,
-            CanteiroAcessoService acesso) {
+            CanteiroAcessoService acesso, RegrasDaMovimentacao regras) {
         this.movimentacoes = movimentacoes;
         this.consultas = consultas;
         this.acesso = acesso;
+        this.regras = regras;
     }
 
     /**
      * Registra a movimentação ou devolve a já gravada com o mesmo id.
      *
      * @throws BusinessException {@code ID_INVALIDO}, {@code MOTIVO_INVALIDO}, {@code ACESSO_NEGADO},
-     *     {@code ID_JA_UTILIZADO} e as recusas do saldo
+     *     {@code ID_JA_UTILIZADO}, as recusas de {@link RegrasDaMovimentacao} e as do saldo
      */
     @PreAuthorize(Permissoes.ALMOXARIFE)
     public ResultadoDaGravacao<MovimentacaoResponse> registrar(UUID canteiroId, MovimentacaoRequest requisicao) {
@@ -50,7 +52,10 @@ public class RegistroDeMovimentacaoService {
         NovaMovimentacao nova = new NovaMovimentacao(id, canteiroId, requisicao.itemId(), requisicao.tipo(),
             requisicao.motivo(), requisicao.quantidade(), requisicao.colaboradorId(), texto(requisicao.frenteObra()),
             texto(requisicao.observacao()), null, UsuarioLogado.atual().id());
-        ResultadoDaGravacao<MovimentacaoEstoque> resultado = movimentacoes.aplicarUmaVez(nova);
+        ResultadoDaGravacao<MovimentacaoEstoque> resultado = movimentacoes.jaGravada(nova).orElseGet(() -> {
+            regras.conferir(nova);
+            return movimentacoes.aplicarUmaVez(nova);
+        });
         MovimentacaoResponse resposta = consultas.buscar(resultado.registro().getId())
             .orElseThrow(() -> new IllegalStateException("Movimentação gravada não encontrada."));
         return new ResultadoDaGravacao<>(resposta, resultado.novo());

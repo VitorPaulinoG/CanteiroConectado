@@ -71,6 +71,7 @@ class SaidasSimultaneasTest {
             UUID canteiro = transacao.execute(status -> dados.canteiro().getId());
             UUID item = transacao.execute(status -> dados.ferramenta().getId());
             Usuario almoxarife = transacao.execute(status -> tokens.almoxarife(canteiro));
+            UUID colaborador = transacao.execute(status -> dados.colaborador(canteiro).getId());
             movimentacoes.aplicarUmaVez(new NovaMovimentacao(UUID.randomUUID(), canteiro, item,
                 TipoMovimentacao.ENTRADA, MotivoMovimentacao.RECEBIMENTO, BigDecimal.ONE, null, null, null, null,
                 almoxarife.getId()));
@@ -80,7 +81,8 @@ class SaidasSimultaneasTest {
             List<Future<MockHttpServletResponse>> futuros = new ArrayList<>();
             for (int i = 0; i < 2; i++) {
                 String corpo = "{\"id\":\"" + UUID.randomUUID() + "\",\"tipo\":\"SAIDA\",\"motivo\":\"RETIRADA\","
-                    + "\"itemId\":\"" + item + "\",\"quantidade\":1}";
+                    + "\"itemId\":\"" + item + "\",\"quantidade\":1,\"colaboradorId\":\"" + colaborador
+                    + "\",\"frenteObra\":\"Fundação\"}";
                 futuros.add(executor.submit(() -> {
                     largada.await();
                     return mockMvc.perform(post("/api/v1/canteiros/" + canteiro + "/movimentacoes")
