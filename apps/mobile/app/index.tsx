@@ -1,5 +1,6 @@
 import { StyleSheet, View } from 'react-native';
-import { Text } from 'react-native-paper';
+import { Link } from 'expo-router';
+import { Button, Text } from 'react-native-paper';
 
 import { useAppTheme } from '@/theme';
 
@@ -9,6 +10,9 @@ export default function TelaInicial() {
   return (
     <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
       <Text variant="headlineSmall">Canteiro Conectado</Text>
+      <Link href="/sobre" asChild>
+        <Button mode="text">Sobre</Button>
+      </Link>
     </View>
   );
 }
