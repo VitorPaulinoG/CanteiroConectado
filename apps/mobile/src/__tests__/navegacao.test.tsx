@@ -1,11 +1,16 @@
 import { renderRouter, screen } from 'expo-router/testing-library';
+import { PaperProvider } from 'react-native-paper';
 import { Text } from 'react-native';
 
 import { SessaoContext, type EstadoSessao, type ValorSessao } from '@/shared/sessao';
+import { appTheme } from '@/theme';
 
 import { Navegacao } from '../../app/_layout';
 import Abertura from '../../app/index';
+import AbasLayout from '../../app/(autenticado)/(abas)/_layout';
 import AreaAutenticadaLayout from '../../app/(autenticado)/_layout';
+
+jest.mock('@expo/vector-icons/MaterialCommunityIcons', () => 'MaterialCommunityIcons');
 
 const usuario = {
   id: '1',
@@ -27,15 +32,23 @@ function rotas(estado: EstadoSessao) {
   };
   return {
     _layout: () => (
-      <SessaoContext.Provider value={valor}>
-        <Navegacao />
-      </SessaoContext.Provider>
+      <PaperProvider theme={appTheme}>
+        <SessaoContext.Provider value={valor}>
+          <Navegacao />
+        </SessaoContext.Provider>
+      </PaperProvider>
     ),
     index: Abertura,
     '(autenticacao)/login': () => <Text>tela de login</Text>,
     '(autenticacao)/trocar-senha': () => <Text>tela de troca de senha</Text>,
     '(autenticado)/_layout': AreaAutenticadaLayout,
-    '(autenticado)/inicio': () => <Text>tela de início</Text>,
+    '(autenticado)/(abas)/_layout': AbasLayout,
+    '(autenticado)/(abas)/inicio': () => <Text>tela de início</Text>,
+    '(autenticado)/(abas)/estoque': () => <Text>tela de estoque</Text>,
+    '(autenticado)/(abas)/movimentar': () => <Text>tela de movimentar</Text>,
+    '(autenticado)/(abas)/requisicoes': () => <Text>tela de requisições</Text>,
+    '(autenticado)/(abas)/historico': () => <Text>tela de histórico</Text>,
+    '(autenticado)/(abas)/mais': () => <Text>tela mais</Text>,
     sobre: () => <Text>sobre</Text>,
   };
 }
@@ -90,5 +103,42 @@ describe('Navegação por sessão (S01)', () => {
       }),
     );
     expect(await screen.findByText('tela de início')).toBeTruthy();
+  });
+
+  it('mostra Movimentar e esconde Histórico para o ALMOXARIFE', async () => {
+    await renderRouter(rotas({ status: 'autenticado', usuario, trocaAdiada: false }));
+    await screen.findByText('tela de início');
+    for (const aba of ['Início', 'Estoque', 'Movimentar', 'Requisições', 'Mais']) {
+      expect(screen.getByLabelText(aba)).toBeTruthy();
+    }
+    expect(screen.queryByLabelText('Histórico')).toBeNull();
+  });
+
+  it('mostra Histórico e esconde Movimentar para o GESTOR', async () => {
+    await renderRouter(
+      rotas({
+        status: 'autenticado',
+        usuario: { ...usuario, perfil: 'GESTOR', canteiroId: null },
+        trocaAdiada: false,
+      }),
+    );
+    await screen.findByText('tela de início');
+    for (const aba of ['Início', 'Estoque', 'Requisições', 'Histórico', 'Mais']) {
+      expect(screen.getByLabelText(aba)).toBeTruthy();
+    }
+    expect(screen.queryByLabelText('Movimentar')).toBeNull();
+  });
+
+  it('não deixa o GESTOR abrir Movimentar pelo endereço', async () => {
+    await renderRouter(
+      rotas({
+        status: 'autenticado',
+        usuario: { ...usuario, perfil: 'GESTOR', canteiroId: null },
+        trocaAdiada: false,
+      }),
+      { initialUrl: '/movimentar' },
+    );
+    expect(await screen.findByText('tela de início')).toBeTruthy();
+    expect(screen.queryByText('tela de movimentar')).toBeNull();
   });
 });
