@@ -1,5 +1,6 @@
 package br.com.canteiroconectado.autenticacao;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -19,6 +20,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.jayway.jsonpath.JsonPath;
 
+import br.com.canteiroconectado.auditoria.AcaoAuditoria;
+import br.com.canteiroconectado.auditoria.LogAuditoria;
+import br.com.canteiroconectado.auditoria.LogAuditoriaRepository;
 import br.com.canteiroconectado.usuario.Perfil;
 import br.com.canteiroconectado.usuario.Usuario;
 import br.com.canteiroconectado.usuario.UsuarioRepository;
@@ -39,6 +43,9 @@ class AutenticacaoControllerTest {
 
     @Autowired
     private PasswordEncoder encoderSenha;
+
+    @Autowired
+    private LogAuditoriaRepository logs;
 
     private Usuario gestor;
 
@@ -121,6 +128,33 @@ class AutenticacaoControllerTest {
                     .content(corpoLogin(gestor.getEmail(), SENHA_CORRETA)))
                 .andExpect(status().isForbidden())
                 .andExpect(jsonPath("$.codigo").value("USUARIO_INATIVO"));
+        }
+
+        @Test
+        @DisplayName("deve devolver 423 CONTA_BLOQUEADA com bloqueadoAte depois de cinco senhas erradas")
+        void deve_devolver423_quando_cincoSenhasErradas() throws Exception {
+            for (int tentativa = 1; tentativa <= 4; tentativa++) {
+                mockMvc.perform(post("/api/v1/autenticacao/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(corpoLogin(gestor.getEmail(), "senha-errada")))
+                    .andExpect(status().isUnauthorized());
+            }
+            mockMvc.perform(post("/api/v1/autenticacao/login")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(corpoLogin(gestor.getEmail(), "senha-errada")))
+                .andExpect(status().isLocked())
+                .andExpect(jsonPath("$.codigo").value("CONTA_BLOQUEADA"))
+                .andExpect(jsonPath("$.bloqueadoAte").isNotEmpty());
+
+            mockMvc.perform(post("/api/v1/autenticacao/login")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(corpoLogin(gestor.getEmail(), SENHA_CORRETA)))
+                .andExpect(status().isLocked());
+
+            assertThat(logs.findByEntidadeIdOrderByCriadoEmAsc(gestor.getId()))
+                .extracting(LogAuditoria::getAcao)
+                .containsSubsequence(AcaoAuditoria.LOGIN_FALHOU, AcaoAuditoria.CONTA_BLOQUEADA,
+                    AcaoAuditoria.LOGIN_FALHOU);
         }
 
         @Test
