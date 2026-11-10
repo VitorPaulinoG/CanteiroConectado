@@ -21,6 +21,8 @@ Fonte: `br.com.canteiroconectado.exception.ErrorCode`.
 | `SENHA_FRACA` | 422 | A nova senha tem menos de 8 caracteres, não tem letra ou não tem número. O `detail` diz qual regra falhou. |
 | `SENHA_IGUAL_A_ATUAL` | 422 | A nova senha é igual à atual. |
 | `TROCA_DE_SENHA_OBRIGATORIA` | 403 | Funcionário com senha temporária chamou um endpoint diferente de `GET /autenticacao/eu` e `POST /autenticacao/trocar-senha`. |
+| `CANTEIRO_DUPLICADO` | 409 | Já existe um canteiro com o mesmo nome (sem diferenciar maiúsculas). O corpo traz `campo: "nome"`. |
+| `CANTEIRO_INATIVO` | 422 | Tentativa de gravar dados (movimentação, colaborador, requisição, usuário) num canteiro desativado. |
 | `ERRO_INESPERADO` | 500 | Falha não prevista. O cliente recebe mensagem genérica, sem stack trace; o detalhe completo fica no log, correlacionado pelo `requestId`. |
 
 Códigos específicos de regra de negócio (ex.: `SALDO_INSUFICIENTE`, `ITEM_INATIVO`) são adicionados
