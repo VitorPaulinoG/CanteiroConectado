@@ -37,4 +37,10 @@ public class EstoqueController {
             @RequestParam(required = false) Integer tamanho) {
         return servico.listar(canteiroId, q, status, tipo, pagina, tamanho);
     }
+
+    @Operation(summary = "Detalhe do item no canteiro: saldo, mínimo e as 10 últimas movimentações")
+    @GetMapping("/{itemId}")
+    public DetalheEstoqueResponse detalhar(@PathVariable UUID canteiroId, @PathVariable UUID itemId) {
+        return servico.detalhar(canteiroId, itemId);
+    }
 }
