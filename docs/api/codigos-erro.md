@@ -42,6 +42,10 @@ Fonte: `br.com.canteiroconectado.exception.ErrorCode`.
 | `FRENTE_OBRA_OBRIGATORIA` | 422 | Saída por retirada sem frente de obra. O corpo traz `campo: "frenteObra"`. |
 | `OBSERVACAO_OBRIGATORIA` | 422 | Ajuste (de entrada ou de saída) sem observação explicando o motivo. O corpo traz `campo: "observacao"`. |
 | `DEVOLUCAO_SO_FERRAMENTA` | 422 | Entrada por devolução de um item do tipo material. O corpo traz `campo: "itemId"`. |
+| `REQUISICAO_SEM_ITENS` | 422 | Requisição sem nenhum item. O corpo traz `campo: "itens"`. |
+| `LIMITE_DE_ITENS` | 422 | Requisição com mais de 20 itens. |
+| `ITEM_REPETIDO` | 422 | O mesmo item aparece em duas linhas da requisição. O corpo traz `campo: "itens[i].itemId"`. |
+| `DATA_NO_PASSADO` | 422 | Data de necessidade (ou previsão de chegada) anterior a hoje, no fuso de São Paulo. O corpo traz o `campo`. |
 | `ERRO_INESPERADO` | 500 | Falha não prevista. O cliente recebe mensagem genérica, sem stack trace; o detalhe completo fica no log, correlacionado pelo `requestId`. |
 
 Códigos específicos de regra de negócio (ex.: `SALDO_INSUFICIENTE`, `ITEM_INATIVO`) são adicionados
