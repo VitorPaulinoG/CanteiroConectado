@@ -6,6 +6,10 @@ import jakarta.validation.constraints.NotBlank;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.validation.annotation.Validated;
 
+/**
+ * Dados do primeiro administrador, lidos de {@code ADMIN_NOME}, {@code ADMIN_EMAIL} e
+ * {@code ADMIN_SENHA}. A senha nunca aparece em {@link #toString()}.
+ */
 @Validated
 @ConfigurationProperties(prefix = "canteiro.admin")
 public record AdminProperties(
