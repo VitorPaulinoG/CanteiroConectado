@@ -136,4 +136,5 @@ eas build --platform android --profile preview --local
 ## Documentação
 
 - [Visão e arquitetura](docs/Vis%C3%A3o%20e%20arquitetura.md): decisões, escopo do MVP, estrutura do monorepo, contrato da API e modelo de dados
+- [Roteiro de demonstração](docs/roteiro-demonstracao.md): como acordar a API e o banco, validar login e APK e o plano B
 - [Protótipos no Figma](https://www.figma.com/design/ECl5KwGt8IQcdXNRebLEuD/CanteiroConectado?node-id=0-1&t=aKGlq4yb4zU1bGhc-1)
