@@ -3,7 +3,7 @@ import { PaperProvider } from 'react-native-paper';
 import type { ReactElement } from 'react';
 
 import { appTheme } from '@/theme';
-import { ErrorState, QuantityStepper, StatusBadge } from '@/shared';
+import { ConfiguracaoInvalida, ErrorState, QuantityStepper, StatusBadge } from '@/shared';
 
 jest.mock('@expo/vector-icons/MaterialCommunityIcons', () => 'MaterialCommunityIcons');
 
@@ -38,5 +38,15 @@ describe('ErrorState', () => {
     await renderWithTheme(<ErrorState onRetry={onRetry} />);
     await fireEvent.press(screen.getByText('Tentar de novo'));
     expect(onRetry).toHaveBeenCalled();
+  });
+});
+
+describe('ConfiguracaoInvalida', () => {
+  it('explica o problema e como resolver', async () => {
+    await renderWithTheme(
+      <ConfiguracaoInvalida problema="A variável EXPO_PUBLIC_API_URL não foi definida." />,
+    );
+    expect(screen.getByText('Configuração incompleta')).toBeTruthy();
+    expect(screen.getByText('A variável EXPO_PUBLIC_API_URL não foi definida.')).toBeTruthy();
   });
 });
