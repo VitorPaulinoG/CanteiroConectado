@@ -9,11 +9,18 @@ Fonte: `br.com.canteiroconectado.exception.ErrorCode`.
 | Código | Status HTTP | Quando acontece |
 | --- | --- | --- |
 | `VALIDACAO_INVALIDA` | 400 | Campo obrigatório ausente ou formato inválido no corpo da requisição; corpo ilegível ou parâmetro ausente ou de tipo errado. O corpo traz também a lista `campos` com o detalhe de cada violação. |
-| `NAO_AUTENTICADO` | 401 | Requisição sem token válido em um endpoint que exige login. |
+| `NAO_AUTENTICADO` | 401 | Requisição sem token válido em um endpoint que exige login, ou token de usuário desativado. |
 | `ACESSO_NEGADO` | 403 | Usuário autenticado sem permissão para a ação (ex.: perfil errado, canteiro de outra pessoa). |
 | `RECURSO_NAO_ENCONTRADO` | 404 | Identificador informado não corresponde a um registro existente, ou o endereço não existe. |
 | `METODO_NAO_PERMITIDO` | 405 | O método HTTP usado não existe para o endereço. |
 | `CONFLITO` | 409 | Estado atual do recurso impede a operação, inclusive violação de integridade no banco (ex.: `ID_JA_UTILIZADO`, tratado por feature). |
+| `CREDENCIAIS_INVALIDAS` | 401 | Login com e-mail inexistente ou senha errada. A resposta é a mesma nos dois casos: "E-mail ou senha incorretos". |
+| `USUARIO_INATIVO` | 403 | Login correto de um usuário desativado pelo administrador. |
+| `CONTA_BLOQUEADA` | 423 | A quinta senha errada seguida bloqueia a conta por 15 minutos; enquanto durar, todo login recebe este código. O corpo traz `bloqueadoAte` (instante UTC) para o app mostrar o tempo restante. |
+| `SENHA_ATUAL_INCORRETA` | 422 | Na troca de senha, a senha atual informada não confere. |
+| `SENHA_FRACA` | 422 | A nova senha tem menos de 8 caracteres, não tem letra ou não tem número. O `detail` diz qual regra falhou. |
+| `SENHA_IGUAL_A_ATUAL` | 422 | A nova senha é igual à atual. |
+| `TROCA_DE_SENHA_OBRIGATORIA` | 403 | Funcionário com senha temporária chamou um endpoint diferente de `GET /autenticacao/eu` e `POST /autenticacao/trocar-senha`. |
 | `ERRO_INESPERADO` | 500 | Falha não prevista. O cliente recebe mensagem genérica, sem stack trace; o detalhe completo fica no log, correlacionado pelo `requestId`. |
 
 Códigos específicos de regra de negócio (ex.: `SALDO_INSUFICIENTE`, `ITEM_INATIVO`) são adicionados

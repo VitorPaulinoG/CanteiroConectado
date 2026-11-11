@@ -1,6 +1,13 @@
-import type { AxiosAdapter, InternalAxiosRequestConfig } from 'axios';
+import { AxiosError, type AxiosAdapter, type InternalAxiosRequestConfig } from 'axios';
 
-import { CABECALHO_REQUEST_ID, criarCliente, definirLeitorDeToken, TIMEOUT_MS } from '../client';
+import {
+  CABECALHO_REQUEST_ID,
+  criarCliente,
+  definirAoPerderSessao,
+  definirLeitorDeToken,
+  ROTA_LOGIN,
+  TIMEOUT_MS,
+} from '../client';
 
 function adaptadorQueCaptura(capturadas: InternalAxiosRequestConfig[]): AxiosAdapter {
   return async (config) => {
@@ -41,5 +48,55 @@ describe('criarCliente', () => {
     definirLeitorDeToken(() => 'abc.def.ghi');
     await criarCliente('http://api').get('/a', { adapter: adaptadorQueCaptura(capturadas) });
     expect(capturadas[0].headers.get('Authorization')).toBe('Bearer abc.def.ghi');
+  });
+});
+
+describe('perda de sessão', () => {
+  afterEach(() => definirAoPerderSessao(() => undefined));
+
+  const adaptadorComStatus =
+    (status: number): AxiosAdapter =>
+    async (config) => {
+      const erro = new AxiosError(
+        'x',
+        'ERR',
+        config,
+        {},
+        {
+          status,
+          statusText: '',
+          headers: {},
+          config,
+          data: { codigo: 'NAO_AUTENTICADO' },
+        },
+      );
+      throw erro;
+    };
+
+  it('avisa quando uma rota autenticada responde 401', async () => {
+    const aoPerder = jest.fn();
+    definirAoPerderSessao(aoPerder);
+    await expect(
+      criarCliente('http://api').get('/api/v1/itens', { adapter: adaptadorComStatus(401) }),
+    ).rejects.toBeTruthy();
+    expect(aoPerder).toHaveBeenCalledTimes(1);
+  });
+
+  it('não avisa no 401 do próprio login', async () => {
+    const aoPerder = jest.fn();
+    definirAoPerderSessao(aoPerder);
+    await expect(
+      criarCliente('http://api').post(ROTA_LOGIN, {}, { adapter: adaptadorComStatus(401) }),
+    ).rejects.toBeTruthy();
+    expect(aoPerder).not.toHaveBeenCalled();
+  });
+
+  it('não avisa em 403', async () => {
+    const aoPerder = jest.fn();
+    definirAoPerderSessao(aoPerder);
+    await expect(
+      criarCliente('http://api').get('/api/v1/itens', { adapter: adaptadorComStatus(403) }),
+    ).rejects.toBeTruthy();
+    expect(aoPerder).not.toHaveBeenCalled();
   });
 });

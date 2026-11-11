@@ -8,6 +8,12 @@ export const MENSAGENS_POR_CODIGO: Record<string, string> = {
   METODO_NAO_PERMITIDO: 'Ação não disponível.',
   CONFLITO: 'A operação conflita com os dados atuais. Atualize a tela e tente de novo.',
   ERRO_INESPERADO: 'Ocorreu um erro inesperado. Tente de novo mais tarde.',
+  CREDENCIAIS_INVALIDAS: 'E-mail ou senha incorretos.',
+  USUARIO_INATIVO: 'Este usuário está desativado. Fale com o administrador.',
+  CONTA_BLOQUEADA: 'Conta bloqueada por excesso de tentativas.',
+  TROCA_DE_SENHA_OBRIGATORIA: 'Troque a senha temporária para continuar.',
+  SENHA_ATUAL_INCORRETA: 'A senha atual está incorreta.',
+  SENHA_IGUAL_A_ATUAL: 'A nova senha deve ser diferente da atual.',
 };
 
 export const MENSAGEM_PADRAO = MENSAGENS_POR_CODIGO.ERRO_INESPERADO;

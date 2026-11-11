@@ -1,22 +1,19 @@
-import { StyleSheet, View } from 'react-native';
-import { Link } from 'expo-router';
-import { Button, Text } from 'react-native-paper';
+import { Redirect } from 'expo-router';
 
-import { useAppTheme } from '@/theme';
+import { AberturaTela } from '@/features/autenticacao';
+import { trocaDeSenhaPendente, useSessao } from '@/shared/sessao';
 
-export default function TelaInicial() {
-  const theme = useAppTheme();
+export default function Abertura() {
+  const { estado } = useSessao();
 
-  return (
-    <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
-      <Text variant="headlineSmall">Canteiro Conectado</Text>
-      <Link href="/sobre" asChild>
-        <Button mode="text">Sobre</Button>
-      </Link>
-    </View>
-  );
+  if (estado.status === 'carregando') {
+    return <AberturaTela />;
+  }
+  if (estado.status === 'anonimo') {
+    return <Redirect href="/login" />;
+  }
+  if (trocaDeSenhaPendente(estado)) {
+    return <Redirect href="/trocar-senha" />;
+  }
+  return <Redirect href="/inicio" />;
 }
-
-const styles = StyleSheet.create({
-  container: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-});
