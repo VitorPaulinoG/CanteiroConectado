@@ -13,10 +13,6 @@ import org.springframework.web.bind.annotation.RestController;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 
-/**
- * Endpoint público usado pelo app para conferir se a API está no ar e para acordá-la depois
- * do desligamento por inatividade do plano gratuito.
- */
 @RestController
 @RequestMapping("/api/v1/ping")
 public class PingController {
