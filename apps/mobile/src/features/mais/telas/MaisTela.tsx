@@ -4,12 +4,14 @@ import { ScrollView, StyleSheet, View } from 'react-native';
 import { Avatar, Button, Dialog, Divider, List, Portal, Text } from 'react-native-paper';
 
 import { TelaComCabecalho } from '@/shared';
-import { iniciais, rotuloDoPerfil, useSessao, useUsuario } from '@/shared/sessao';
+import { useCanteiroAtivo } from '@/shared/canteiro';
+import { iniciais, rotuloDoPerfil, SomentePerfil, useSessao, useUsuario } from '@/shared/sessao';
 
 export function MaisTela() {
   const router = useRouter();
   const usuario = useUsuario();
   const { sair } = useSessao();
+  const { canteiro, podeEscolher } = useCanteiroAtivo();
   const [confirmandoSaida, setConfirmandoSaida] = useState(false);
 
   return (
@@ -25,6 +27,50 @@ export function MaisTela() {
         </View>
 
         <Divider />
+
+        <List.Section>
+          <List.Subheader>Canteiro</List.Subheader>
+          <List.Item
+            title={canteiro?.nome ?? 'Nenhum canteiro'}
+            description={podeEscolher ? 'Toque para trocar' : 'Seu canteiro de trabalho'}
+            left={(props) => <List.Icon {...props} icon="office-building-marker-outline" />}
+            right={
+              podeEscolher ? (props) => <List.Icon {...props} icon="chevron-right" /> : undefined
+            }
+            onPress={podeEscolher ? () => router.push('/canteiro') : undefined}
+          />
+        </List.Section>
+
+        <List.Section>
+          <List.Subheader>Cadastros</List.Subheader>
+          <List.Item
+            title="Colaboradores"
+            description="Quem retira material no canteiro"
+            left={(props) => <List.Icon {...props} icon="account-hard-hat-outline" />}
+            right={(props) => <List.Icon {...props} icon="chevron-right" />}
+            onPress={() => router.push('/cadastros/colaboradores')}
+          />
+        </List.Section>
+
+        <SomentePerfil administrador>
+          <List.Section>
+            <List.Subheader>Administração</List.Subheader>
+            <List.Item
+              title="Canteiros"
+              description="Obras e situação"
+              left={(props) => <List.Icon {...props} icon="office-building-outline" />}
+              right={(props) => <List.Icon {...props} icon="chevron-right" />}
+              onPress={() => router.push('/cadastros/canteiros')}
+            />
+            <List.Item
+              title="Funcionários"
+              description="Acessos, senhas temporárias e desativação"
+              left={(props) => <List.Icon {...props} icon="account-group-outline" />}
+              right={(props) => <List.Icon {...props} icon="chevron-right" />}
+              onPress={() => router.push('/cadastros/usuarios')}
+            />
+          </List.Section>
+        </SomentePerfil>
 
         <List.Section>
           <List.Subheader>Conta</List.Subheader>

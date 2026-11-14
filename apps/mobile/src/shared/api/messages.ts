@@ -14,6 +14,14 @@ export const MENSAGENS_POR_CODIGO: Record<string, string> = {
   TROCA_DE_SENHA_OBRIGATORIA: 'Troque a senha temporária para continuar.',
   SENHA_ATUAL_INCORRETA: 'A senha atual está incorreta.',
   SENHA_IGUAL_A_ATUAL: 'A nova senha deve ser diferente da atual.',
+  CANTEIRO_DUPLICADO: 'Já existe um canteiro com este nome.',
+  CANTEIRO_INATIVO: 'Este canteiro está desativado.',
+  EMAIL_JA_CADASTRADO: 'Já existe um funcionário com este e-mail.',
+  CANTEIRO_OBRIGATORIO: 'Escolha o canteiro do almoxarife.',
+  AUTODESATIVACAO_PROIBIDA: 'Você não pode desativar a si mesmo.',
+  ADMINISTRADOR_PROTEGIDO: 'O perfil do administrador não pode ser alterado.',
+  CREDENCIAL_JA_TROCADA: 'O funcionário já trocou a senha temporária.',
+  COLABORADOR_DUPLICADO: 'Já existe um colaborador com este nome neste canteiro.',
 };
 
 export const MENSAGEM_PADRAO = MENSAGENS_POR_CODIGO.ERRO_INESPERADO;

@@ -1,7 +1,7 @@
 import { fireEvent, screen } from '@testing-library/react-native';
 
 import { renderizar } from '@/test-utils/render';
-import { administrador, autenticado, ComSessao, valorSessao } from '@/test-utils/sessao';
+import { administrador, autenticado, ComSessao, gestor, valorSessao } from '@/test-utils/sessao';
 
 import { MaisTela } from '../telas/MaisTela';
 
@@ -20,6 +20,36 @@ describe('MaisTela (S19)', () => {
     expect(screen.getByText('A')).toBeTruthy();
     expect(screen.getByText('Administrador')).toBeTruthy();
     expect(screen.getByText('Gestor · Administrador')).toBeTruthy();
+  });
+
+  it('mostra Canteiros só para o administrador', async () => {
+    await renderizar(
+      <ComSessao valor={valorSessao(autenticado(administrador))}>
+        <MaisTela />
+      </ComSessao>,
+    );
+    await fireEvent.press(screen.getByText('Canteiros'));
+    expect(mockPush).toHaveBeenCalledWith('/cadastros/canteiros');
+  });
+
+  it('esconde a administração do gestor comum', async () => {
+    await renderizar(
+      <ComSessao valor={valorSessao(autenticado(gestor))}>
+        <MaisTela />
+      </ComSessao>,
+    );
+    expect(screen.queryByText('Administração')).toBeNull();
+  });
+
+  it('mostra o canteiro e deixa o gestor trocar', async () => {
+    await renderizar(
+      <ComSessao valor={valorSessao(autenticado(gestor))}>
+        <MaisTela />
+      </ComSessao>,
+    );
+    expect(screen.getByText('Residencial Aurora')).toBeTruthy();
+    await fireEvent.press(screen.getByText('Toque para trocar'));
+    expect(mockPush).toHaveBeenCalledWith('/canteiro');
   });
 
   it('abre Sobre e Trocar senha', async () => {
