@@ -67,9 +67,9 @@ public class MovimentacaoService {
      *     {@link #aplicar(NovaMovimentacao)}
      */
     public ResultadoDaGravacao<MovimentacaoEstoque> aplicarUmaVez(NovaMovimentacao nova) {
-        Optional<ResultadoDaGravacao<MovimentacaoEstoque>> jaGravada = leitura.execute(status -> repetida(nova));
-        if (jaGravada.isPresent()) {
-            return jaGravada.get();
+        Optional<ResultadoDaGravacao<MovimentacaoEstoque>> gravada = jaGravada(nova);
+        if (gravada.isPresent()) {
+            return gravada.get();
         }
         try {
             return escrita.execute(status -> {
@@ -91,6 +91,16 @@ public class MovimentacaoService {
      * @throws BusinessException {@code QUANTIDADE_INVALIDA}, {@code CANTEIRO_INATIVO},
      *     {@code ITEM_INATIVO} ou {@code SALDO_INSUFICIENTE} (com {@code saldoAtual})
      */
+    /**
+     * Procura o mesmo pedido já gravado, para quem precisa responder a um reenvio antes de
+     * conferir regras que podem ter mudado (colaborador desativado, por exemplo).
+     *
+     * @throws BusinessException {@code ID_JA_UTILIZADO} quando o id tem outro conteúdo
+     */
+    public Optional<ResultadoDaGravacao<MovimentacaoEstoque>> jaGravada(NovaMovimentacao nova) {
+        return leitura.execute(status -> repetida(nova));
+    }
+
     @Transactional
     public MovimentacaoEstoque aplicar(NovaMovimentacao nova) {
         return gravar(nova, validarETravar(nova));
