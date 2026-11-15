@@ -13,7 +13,7 @@ Fonte: `br.com.canteiroconectado.exception.ErrorCode`.
 | `ACESSO_NEGADO` | 403 | Usuário autenticado sem permissão para a ação (ex.: perfil errado, canteiro de outra pessoa). |
 | `RECURSO_NAO_ENCONTRADO` | 404 | Identificador informado não corresponde a um registro existente, ou o endereço não existe. |
 | `METODO_NAO_PERMITIDO` | 405 | O método HTTP usado não existe para o endereço. |
-| `CONFLITO` | 409 | Estado atual do recurso impede a operação, inclusive violação de integridade no banco (ex.: `ID_JA_UTILIZADO`, tratado por feature). |
+| `CONFLITO` | 409 | Estado atual do recurso impede a operação, inclusive violação de integridade no banco não tratada por uma regra específica. |
 | `CREDENCIAIS_INVALIDAS` | 401 | Login com e-mail inexistente ou senha errada. A resposta é a mesma nos dois casos: "E-mail ou senha incorretos". |
 | `USUARIO_INATIVO` | 403 | Login correto de um usuário desativado pelo administrador. |
 | `CONTA_BLOQUEADA` | 423 | A quinta senha errada seguida bloqueia a conta por 15 minutos; enquanto durar, todo login recebe este código. O corpo traz `bloqueadoAte` (instante UTC) para o app mostrar o tempo restante. |
@@ -33,6 +33,10 @@ Fonte: `br.com.canteiroconectado.exception.ErrorCode`.
 | `CODIGO_DUPLICADO` | 409 | Já existe um item com o mesmo código (sem diferenciar maiúsculas nem espaços nas pontas). O corpo traz `campo: "codigo"`. |
 | `ITEM_JA_MOVIMENTADO` | 422 | Tentativa de mudar o código ou a unidade de um item que já teve movimentação. O corpo traz `campo` com o campo recusado. |
 | `ITEM_INATIVO` | 422 | O item informado numa movimentação ou requisição está desativado. O corpo traz `campo: "itemId"`. |
+| `SALDO_INSUFICIENTE` | 422 | A saída (ou o estorno de uma entrada) deixaria o saldo negativo. O corpo traz `saldoAtual` e `campo: "quantidade"`. |
+| `QUANTIDADE_INVALIDA` | 422 | Quantidade zero, negativa ou com mais de 3 casas decimais. O corpo traz `campo: "quantidade"`. |
+| `ID_INVALIDO` | 400 | O `id` gerado no app (movimentação ou requisição) está ausente ou não é um UUID no formato `8-4-4-4-12`. O corpo traz `campo: "id"`. |
+| `ID_JA_UTILIZADO` | 409 | O `id` já pertence a um registro com conteúdo diferente. Reenviar o mesmo pedido com o mesmo `id` não dá erro: devolve o registro gravado. |
 | `ERRO_INESPERADO` | 500 | Falha não prevista. O cliente recebe mensagem genérica, sem stack trace; o detalhe completo fica no log, correlacionado pelo `requestId`. |
 
 Códigos específicos de regra de negócio (ex.: `SALDO_INSUFICIENTE`, `ITEM_INATIVO`) são adicionados

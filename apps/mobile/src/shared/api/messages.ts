@@ -22,6 +22,8 @@ export const MENSAGENS_POR_CODIGO: Record<string, string> = {
   ADMINISTRADOR_PROTEGIDO: 'O perfil do administrador não pode ser alterado.',
   CREDENCIAL_JA_TROCADA: 'O funcionário já trocou a senha temporária.',
   COLABORADOR_DUPLICADO: 'Já existe um colaborador com este nome neste canteiro.',
+  CODIGO_DUPLICADO: 'Código já cadastrado.',
+  ITEM_INATIVO: 'Este item está desativado.',
 };
 
 export const MENSAGEM_PADRAO = MENSAGENS_POR_CODIGO.ERRO_INESPERADO;
