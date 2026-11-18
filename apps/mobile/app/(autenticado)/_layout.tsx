@@ -17,6 +17,8 @@ function AreaDoCanteiro() {
     <Stack screenOptions={{ headerShown: false }}>
       <Stack.Protected guard={status === 'pronto'} redirectTo="/canteiro">
         <Stack.Screen name="(abas)" />
+        <Stack.Screen name="estoque/[id]" />
+        <Stack.Screen name="movimentar/saida" />
       </Stack.Protected>
       <Stack.Screen name="canteiro" />
     </Stack>

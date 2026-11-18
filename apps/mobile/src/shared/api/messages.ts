@@ -24,6 +24,16 @@ export const MENSAGENS_POR_CODIGO: Record<string, string> = {
   COLABORADOR_DUPLICADO: 'Já existe um colaborador com este nome neste canteiro.',
   CODIGO_DUPLICADO: 'Código já cadastrado.',
   ITEM_INATIVO: 'Este item está desativado.',
+  ITEM_JA_MOVIMENTADO: 'Este item já teve movimentação: o código e a unidade não podem mais mudar.',
+  QUANTIDADE_INVALIDA: 'Informe uma quantidade maior que zero, com até 3 casas decimais.',
+  COLABORADOR_OBRIGATORIO: 'Escolha o colaborador.',
+  COLABORADOR_INVALIDO: 'Este colaborador não pode ser usado neste canteiro.',
+  FRENTE_OBRA_OBRIGATORIA: 'Informe a frente de obra.',
+  OBSERVACAO_OBRIGATORIA: 'Conte o que aconteceu na observação.',
+  DEVOLUCAO_SO_FERRAMENTA: 'Só ferramentas podem ser devolvidas.',
+  ID_JA_UTILIZADO: 'Este registro já foi usado. Abra o formulário de novo.',
+  ID_INVALIDO: 'O registro chegou sem identificação válida. Abra o formulário de novo.',
+  MOTIVO_INVALIDO: 'Este motivo não vale para este tipo de movimentação.',
 };
 
 export const MENSAGEM_PADRAO = MENSAGENS_POR_CODIGO.ERRO_INESPERADO;
