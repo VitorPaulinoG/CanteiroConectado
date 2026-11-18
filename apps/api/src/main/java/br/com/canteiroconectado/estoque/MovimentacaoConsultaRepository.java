@@ -46,6 +46,21 @@ public class MovimentacaoConsultaRepository {
         return encontradas.stream().findFirst();
     }
 
+    /**
+     * Últimas movimentações do item no canteiro, da mais recente para a mais antiga.
+     */
+    public List<MovimentacaoResponse> ultimas(UUID canteiroId, UUID itemId, int limite) {
+        return jdbc.query(SELECAO + """
+             WHERE m.canteiro_id = :canteiroId AND m.item_id = :itemId
+            ORDER BY m.criado_em DESC, m.id
+            LIMIT :limite
+            """, new MapSqlParameterSource()
+                .addValue("canteiroId", canteiroId)
+                .addValue("itemId", itemId)
+                .addValue("limite", limite),
+            MovimentacaoConsultaRepository::linha);
+    }
+
     static MovimentacaoResponse linha(ResultSet resultado, int numero) throws SQLException {
         return new MovimentacaoResponse(
             resultado.getObject("id", UUID.class),
