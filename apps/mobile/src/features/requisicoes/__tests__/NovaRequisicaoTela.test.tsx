@@ -163,4 +163,46 @@ describe('NovaRequisicaoTela (S13)', () => {
     await fireEvent.press(screen.getByText('Concluir'));
     await waitFor(() => expect(mockBack).toHaveBeenCalled());
   });
+
+  it('envia frente e observação sem os espaços das pontas', async () => {
+    jest.mocked(criarRequisicao).mockResolvedValue(requisicaoDaCamila);
+    await montar();
+    await adicionar('Cimento CP-II 50kg');
+    await fireEvent.changeText(screen.getByLabelText('Quantidade de Cimento CP-II 50kg'), '40');
+    await escolherData(3);
+    await fireEvent.changeText(screen.getByLabelText('Frente de obra'), '  Laje  ');
+    await fireEvent.changeText(screen.getByLabelText('Observação'), ' Entregar pela manhã ');
+    await fireEvent.press(screen.getByText('Enviar requisição'));
+
+    await screen.findByText('Salvo no servidor');
+    expect(criarRequisicao).toHaveBeenCalledWith(
+      expect.objectContaining({ frenteObra: 'Laje', observacao: 'Entregar pela manhã' }),
+    );
+  });
+
+  it('mostra acima do botão a recusa da API que não é de um campo', async () => {
+    jest
+      .mocked(criarRequisicao)
+      .mockRejectedValue(erroDaApi(422, { codigo: 'CANTEIRO_INATIVO', detail: 'Inativo.' }));
+    await montar();
+    await adicionar('Cimento CP-II 50kg');
+    await fireEvent.changeText(screen.getByLabelText('Quantidade de Cimento CP-II 50kg'), '40');
+    await escolherData(2);
+    await fireEvent.press(screen.getByText('Enviar requisição'));
+
+    expect(await screen.findByText('Este canteiro está desativado.')).toBeTruthy();
+    expect(screen.getByText('Enviar requisição')).toBeTruthy();
+  });
+
+  it('fecha o seletor de item sem adicionar nada', async () => {
+    await montar();
+    await fireEvent.press(screen.getByText('Adicionar item'));
+    await screen.findByTestId('lista-do-seletor-de-item');
+
+    await fireEvent.press(screen.getByLabelText('Fechar'));
+
+    await waitFor(() => expect(screen.queryByTestId('lista-do-seletor-de-item')).toBeNull());
+    await fireEvent.press(screen.getByText('Enviar requisição'));
+    expect(screen.getByText('Adicione pelo menos um item.')).toBeTruthy();
+  });
 });

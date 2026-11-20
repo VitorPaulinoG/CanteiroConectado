@@ -63,3 +63,36 @@ describe('validarDecisao', () => {
     expect(validarDecisao({ ...base, decisao: 'recusar', motivo: 'Sem verba' })).toEqual({});
   });
 });
+
+describe('limites de texto da requisição e da decisão', () => {
+  const requisicao = {
+    linhas: [linha('40')],
+    necessarioAte: '2026-11-10',
+    frenteObra: '',
+    observacao: '',
+    hoje: '2026-11-01',
+  };
+  const decisao = { previsaoChegada: null, motivo: '', observacao: '', hoje: '2026-11-01' };
+
+  it('limita a frente a 60 e a observação a 200 caracteres, sem contar os espaços das pontas', () => {
+    const erros = validarRequisicao({
+      ...requisicao,
+      frenteObra: 'a'.repeat(61),
+      observacao: 'b'.repeat(201),
+    });
+    expect(erros.frenteObra).toBe('A frente de obra deve ter no máximo 60 caracteres.');
+    expect(erros.observacao).toBe('A observação deve ter no máximo 200 caracteres.');
+    expect(
+      validarRequisicao({ ...requisicao, frenteObra: ` ${'a'.repeat(60)} `, observacao: '' }),
+    ).toEqual({});
+  });
+
+  it('limita a observação da aprovação e o motivo da recusa a 200 caracteres', () => {
+    expect(
+      validarDecisao({ ...decisao, decisao: 'aprovar', observacao: 'c'.repeat(201) }).observacao,
+    ).toBe('A observação deve ter no máximo 200 caracteres.');
+    expect(validarDecisao({ ...decisao, decisao: 'recusar', motivo: 'd'.repeat(201) }).motivo).toBe(
+      'O motivo deve ter no máximo 200 caracteres.',
+    );
+  });
+});
