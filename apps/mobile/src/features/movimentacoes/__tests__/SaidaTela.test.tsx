@@ -3,7 +3,7 @@ import { fireEvent, screen, waitFor } from '@testing-library/react-native';
 import { listarColaboradores } from '@/shared/colaborador/api';
 import { buscarDetalheEstoque, listarEstoque } from '@/shared/estoque/api';
 import { erroDaApi, erroDeRede } from '@/test-utils/api';
-import { furadeiraNoEstoque, joao, pagina } from '@/test-utils/estoque';
+import { furadeiraNoEstoque, joao, pagina, saidaGravada } from '@/test-utils/estoque';
 import { renderizar } from '@/test-utils/render';
 import { almoxarife, autenticado, ComSessao, gestor, valorSessao } from '@/test-utils/sessao';
 import type { UsuarioSessao } from '@/shared/sessao';
@@ -51,14 +51,15 @@ describe('SaidaTela (S09)', () => {
   });
 
   it('registra a retirada do João na Fundação com o id gerado ao abrir', async () => {
-    jest.mocked(registrarMovimentacao).mockResolvedValue({} as never);
+    jest.mocked(registrarMovimentacao).mockResolvedValue(saidaGravada);
     await montar();
 
     await escolherFuradeiraEJoao();
+    expect(screen.getByText('Saldo no canteiro: 2 un')).toBeTruthy();
     await fireEvent.changeText(screen.getByLabelText('Frente de obra'), ' Fundação ');
     await fireEvent.press(screen.getByText('Confirmar saída'));
 
-    await waitFor(() => expect(mockBack).toHaveBeenCalled());
+    expect(await screen.findByText('Salvo no servidor')).toBeTruthy();
     expect(registrarMovimentacao).toHaveBeenCalledWith('c-aurora', {
       id: expect.stringMatching(UUID),
       tipo: 'SAIDA',
@@ -69,7 +70,6 @@ describe('SaidaTela (S09)', () => {
       frenteObra: 'Fundação',
       observacao: undefined,
     });
-    expect(screen.getByText('Saldo no canteiro: 2 un')).toBeTruthy();
   });
 
   it('impede no campo a quantidade acima do saldo', async () => {
@@ -99,11 +99,19 @@ describe('SaidaTela (S09)', () => {
     await fireEvent.press(screen.getByText('Confirmar saída'));
 
     expect(await screen.findByText('Saldo insuficiente: há 1 no canteiro.')).toBeTruthy();
-    expect(mockBack).not.toHaveBeenCalled();
+    expect(screen.getByText('Confirmar saída')).toBeTruthy();
+    expect(registrarMovimentacao).toHaveBeenCalledTimes(1);
   });
 
   it('no ajuste dispensa o colaborador e exige a observação', async () => {
-    jest.mocked(registrarMovimentacao).mockResolvedValue({} as never);
+    jest.mocked(registrarMovimentacao).mockResolvedValue({
+      ...saidaGravada,
+      motivo: 'AJUSTE',
+      colaboradorId: null,
+      colaboradorNome: null,
+      frenteObra: null,
+      observacao: 'Quebrou no uso',
+    });
     await montar();
     await fireEvent.press(screen.getByLabelText('Escolher item'));
     await fireEvent.press(await screen.findByText('Furadeira de impacto 700W'));
@@ -137,18 +145,18 @@ describe('SaidaTela (S09)', () => {
     expect(buscarDetalheEstoque).toHaveBeenCalledWith('c-aurora', 'i-furadeira');
   });
 
-  it('desabilita o botão enquanto envia e envia uma vez só no toque duplo', async () => {
+  it('troca o formulário pelo comprovante em Enviando… até a resposta chegar', async () => {
     jest.mocked(registrarMovimentacao).mockReturnValue(new Promise(() => undefined));
     await montar();
     await escolherFuradeiraEJoao();
     await fireEvent.changeText(screen.getByLabelText('Frente de obra'), 'Fundação');
 
-    const botao = screen.getByText('Confirmar saída');
-    await fireEvent.press(botao);
-    await fireEvent.press(botao);
+    await fireEvent.press(screen.getByText('Confirmar saída'));
 
-    expect(await screen.findAllByText('Enviando…')).toHaveLength(2);
-    expect(screen.getByRole('button', { name: 'Enviando…' })).toBeDisabled();
+    expect(await screen.findByText('Comprovante de saída')).toBeTruthy();
+    expect(screen.getByText('Enviando…')).toBeTruthy();
+    expect(screen.queryByText('Salvo no servidor')).toBeNull();
+    expect(screen.queryByText('Confirmar saída')).toBeNull();
     expect(registrarMovimentacao).toHaveBeenCalledTimes(1);
   });
 
@@ -156,7 +164,7 @@ describe('SaidaTela (S09)', () => {
     jest
       .mocked(registrarMovimentacao)
       .mockRejectedValueOnce(erroDeRede())
-      .mockResolvedValue({} as never);
+      .mockResolvedValue(saidaGravada);
     await montar();
     await escolherFuradeiraEJoao();
     await fireEvent.changeText(screen.getByLabelText('Frente de obra'), 'Fundação');
@@ -164,9 +172,24 @@ describe('SaidaTela (S09)', () => {
 
     await fireEvent.press(await screen.findByText('Tentar de novo'));
 
-    await waitFor(() => expect(mockBack).toHaveBeenCalled());
-    const [primeira, segunda] = jest.mocked(registrarMovimentacao).mock.calls;
-    expect(segunda[1].id).toBe(primeira[1].id);
+    expect(await screen.findByText('Salvo no servidor')).toBeTruthy();
+    const ids = jest.mocked(registrarMovimentacao).mock.calls.map((chamada) => chamada[1].id);
+    expect(new Set(ids).size).toBe(1);
+    expect(ids).toHaveLength(2);
+  });
+
+  it('mostra o saldo depois e os dados do servidor no comprovante salvo', async () => {
+    jest.mocked(registrarMovimentacao).mockResolvedValue(saidaGravada);
+    await montar();
+    await escolherFuradeiraEJoao();
+    await fireEvent.changeText(screen.getByLabelText('Frente de obra'), 'Fundação');
+    await fireEvent.press(screen.getByText('Confirmar saída'));
+
+    await screen.findByText('Salvo no servidor');
+    expect(screen.getByText('Sebastião Lima')).toBeTruthy();
+    expect(screen.getAllByText('1 un')).toHaveLength(2);
+    await fireEvent.press(screen.getByText('Concluir'));
+    expect(mockBack).toHaveBeenCalled();
   });
 
   it('mostra acesso negado para o GESTOR', async () => {

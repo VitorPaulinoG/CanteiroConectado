@@ -19,6 +19,7 @@ function AreaDoCanteiro() {
         <Stack.Screen name="(abas)" />
         <Stack.Screen name="estoque/[id]" />
         <Stack.Screen name="movimentar/saida" />
+        <Stack.Screen name="movimentar/entrada" />
       </Stack.Protected>
       <Stack.Screen name="canteiro" />
     </Stack>

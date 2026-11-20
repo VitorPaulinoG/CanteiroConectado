@@ -73,7 +73,12 @@ export function SeletorColaborador({
         {erro ?? ''}
       </HelperText>
       <Portal>
-        <Modal visible={aberto} onDismiss={() => setAberto(false)} style={styles.modalExterno}>
+        <Modal
+          visible={aberto}
+          onDismiss={() => setAberto(false)}
+          style={styles.modalExterno}
+          contentContainerStyle={styles.conteudoModal}
+        >
           {aberto ? (
             <ListaDeColaboradores
               canteiroId={canteiroId}
@@ -112,7 +117,7 @@ function ListaDeColaboradores({ canteiroId, aoEscolher, aoFechar }: PropsLista) 
 
   return (
     <SafeAreaView style={[styles.tela, { backgroundColor: theme.colors.background }]}>
-      <Appbar.Header>
+      <Appbar.Header statusBarHeight={0}>
         <Appbar.Action icon="close" accessibilityLabel="Fechar" onPress={aoFechar} />
         <Appbar.Content title="Escolher colaborador" />
       </Appbar.Header>
@@ -180,6 +185,7 @@ function ListaDeColaboradores({ canteiroId, aoEscolher, aoFechar }: PropsLista) 
 
 const styles = StyleSheet.create({
   modalExterno: { margin: 0 },
+  conteudoModal: { flex: 1 },
   tela: { flex: 1 },
   busca: { padding: 16, paddingBottom: 8 },
   carregando: { padding: 24 },

@@ -1,4 +1,4 @@
-import type { ItemEstoque } from '@/shared/estoque';
+import type { ItemEstoque, Movimentacao } from '@/shared/estoque';
 import type { Colaborador } from '@/shared/colaborador';
 
 export const furadeiraNoEstoque: ItemEstoque = {
@@ -23,3 +23,26 @@ export const joao: Colaborador = {
 export function pagina<T>(conteudo: T[]) {
   return { conteudo, pagina: 0, tamanho: 20, totalElementos: conteudo.length, totalPaginas: 1 };
 }
+
+export const saidaGravada: Movimentacao = {
+  id: 'm-saida',
+  canteiroId: 'c-aurora',
+  canteiroNome: 'Residencial Aurora',
+  itemId: 'i-furadeira',
+  itemCodigo: 'FER-0012',
+  itemDescricao: 'Furadeira de impacto 700W',
+  unidadeSimbolo: 'un',
+  tipo: 'SAIDA',
+  motivo: 'RETIRADA',
+  quantidade: 1,
+  saldoApos: 1,
+  colaboradorId: 'col-joao',
+  colaboradorNome: 'João da Silva',
+  frenteObra: 'Fundação',
+  observacao: null,
+  estornaId: null,
+  estornadaPorId: null,
+  registradoPorId: 'u-almoxarife',
+  registradoPorNome: 'Sebastião Lima',
+  criadoEm: '2026-11-01T15:30:00Z',
+};
