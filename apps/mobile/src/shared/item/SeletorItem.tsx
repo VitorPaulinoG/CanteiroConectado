@@ -113,7 +113,12 @@ export function SeletorItem({
             : '')}
       </HelperText>
       <Portal>
-        <Modal visible={aberto} onDismiss={() => setAberto(false)} style={styles.modal}>
+        <Modal
+          visible={aberto}
+          onDismiss={() => setAberto(false)}
+          style={styles.modal}
+          contentContainerStyle={styles.conteudoModal}
+        >
           {aberto ? (
             <Lista
               {...modo}
@@ -167,7 +172,7 @@ function Lista({ aoEscolher, aoFechar, ...modo }: PropsLista) {
 
   return (
     <SafeAreaView style={[styles.tela, { backgroundColor: theme.colors.background }]}>
-      <Appbar.Header>
+      <Appbar.Header statusBarHeight={0}>
         <Appbar.Action icon="close" accessibilityLabel="Fechar" onPress={aoFechar} />
         <Appbar.Content title="Escolher item" />
       </Appbar.Header>
@@ -250,6 +255,7 @@ function Lista({ aoEscolher, aoFechar, ...modo }: PropsLista) {
 
 const styles = StyleSheet.create({
   modal: { margin: 0 },
+  conteudoModal: { flex: 1 },
   tela: { flex: 1 },
   busca: { padding: 16, paddingBottom: 8 },
   carregando: { padding: 24 },
