@@ -5,6 +5,7 @@ import java.time.Clock;
 import java.time.OffsetDateTime;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
@@ -26,6 +27,10 @@ import br.com.canteiroconectado.item.ItemService;
  * de escrita; assim, duas saídas simultâneas do mesmo item são aplicadas uma depois da outra e o
  * saldo nunca fica negativo. Esta classe não confere permissão: quem a chama (registro pelo app,
  * estorno, carga de demonstração) já conferiu perfil e canteiro.</p>
+ *
+ * <p>Um estorno só é gravado se a movimentação original ainda não tiver estorno; a conferência é
+ * feita com o saldo travado, então dois estornos simultâneos da mesma movimentação não passam
+ * juntos.</p>
  *
  * <p>O id vem do app. {@link #aplicarUmaVez(NovaMovimentacao)} devolve o registro já gravado
  * quando o mesmo pedido chega de novo, recusa com {@code ID_JA_UTILIZADO} quando o id já pertence
@@ -64,6 +69,15 @@ public class MovimentacaoService {
      *     {@link #aplicar(NovaMovimentacao)}
      */
     public ResultadoDaGravacao<MovimentacaoEstoque> aplicarUmaVez(NovaMovimentacao nova) {
+        return aplicarUmaVez(nova, criada -> { });
+    }
+
+    /**
+     * Igual a {@link #aplicarUmaVez(NovaMovimentacao)}, rodando {@code aoCriar} na mesma
+     * transação da gravação, só quando o registro é criado agora (por exemplo, para auditar).
+     */
+    public ResultadoDaGravacao<MovimentacaoEstoque> aplicarUmaVez(NovaMovimentacao nova,
+            Consumer<MovimentacaoEstoque> aoCriar) {
         Optional<ResultadoDaGravacao<MovimentacaoEstoque>> gravada = jaGravada(nova);
         if (gravada.isPresent()) {
             return gravada.get();
@@ -75,7 +89,9 @@ public class MovimentacaoService {
                 if (gravadaEnquantoEsperava.isPresent()) {
                     return gravadaEnquantoEsperava.get();
                 }
-                return ResultadoDaGravacao.criado(gravar(nova, saldo));
+                MovimentacaoEstoque criada = gravar(nova, saldo);
+                aoCriar.accept(criada);
+                return ResultadoDaGravacao.criado(criada);
             });
         } catch (DataIntegrityViolationException corrida) {
             return leitura.execute(status -> repetida(nova)).orElseThrow(() -> corrida);
@@ -113,6 +129,9 @@ public class MovimentacaoService {
     }
 
     private MovimentacaoEstoque gravar(NovaMovimentacao nova, SaldoEstoque saldo) {
+        if (nova.estornaId() != null && movimentacoes.existsByEstornaId(nova.estornaId())) {
+            throw new BusinessException(ErrorCode.JA_ESTORNADA, "Esta movimentação já foi estornada.");
+        }
         BigDecimal quantidade = validarQuantidade(nova.quantidade());
         BigDecimal saldoApos = nova.tipo().aplicar(saldo.getQuantidade(), quantidade);
         if (saldoApos.signum() < 0) {
