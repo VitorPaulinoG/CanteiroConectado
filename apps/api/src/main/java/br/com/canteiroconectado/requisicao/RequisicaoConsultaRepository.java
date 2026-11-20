@@ -7,6 +7,7 @@ import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.EnumMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -92,6 +93,25 @@ public class RequisicaoConsultaRepository {
         Long total = jdbc.queryForObject("SELECT count(*) FROM requisicao r " + condicoes(filtro), parametros(filtro),
             Long.class);
         return total == null ? 0 : total;
+    }
+
+    /**
+     * Quantas requisições do usuário no canteiro estão em cada status.
+     */
+    public Map<StatusRequisicao, Long> contarDoUsuarioPorStatus(UUID canteiroId, UUID usuarioId) {
+        Map<StatusRequisicao, Long> contagem = new EnumMap<>(StatusRequisicao.class);
+        for (StatusRequisicao status : StatusRequisicao.values()) {
+            contagem.put(status, 0L);
+        }
+        jdbc.query("""
+            SELECT status, count(*) AS total FROM requisicao
+            WHERE canteiro_id = :canteiroId AND solicitante_id = :usuarioId
+            GROUP BY status
+            """, new MapSqlParameterSource().addValue("canteiroId", canteiroId).addValue("usuarioId", usuarioId),
+            resultado -> {
+                contagem.put(StatusRequisicao.valueOf(resultado.getString("status")), resultado.getLong("total"));
+            });
+        return contagem;
     }
 
     private static String condicoes(FiltroDeRequisicoes filtro) {

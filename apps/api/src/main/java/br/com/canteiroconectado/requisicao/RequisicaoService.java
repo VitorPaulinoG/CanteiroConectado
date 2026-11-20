@@ -239,6 +239,20 @@ public class RequisicaoService {
     }
 
     /**
+     * Contadores do Início: quantas requisições o usuário pode decidir no canteiro e quantas dele
+     * estão em cada status.
+     */
+    @PreAuthorize(Permissoes.ALMOXARIFE_OU_GESTOR)
+    @Transactional(readOnly = true)
+    public ContadoresDeRequisicoes contadores(UUID canteiroId) {
+        UsuarioLogado usuario = UsuarioLogado.atual();
+        acesso.conferir(canteiroId);
+        long paraDecidir = consultas.contar(new FiltroDeRequisicoes(canteiroId, usuario.id(), perfilQueDecide(usuario),
+            EscopoDeRequisicoes.PARA_DECIDIR, List.of()));
+        return new ContadoresDeRequisicoes(paraDecidir, consultas.contarDoUsuarioPorStatus(canteiroId, usuario.id()));
+    }
+
+    /**
      * Perfil cujas requisições o usuário decide: o ALMOXARIFE decide as do GESTOR e o GESTOR as do
      * ALMOXARIFE.
      */

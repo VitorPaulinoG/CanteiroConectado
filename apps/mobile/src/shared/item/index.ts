@@ -9,4 +9,4 @@ export {
   type TipoItem,
   type Unidade,
 } from './api';
-export { SeletorItem, type ItemSelecionado } from './SeletorItem';
+export { SeletorItem, SeletorItemModal, type ItemSelecionado } from './SeletorItem';
