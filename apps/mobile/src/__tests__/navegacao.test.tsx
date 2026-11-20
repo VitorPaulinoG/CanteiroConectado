@@ -1,6 +1,7 @@
 import { QueryClientProvider } from '@tanstack/react-query';
 import * as SecureStore from 'expo-secure-store';
-import { renderRouter, screen } from 'expo-router/testing-library';
+import { router } from 'expo-router';
+import { act, renderRouter, screen } from 'expo-router/testing-library';
 import { PaperProvider } from 'react-native-paper';
 import { Text } from 'react-native';
 
@@ -13,9 +14,22 @@ import { appTheme } from '@/theme';
 import { Navegacao } from '../../app/_layout';
 import Abertura from '../../app/index';
 import AbasLayout from '../../app/(autenticado)/(abas)/_layout';
+import EstoqueRota from '../../app/(autenticado)/(abas)/estoque';
 import AreaAutenticadaLayout from '../../app/(autenticado)/_layout';
 
 jest.mock('@expo/vector-icons/MaterialCommunityIcons', () => 'MaterialCommunityIcons');
+jest.mock('@/features/estoque', () => {
+  const { Text: Texto } = jest.requireActual('react-native');
+  const { useState } = jest.requireActual('react');
+  const { useLocalSearchParams } = jest.requireActual('expo-router');
+  return {
+    EstoqueTela: function EstoqueFalso() {
+      const parametros = useLocalSearchParams();
+      const [filtroInicial] = useState(String(parametros.filtro ?? 'todos'));
+      return <Texto>{`estoque filtro ${filtroInicial}`}</Texto>;
+    },
+  };
+});
 jest.mock('@/shared/canteiro/api', () => ({
   ...jest.requireActual('@/shared/canteiro/api'),
   buscarCanteiro: jest.fn(),
@@ -64,7 +78,7 @@ function rotas(estado: EstadoSessao) {
     '(autenticado)/_layout': AreaAutenticadaLayout,
     '(autenticado)/(abas)/_layout': AbasLayout,
     '(autenticado)/(abas)/inicio': () => <Text>tela de início</Text>,
-    '(autenticado)/(abas)/estoque': () => <Text>tela de estoque</Text>,
+    '(autenticado)/(abas)/estoque': EstoqueRota,
     '(autenticado)/(abas)/movimentar': () => <Text>tela de movimentar</Text>,
     '(autenticado)/(abas)/requisicoes': () => <Text>tela de requisições</Text>,
     '(autenticado)/(abas)/historico': () => <Text>tela de histórico</Text>,
@@ -186,5 +200,18 @@ describe('Navegação por sessão (S01)', () => {
       }),
     );
     expect(await screen.findByText('escolher canteiro')).toBeTruthy();
+  });
+
+  it('reabre o Estoque com o filtro novo mesmo quando a aba já estava aberta', async () => {
+    const resultado = await renderRouter(
+      rotas({ status: 'autenticado', usuario, trocaAdiada: false }),
+      { initialUrl: '/estoque' },
+    );
+    expect(await screen.findByText('estoque filtro todos')).toBeTruthy();
+
+    await act(() => router.navigate('/estoque?filtro=alerta'));
+
+    expect(await screen.findByText('estoque filtro alerta')).toBeTruthy();
+    expect(resultado.getPathname()).toBe('/estoque');
   });
 });
