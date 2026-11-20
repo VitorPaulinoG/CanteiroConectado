@@ -59,6 +59,19 @@ export function MaisTela() {
           />
         </List.Section>
 
+        <SomentePerfil perfis={['GESTOR']}>
+          <List.Section>
+            <List.Subheader>Auditoria</List.Subheader>
+            <List.Item
+              title="Trilha de auditoria"
+              description="Logins, senhas, cadastros, estornos e decisões"
+              left={(props) => <List.Icon {...props} icon="shield-search" />}
+              right={(props) => <List.Icon {...props} icon="chevron-right" />}
+              onPress={() => router.push('/auditoria')}
+            />
+          </List.Section>
+        </SomentePerfil>
+
         <SomentePerfil administrador>
           <List.Section>
             <List.Subheader>Administração</List.Subheader>

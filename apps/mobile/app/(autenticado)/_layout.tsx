@@ -22,6 +22,8 @@ function AreaDoCanteiro() {
         <Stack.Screen name="movimentar/entrada" />
         <Stack.Screen name="requisicoes/nova" />
         <Stack.Screen name="requisicoes/[id]" />
+        <Stack.Screen name="movimentacao/[id]" />
+        <Stack.Screen name="auditoria" />
       </Stack.Protected>
       <Stack.Screen name="canteiro" />
     </Stack>

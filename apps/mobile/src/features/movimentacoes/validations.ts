@@ -106,3 +106,13 @@ export function temErros(erros: object): boolean {
 export function textoOpcional(texto: string): string | undefined {
   return texto.trim() ? texto.trim() : undefined;
 }
+
+export function validarMotivoDoEstorno(motivo: string): string | undefined {
+  if (!motivo.trim()) {
+    return 'Conte por que o lançamento está errado.';
+  }
+  if (motivo.trim().length > TAMANHO_MAXIMO_OBSERVACAO) {
+    return `O motivo deve ter no máximo ${TAMANHO_MAXIMO_OBSERVACAO} caracteres.`;
+  }
+  return undefined;
+}
