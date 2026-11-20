@@ -1,7 +1,6 @@
 package br.com.canteiroconectado.estoque;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.time.Clock;
 import java.time.OffsetDateTime;
 import java.util.Objects;
@@ -35,8 +34,6 @@ import br.com.canteiroconectado.item.ItemService;
  */
 @Service
 public class MovimentacaoService {
-
-    static final int CASAS_DECIMAIS = 3;
 
     private final MovimentacaoEstoqueRepository movimentacoes;
     private final SaldoEstoqueRepository saldos;
@@ -162,26 +159,7 @@ public class MovimentacaoService {
             && existente.getRegistradoPor().equals(nova.registradoPor());
     }
 
-    /**
-     * Confere que a quantidade é positiva e tem no máximo 3 casas decimais.
-     *
-     * @throws BusinessException {@code QUANTIDADE_INVALIDA}
-     */
     static BigDecimal validarQuantidade(BigDecimal quantidade) {
-        if (quantidade == null || quantidade.signum() <= 0) {
-            throw quantidadeInvalida("A quantidade deve ser maior que zero.");
-        }
-        if (quantidade.stripTrailingZeros().scale() > CASAS_DECIMAIS) {
-            throw quantidadeInvalida("A quantidade aceita no máximo 3 casas decimais.");
-        }
-        BigDecimal ajustada = quantidade.setScale(CASAS_DECIMAIS, RoundingMode.UNNECESSARY);
-        if (ajustada.precision() > 14) {
-            throw quantidadeInvalida("A quantidade é grande demais.");
-        }
-        return ajustada;
-    }
-
-    private static BusinessException quantidadeInvalida(String mensagem) {
-        return new BusinessException(ErrorCode.QUANTIDADE_INVALIDA, mensagem).com("campo", "quantidade");
+        return Quantidades.validar(quantidade, "quantidade");
     }
 }
