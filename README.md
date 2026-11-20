@@ -35,6 +35,10 @@ cd apps/api && ./mvnw spring-boot:run
 - `CHAVE_SENHA_TEMPORARIA` cifra a senha temporária dos funcionários (AES-256): Base64 de 32 bytes, gerada com
   `openssl rand -base64 32`. É obrigatória no perfil `prod`; no `local`, se ficar vazia, a API sorteia uma a cada
   subida (as senhas temporárias anteriores deixam de poder ser consultadas, basta redefinir).
+- Dados de demonstração: suba com `SPRING_PROFILES_ACTIVE=local,demo` e `DEMO_SENHA` (8 caracteres ou mais, com
+  letra e número). Em banco vazio, a API cria o canteiro Residencial Aurora com 22 itens, o almoxarife Sebastião
+  (`sebastiao@canteiro.demo`) e a gestora Camila (`camila@canteiro.demo`), os dois com a senha de `DEMO_SENHA`.
+  O perfil `demo` nunca roda por padrão.
 - Swagger UI em `http://localhost:8080/swagger-ui.html`, saúde em `http://localhost:8080/actuator/health` e
   `http://localhost:8080/api/v1/ping` (público) devolve nome, versão e hora do servidor em UTC.
 - Testes: `./mvnw verify` em `apps/api`. Os testes de contexto e o de trigger do banco **precisam do Postgres no ar**
