@@ -6,10 +6,6 @@ import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 
-/**
- * Violação de regra de negócio. Vira uma resposta Problem Details com o {@code codigo} estável e,
- * quando houver, propriedades extras (por exemplo {@code bloqueadoAte}).
- */
 public class BusinessException extends RuntimeException {
 
     private final ErrorCode codigo;
@@ -26,9 +22,6 @@ public class BusinessException extends RuntimeException {
         this.status = status;
     }
 
-    /**
-     * Acrescenta uma propriedade ao corpo da resposta de erro.
-     */
     public BusinessException com(String nome, Object valor) {
         propriedades.put(nome, valor);
         return this;

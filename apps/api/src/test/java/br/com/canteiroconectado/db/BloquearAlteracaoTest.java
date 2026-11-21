@@ -13,7 +13,6 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
 
-/** Exige o Postgres do Docker Compose (ou do CI): o Flyway aplica o V1 e a função é usada de verdade. */
 @SpringBootTest
 @Transactional
 @DisplayName("bloquear_alteracao()")
@@ -23,7 +22,7 @@ class BloquearAlteracaoTest {
     private JdbcTemplate jdbc;
 
     @BeforeEach
-    void criarTabelaDeTeste() {
+    void criarTabelaTeste() {
         jdbc.execute("CREATE TEMPORARY TABLE registro_imutavel_teste (id INT PRIMARY KEY, texto TEXT)");
         jdbc.execute("""
             CREATE TRIGGER impedir_alteracao_registro_imutavel_teste

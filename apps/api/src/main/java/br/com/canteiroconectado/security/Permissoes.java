@@ -1,10 +1,5 @@
 package br.com.canteiroconectado.security;
 
-/**
- * Expressões de {@code @PreAuthorize} usadas nos services. Os papéis vêm do JWT: o perfil vira
- * {@code ROLE_ALMOXARIFE} ou {@code ROLE_GESTOR}, e a marca de administrador vira
- * {@code ROLE_ADMIN}.
- */
 public final class Permissoes {
 
     public static final String AUTENTICADO = "isAuthenticated()";

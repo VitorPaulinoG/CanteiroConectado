@@ -9,12 +9,8 @@ import java.util.UUID;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
-import br.com.canteiroconectado.usuario.Usuario;
+import br.com.canteiroconectado.dominio.usuario.Usuario;
 
-/**
- * Grava requisições direto no banco de teste, com o status e a data desejados, para testar
- * consultas e transições sem depender do fluxo inteiro.
- */
 @Component
 public class Requisicoes {
 

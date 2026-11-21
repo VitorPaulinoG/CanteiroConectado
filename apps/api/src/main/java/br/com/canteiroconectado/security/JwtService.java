@@ -6,20 +6,16 @@ import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
+import org.springframework.security.oauth2.jwt.JwsHeader;
 import org.springframework.security.oauth2.jwt.JwtClaimsSet;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
-import org.springframework.security.oauth2.jwt.JwsHeader;
 import org.springframework.stereotype.Service;
 
 import br.com.canteiroconectado.config.JwtProperties;
-import br.com.canteiroconectado.usuario.Usuario;
+import br.com.canteiroconectado.dominio.usuario.Usuario;
 
-/**
- * Gera o JWT de acesso do usuário. A validação fica com o resource server ({@link JwtDecoder}
- * configurado em {@link SecurityConfig}). Token único, sem refresh: expirou, entra de novo.
- */
 @Service
 public class JwtService {
 
@@ -37,10 +33,6 @@ public class JwtService {
         this.relogio = relogio;
     }
 
-    /**
-     * Emite um token assinado com o id do usuário no {@code sub}, o perfil, a marca de
-     * administrador e o canteiro (só para ALMOXARIFE).
-     */
     public TokenGerado gerarToken(Usuario usuario) {
         Instant agora = Instant.now(relogio);
         Instant expiraEm = agora.plus(propriedades.validadeHoras(), ChronoUnit.HOURS);
@@ -63,9 +55,6 @@ public class JwtService {
         return new TokenGerado(valor, expiraEm);
     }
 
-    /**
-     * Token emitido e o instante em que expira.
-     */
     public record TokenGerado(String valor, Instant expiraEm) {
     }
 }

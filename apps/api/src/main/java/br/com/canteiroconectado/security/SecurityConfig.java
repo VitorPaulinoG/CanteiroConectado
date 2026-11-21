@@ -1,7 +1,6 @@
 package br.com.canteiroconectado.security;
 
 import java.nio.charset.StandardCharsets;
-
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 
@@ -25,17 +24,13 @@ import org.springframework.security.oauth2.server.resource.web.authentication.Be
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 
+import br.com.canteiroconectado.config.JwtProperties;
+import br.com.canteiroconectado.filter.UsuarioMdcFilter;
+import br.com.canteiroconectado.filter.UsuarioSituacaoFilter;
+import br.com.canteiroconectado.repository.usuario.UsuarioRepository;
+
 import com.nimbusds.jose.jwk.source.ImmutableSecret;
 
-import br.com.canteiroconectado.config.JwtProperties;
-import br.com.canteiroconectado.usuario.UsuarioRepository;
-
-/**
- * Resource server com JWT simétrico (HS256) assinado com o {@code JWT_SEGREDO} (32 caracteres ou
- * mais, validado em {@link JwtProperties}). São públicos o login, o ping, o health do Actuator e o
- * Swagger; o resto exige token válido. As falhas de autenticação e de autorização saem em Problem
- * Details com {@code NAO_AUTENTICADO} (401) e {@code ACESSO_NEGADO} (403).
- */
 @Configuration
 @EnableMethodSecurity
 public class SecurityConfig {
@@ -50,15 +45,15 @@ public class SecurityConfig {
     };
 
     private final JwtProperties propriedades;
-    private final ErrosDeSegurancaHandler errosDeSeguranca;
+    private final SecurityErrorHandler errosSeguranca;
     private final UsuarioRepository usuarios;
     private final HandlerExceptionResolver resolvedor;
 
-    public SecurityConfig(JwtProperties propriedades, ErrosDeSegurancaHandler errosDeSeguranca,
+    public SecurityConfig(JwtProperties propriedades, SecurityErrorHandler errosSeguranca,
             UsuarioRepository usuarios,
             @Qualifier("handlerExceptionResolver") HandlerExceptionResolver resolvedor) {
         this.propriedades = propriedades;
-        this.errosDeSeguranca = errosDeSeguranca;
+        this.errosSeguranca = errosSeguranca;
         this.usuarios = usuarios;
         this.resolvedor = resolvedor;
     }
@@ -73,20 +68,20 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET, ROTAS_PUBLICAS).permitAll()
                 .anyRequest().authenticated())
             .oauth2ResourceServer(oauth2 -> oauth2
-                .jwt(jwt -> jwt.jwtAuthenticationConverter(conversorDeAutenticacao()))
-                .authenticationEntryPoint(errosDeSeguranca)
-                .accessDeniedHandler(errosDeSeguranca))
+                .jwt(jwt -> jwt.jwtAuthenticationConverter(conversorAutenticacao()))
+                .authenticationEntryPoint(errosSeguranca)
+                .accessDeniedHandler(errosSeguranca))
             .exceptionHandling(erros -> erros
-                .authenticationEntryPoint(errosDeSeguranca)
-                .accessDeniedHandler(errosDeSeguranca))
-            .addFilterAfter(new UsuarioNoMdcFilter(), BearerTokenAuthenticationFilter.class)
-            .addFilterAfter(new SituacaoDoUsuarioFilter(usuarios, resolvedor), UsuarioNoMdcFilter.class);
+                .authenticationEntryPoint(errosSeguranca)
+                .accessDeniedHandler(errosSeguranca))
+            .addFilterAfter(new UsuarioMdcFilter(), BearerTokenAuthenticationFilter.class)
+            .addFilterAfter(new UsuarioSituacaoFilter(usuarios, resolvedor), UsuarioMdcFilter.class);
         return http.build();
     }
 
-    private static JwtAuthenticationConverter conversorDeAutenticacao() {
+    private static JwtAuthenticationConverter conversorAutenticacao() {
         JwtAuthenticationConverter conversor = new JwtAuthenticationConverter();
-        conversor.setJwtGrantedAuthoritiesConverter(new PapeisDoJwtConverter());
+        conversor.setJwtGrantedAuthoritiesConverter(new JwtPapelConverter());
         return conversor;
     }
 

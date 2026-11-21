@@ -5,8 +5,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-import jakarta.validation.Validation;
-import jakarta.validation.ValidatorFactory;
 import org.springframework.boot.EnvironmentPostProcessor;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.config.ConfigDataEnvironmentPostProcessor;
@@ -20,6 +18,9 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.validation.ObjectError;
 import org.springframework.validation.Validator;
 import org.springframework.validation.beanvalidation.SpringValidatorAdapter;
+
+import jakarta.validation.Validation;
+import jakarta.validation.ValidatorFactory;
 
 public class EnvironmentValidator implements EnvironmentPostProcessor, Ordered {
 

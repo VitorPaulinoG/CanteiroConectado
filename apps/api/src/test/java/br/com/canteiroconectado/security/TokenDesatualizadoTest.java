@@ -24,10 +24,11 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
+import br.com.canteiroconectado.dominio.usuario.Perfil;
+import br.com.canteiroconectado.dominio.usuario.Usuario;
+import br.com.canteiroconectado.repository.usuario.UsuarioRepository;
+import br.com.canteiroconectado.service.canteiro.CanteiroAcessoService;
 import br.com.canteiroconectado.support.Tokens;
-import br.com.canteiroconectado.usuario.Perfil;
-import br.com.canteiroconectado.usuario.Usuario;
-import br.com.canteiroconectado.usuario.UsuarioRepository;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -51,7 +52,7 @@ class TokenDesatualizadoTest {
     }
 
     @Nested
-    @DisplayName("SituacaoDoUsuarioFilter")
+    @DisplayName("UsuarioSituacaoFilter")
     class Filtro {
 
         @Test
@@ -72,7 +73,7 @@ class TokenDesatualizadoTest {
 
         @Test
         @DisplayName("deve devolver 401 ao token antigo quando o funcionário perde a administração")
-        void deve_devolver401_quando_deixaDeSerAdministrador() throws Exception {
+        void deve_devolver401_quando_deixaSerAdministrador() throws Exception {
             Usuario admin = tokens.admin();
             String antigo = tokens.bearer(admin);
             admin.setAdministrador(false);
@@ -116,8 +117,8 @@ class TokenDesatualizadoTest {
         @Test
         @DisplayName("não deve dar papel nenhum ao token sem perfil")
         void naoDeve_darPapel_quando_tokenSemPerfil() {
-            assertThat(new PapeisDoJwtConverter().convert(jwt(null))).isEmpty();
-            assertThat(new PapeisDoJwtConverter().convert(jwt("GESTOR"))).extracting(GrantedAuthority::getAuthority)
+            assertThat(new JwtPapelConverter().convert(jwt(null))).isEmpty();
+            assertThat(new JwtPapelConverter().convert(jwt("GESTOR"))).extracting(GrantedAuthority::getAuthority)
                 .containsExactly("ROLE_GESTOR");
         }
 

@@ -34,7 +34,7 @@ na API exigiria guardar estado por IP, que se perde a cada vez que o serviço do
 válido até expirar.
 
 **Por que aceitar:** o token fica no SecureStore do Android. Ele deixa de valer na hora quando o administrador
-desativa o usuário ou muda o perfil, o canteiro ou a administração (`SituacaoDoUsuarioFilter`, que consulta o banco
+desativa o usuário ou muda o perfil, o canteiro ou a administração (`UsuarioSituacaoFilter`, que consulta o banco
 a cada requisição). Trocar o `JWT_SEGREDO` invalida todos os tokens de uma vez.
 
 **Muda se:** surgir a necessidade de "sair de todos os aparelhos" ou de sessões mais longas que um turno.

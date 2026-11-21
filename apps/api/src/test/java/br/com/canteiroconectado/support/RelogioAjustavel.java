@@ -6,9 +6,6 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 
-/**
- * Relógio de teste que só anda quando o teste manda.
- */
 public class RelogioAjustavel extends Clock {
 
     private Instant agora;

@@ -56,4 +56,4 @@ em [`exemplos.http`](exemplos.http). Os códigos de erro estão em [`codigos-err
 | `POST /requisicoes/{id}/cancelar` | Quem criou | Cancelar enquanto pendente |
 | `GET /auditoria` | GESTOR | Trilha de auditoria (`usuarioId`, `acao`, `de`, `ate`) |
 
-A matriz completa, perfil por perfil, é testada em `MatrizDePermissoesTest`.
+A matriz completa, perfil por perfil, é testada em `MatrizPermissoesTest`.

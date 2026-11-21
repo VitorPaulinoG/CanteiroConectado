@@ -1,15 +1,12 @@
 package br.com.canteiroconectado.config;
 
-import jakarta.validation.constraints.AssertTrue;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.validation.annotation.Validated;
 
-/**
- * Dados do primeiro administrador, lidos de {@code ADMIN_NOME}, {@code ADMIN_EMAIL} e
- * {@code ADMIN_SENHA}. A senha nunca aparece em {@link #toString()}.
- */
+import jakarta.validation.constraints.AssertTrue;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+
 @Validated
 @ConfigurationProperties(prefix = "canteiro.admin")
 public record AdminProperties(

@@ -5,10 +5,6 @@ import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.SimpleTransactionStatus;
 
-/**
- * Gerenciador de transação que não faz nada, para testes de unidade de services que usam
- * {@code TransactionTemplate}.
- */
 public class TransacaoFalsa implements PlatformTransactionManager {
 
     private int confirmadas;

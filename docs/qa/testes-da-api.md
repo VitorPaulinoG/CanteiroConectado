@@ -18,7 +18,7 @@ Total: 531 testes. Cobertura por pacote, com os pacotes de regra em destaque:
 
 O que a revisão acrescentou:
 
-- **Matriz de permissões:** `CoberturaDaMatrizTest` compara os endpoints registrados no Spring com as linhas da
+- **Matriz de permissões:** `CoberturaMatrizTest` compara os endpoints registrados no Spring com as linhas da
   matriz e falha se um endpoint novo não tiver linha. Na primeira execução ele achou `GET /colaboradores/{id}`
   fora da matriz, e a linha foi incluída.
 - **Token desatualizado:** o token antigo recebe 401 quando o perfil muda, quando a administração é retirada e

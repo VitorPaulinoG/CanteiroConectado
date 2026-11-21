@@ -25,23 +25,23 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.canteiroconectado.dominio.usuario.Usuario;
+import br.com.canteiroconectado.filter.RequestIdFilter;
+import br.com.canteiroconectado.support.Tokens;
+
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.read.ListAppender;
 
-import br.com.canteiroconectado.filter.RequestIdFilter;
-import br.com.canteiroconectado.support.Tokens;
-import br.com.canteiroconectado.usuario.Usuario;
-
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
-@Import({SegurancaTest.ControllerDeTeste.class, Tokens.class})
+@Import({SegurancaTest.ControllerTeste.class, Tokens.class})
 @DisplayName("SecurityConfig")
 class SegurancaTest {
 
     @RestController
-    static class ControllerDeTeste {
+    static class ControllerTeste {
 
         @PreAuthorize(Permissoes.ADMIN)
         @GetMapping("/api/v1/teste-seguranca/admin")
@@ -140,7 +140,7 @@ class SegurancaTest {
 
     @Nested
     @DisplayName("UsuarioLogado e MDC")
-    class UsuarioDaRequisicao {
+    class UsuarioRequisicao {
 
         @Test
         @DisplayName("deve ler id, perfil, administrador e canteiro do token")

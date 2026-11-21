@@ -5,17 +5,13 @@ import java.util.UUID;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
-import br.com.canteiroconectado.canteiro.Canteiro;
-import br.com.canteiroconectado.canteiro.CanteiroRepository;
+import br.com.canteiroconectado.dominio.canteiro.Canteiro;
+import br.com.canteiroconectado.dominio.usuario.Perfil;
+import br.com.canteiroconectado.dominio.usuario.Usuario;
+import br.com.canteiroconectado.repository.canteiro.CanteiroRepository;
+import br.com.canteiroconectado.repository.usuario.UsuarioRepository;
 import br.com.canteiroconectado.security.JwtService;
-import br.com.canteiroconectado.usuario.Perfil;
-import br.com.canteiroconectado.usuario.Usuario;
-import br.com.canteiroconectado.usuario.UsuarioRepository;
 
-/**
- * Cria canteiros e usuários gravados no banco de teste e devolve o cabeçalho
- * {@code Authorization} de cada usuário.
- */
 @Component
 public class Tokens {
 

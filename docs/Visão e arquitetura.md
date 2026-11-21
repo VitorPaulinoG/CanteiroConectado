@@ -113,9 +113,9 @@ Todo identificador é escrito em pt-BR, sem acento nem cedilha, e leva o sufixo 
 
 | Elemento | Regra | Exemplos |
 | --- | --- | --- |
-| Classes Java | PascalCase em pt + sufixo técnico | `MovimentacaoService`, `EstoqueController`, `UsuarioRepository`, `SegurancaConfig`, `RequestIdFilter` |
+| Classes Java | PascalCase em pt + sufixo técnico | `MovimentacaoService`, `EstoqueController`, `UsuarioRepository`, `SecurityConfig`, `RequestIdFilter` |
 | Entidades e enums | Substantivo pt no singular | `Canteiro`, `MovimentacaoEstoque`, `TipoMovimentacao.SAIDA`, `Perfil.GESTOR` |
-| DTOs | pt + `Request` ou `Response` | `MovimentacaoRequest`, `LoginResponse` |
+| DTOs | pt + `Request` ou `Response` | `RegistrarMovimentacaoRequest`, `LoginResponse` |
 | Métodos e variáveis | camelCase em pt, verbo no infinitivo para ações | `registrarSaida`, `saldoAtual` |
 | Pacotes Java | minúsculos; camadas com nome consagrado e funcionalidades em pt | `controller.estoque`, `service.requisicao`, `dominio.item` |
 | Tabelas e colunas | snake\_case em pt, tabela no singular | `movimentacao_estoque`, `quantidade_minima`, `criado_em` |
@@ -191,16 +191,18 @@ A recomendação é o **React Native Paper** (Material Design 3): funciona no Ex
 
 Diretrizes pensadas para o Sebastião (luvas, sol, pressa): cor primária laranja de segurança com contraste AA, texto de 16 sp ou mais, alvos de toque de 48 dp ou mais, botão primário de largura total fixo no rodapé e três cores de status de estoque (normal, abaixo do mínimo, zerado) sempre com texto ou ícone, nunca só cor.
 
-## API: camadas divididas por funcionalidade
+## API: arquitetura em camadas
 
-A API é um serviço Java 21 com Spring Boot 4.1 em arquitetura em camadas (`controller`, `service`, `repository`, `dominio`, `dto`), e cada camada tem uma pasta por funcionalidade. Quem procura "tudo de estoque" abre a mesma subpasta em cada camada. Regra de dependência: o controller chama só o service; o service chama repositórios e outros services, nunca controllers; sem ciclo (`estoque` usa `item`, e `item` nunca usa `estoque`).
+A API é um serviço Java 21 com Spring Boot 4.1 em arquitetura em camadas (`controller`, `service`, `repository`, `dominio`, `dto`). As camadas `controller`, `service`, `repository` e `dominio` têm uma subpasta por funcionalidade; a camada `dto` é a única que não se divide por funcionalidade e guarda todos os `request` e `response` direto em duas pastas. Regra de dependência: o controller chama só o service; o service chama repositórios e outros services, nunca controllers; sem ciclo (`estoque` usa `item`, e `item` nunca usa `estoque`).
+
+Os nomes seguem `<Acao><Funcionalidade><Papel>`: a ação é opcional, fica no infinitivo e aparece sobretudo nos DTOs (`AtualizarColaboradorRequest`); a funcionalidade é o alvo (`Canteiro`, `Estoque`); o papel é o sufixo técnico em inglês (`Controller`, `Service`, `Request`, `Config`). O código não leva comentários nem Javadoc.
 
 ### Estrutura de diretórios
 
 ```text
 apps/api/src/main/java/br/com/canteiroconectado/
-├─ CanteiroConectadoApplication.java
-├─ controller/
+├─ Application.java
+├─ controller/        uma subpasta por funcionalidade
 │  ├─ autenticacao/   AutenticacaoController
 │  ├─ usuario/        UsuarioController
 │  ├─ canteiro/       CanteiroController
@@ -208,19 +210,23 @@ apps/api/src/main/java/br/com/canteiroconectado/
 │  ├─ item/           ItemController
 │  ├─ estoque/        EstoqueController · MovimentacaoController
 │  ├─ requisicao/     RequisicaoController
+│  ├─ resumo/         ResumoController
+│  ├─ ping/           PingController
 │  └─ auditoria/      AuditoriaController
-├─ service/           AutenticacaoService · UsuarioService · EstoqueService ...
-│  └─ (mesmas pastas)  MovimentacaoService · RequisicaoService · AuditoriaService
-├─ repository/        UsuarioRepository · SaldoEstoqueRepository ... (mesmas pastas)
-├─ dominio/           Usuario · Perfil · Canteiro · Colaborador · Item · TipoItem
-│  └─ (mesmas pastas)  MovimentacaoEstoque · TipoMovimentacao · MotivoMovimentacao
-│                      SaldoEstoque · Requisicao · ItemRequisicao · StatusRequisicao · LogAuditoria
-├─ dto/               LoginRequest · LoginResponse · MovimentacaoRequest ... (mesmas pastas)
-├─ seguranca/         SegurancaConfig · JwtService · UsuarioLogado · CanteiroAcessoService
-├─ config/            OpenApiConfig · JwtProperties · AdminProperties · DbProperties · AmbienteValidator
-├─ filtro/            RequestIdFilter
-├─ excecao/           RegraDeNegocioException · CodigoErro · TratadorGlobalDeErros
-└─ inicializacao/     AdminInicializador
+├─ service/           mesmas subpastas: AutenticacaoService · UsuarioService · EstoqueService
+│                     MovimentacaoService · RequisicaoService · AuditoriaService ...
+├─ repository/        mesmas subpastas: UsuarioRepository · SaldoEstoqueRepository ...
+├─ dominio/           mesmas subpastas: Usuario · Perfil · Canteiro · Colaborador · Item · TipoItem
+│                     MovimentacaoEstoque · TipoMovimentacao · SaldoEstoque · Requisicao ...
+├─ dto/
+│  ├─ request/        CriarColaboradorRequest · AtualizarColaboradorRequest · LoginRequest ...
+│  └─ response/       ColaboradorResponse · LoginResponse · PaginaResponse ...
+├─ security/          SecurityConfig · JwtService · UsuarioLogado · SecurityErrorHandler
+├─ config/            OpenApiConfig · JwtProperties · AdminProperties · DbProperties · EnvironmentValidator
+├─ filter/            RequestIdFilter · UsuarioMdcFilter · UsuarioSituacaoFilter
+├─ exception/         BusinessException · ErrorCode · GlobalExceptionHandler
+├─ inicializacao/     AdminInitializer · DemoDataInitializer · DemoDataLoader
+└─ util/              Paginacao · Quantidades · Fuso · IdCliente · SenhaValidator
 apps/api/src/main/resources/
 ├─ application.yml · application-local.yml · application-prod.yml
 └─ db/migration/      V1__esquema_inicial.sql · V2__... (Flyway)

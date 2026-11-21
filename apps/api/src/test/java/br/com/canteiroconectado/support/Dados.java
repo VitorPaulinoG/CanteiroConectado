@@ -6,19 +6,15 @@ import java.util.UUID;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
-import br.com.canteiroconectado.canteiro.Canteiro;
-import br.com.canteiroconectado.canteiro.CanteiroRepository;
-import br.com.canteiroconectado.colaborador.Colaborador;
-import br.com.canteiroconectado.colaborador.ColaboradorRepository;
-import br.com.canteiroconectado.item.Item;
-import br.com.canteiroconectado.item.ItemRepository;
-import br.com.canteiroconectado.item.TipoItem;
-import br.com.canteiroconectado.item.Unidade;
+import br.com.canteiroconectado.dominio.canteiro.Canteiro;
+import br.com.canteiroconectado.dominio.colaborador.Colaborador;
+import br.com.canteiroconectado.dominio.item.Item;
+import br.com.canteiroconectado.dominio.item.TipoItem;
+import br.com.canteiroconectado.dominio.item.Unidade;
+import br.com.canteiroconectado.repository.canteiro.CanteiroRepository;
+import br.com.canteiroconectado.repository.colaborador.ColaboradorRepository;
+import br.com.canteiroconectado.repository.item.ItemRepository;
 
-/**
- * Cria itens, colaboradores e saldos de teste com nomes únicos, para que dados gravados por um
- * teste não apareçam nas buscas de outro.
- */
 @Component
 public class Dados {
 

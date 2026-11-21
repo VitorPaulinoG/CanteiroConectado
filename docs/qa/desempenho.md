@@ -6,7 +6,7 @@ tempo de resposta com 2 mil itens e 10 mil movimentações.
 ## Consultas repetidas (N+1)
 
 `ConsultasPorRequisicaoTest` conta os SQL que cada tela faz, tanto os do Hibernate quanto os do `JdbcTemplate`
-(`support/ContadorDeConsultas`). Cada tela é medida com 1 linha na página e depois com 15. Se o número de
+(`support/ContadorConsultas`). Cada tela é medida com 1 linha na página e depois com 15. Se o número de
 consultas cresce com a página, há N+1 e o teste falha listando os SQL. Ele roda no `./mvnw verify` de sempre.
 
 | Tela | Endpoint | Consultas por chamada |
@@ -22,14 +22,14 @@ consultas cresce com a página, há N+1 e o teste falha listando os SQL. Ele rod
 | S24 Funcionários | `GET /usuarios` | 2 |
 | S23 Canteiros | `GET /canteiros` | 2 |
 
-Os números incluem a consulta que o `SituacaoDoUsuarioFilter` faz em toda requisição autenticada. Nenhuma tela tem
+Os números incluem a consulta que o `UsuarioSituacaoFilter` faz em toda requisição autenticada. Nenhuma tela tem
 N+1. As listas trazem os nomes (item, colaborador, autor, canteiro) por `JOIN` na mesma consulta, e a lista de
 requisições busca os itens de todas as requisições da página numa segunda consulta só (`WHERE requisicao_id IN`).
 O teste também falha se alguma tela passar de 6 consultas.
 
 ## Volume de dados
 
-`VolumeDeDadosTest` carrega num canteiro:
+`VolumeDadosTest` carrega num canteiro:
 
 - 2.000 itens (30% ferramentas, um quarto com mínimo 100);
 - 10.000 movimentações: um recebimento e quatro retiradas por item, espalhados por 90 dias e por 20 colaboradores;
@@ -42,7 +42,7 @@ JSON), sem a rede. O teste grava os dados de verdade, por isso só roda quando p
 createdb -O canteiro canteiroconectado_volume
 cd apps/api
 BANCO_URL=jdbc:postgresql://localhost:5432/canteiroconectado_volume \
-  ./mvnw test -Dtest=VolumeDeDadosTest -Ddesempenho=true -Djacoco.skip=true
+  ./mvnw test -Dtest=VolumeDadosTest -Ddesempenho=true -Djacoco.skip=true
 cat target/desempenho/resultado.md
 ```
 
