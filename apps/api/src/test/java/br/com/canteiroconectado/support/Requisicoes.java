@@ -9,7 +9,7 @@ import java.util.UUID;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
-import br.com.canteiroconectado.dominio.usuario.Usuario;
+import br.com.canteiroconectado.domain.usuario.Usuario;
 
 @Component
 public class Requisicoes {

@@ -4,7 +4,7 @@ import java.time.OffsetDateTime;
 import java.util.Map;
 import java.util.UUID;
 
-import br.com.canteiroconectado.dominio.auditoria.AcaoAuditoria;
+import br.com.canteiroconectado.domain.auditoria.AcaoAuditoria;
 
 public record EventoAuditoriaResponse(
     UUID id,

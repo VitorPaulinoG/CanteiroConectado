@@ -3,8 +3,8 @@ package br.com.canteiroconectado.dto.request;
 import java.math.BigDecimal;
 import java.util.UUID;
 
-import br.com.canteiroconectado.dominio.estoque.MotivoMovimentacao;
-import br.com.canteiroconectado.dominio.estoque.TipoMovimentacao;
+import br.com.canteiroconectado.domain.estoque.MotivoMovimentacao;
+import br.com.canteiroconectado.domain.estoque.TipoMovimentacao;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;

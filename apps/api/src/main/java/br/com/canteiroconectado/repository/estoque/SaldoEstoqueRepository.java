@@ -8,8 +8,8 @@ import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
-import br.com.canteiroconectado.dominio.estoque.SaldoEstoque;
-import br.com.canteiroconectado.dominio.estoque.SaldoEstoqueId;
+import br.com.canteiroconectado.domain.estoque.SaldoEstoque;
+import br.com.canteiroconectado.domain.estoque.SaldoEstoqueId;
 
 import jakarta.persistence.LockModeType;
 

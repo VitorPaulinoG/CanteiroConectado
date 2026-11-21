@@ -4,9 +4,9 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
-import br.com.canteiroconectado.dominio.estoque.StatusEstoque;
-import br.com.canteiroconectado.dominio.item.TipoItem;
-import br.com.canteiroconectado.dominio.item.Unidade;
+import br.com.canteiroconectado.domain.estoque.StatusEstoque;
+import br.com.canteiroconectado.domain.item.TipoItem;
+import br.com.canteiroconectado.domain.item.Unidade;
 
 public record DetalharEstoqueResponse(
     UUID itemId,

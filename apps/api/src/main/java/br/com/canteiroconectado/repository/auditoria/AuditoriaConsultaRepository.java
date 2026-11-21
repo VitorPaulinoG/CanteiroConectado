@@ -11,7 +11,7 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-import br.com.canteiroconectado.dominio.auditoria.AcaoAuditoria;
+import br.com.canteiroconectado.domain.auditoria.AcaoAuditoria;
 import br.com.canteiroconectado.dto.response.EventoAuditoriaResponse;
 
 import tools.jackson.core.type.TypeReference;

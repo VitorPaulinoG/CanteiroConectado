@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.com.canteiroconectado.dominio.auditoria.AcaoAuditoria;
+import br.com.canteiroconectado.domain.auditoria.AcaoAuditoria;
 import br.com.canteiroconectado.dto.response.EventoAuditoriaResponse;
 import br.com.canteiroconectado.dto.response.PaginaResponse;
 import br.com.canteiroconectado.service.auditoria.AuditoriaService;

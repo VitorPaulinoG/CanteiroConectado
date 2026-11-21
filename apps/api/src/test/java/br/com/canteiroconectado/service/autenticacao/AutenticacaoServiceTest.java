@@ -26,9 +26,9 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import br.com.canteiroconectado.dominio.auditoria.AcaoAuditoria;
-import br.com.canteiroconectado.dominio.usuario.Perfil;
-import br.com.canteiroconectado.dominio.usuario.Usuario;
+import br.com.canteiroconectado.domain.auditoria.AcaoAuditoria;
+import br.com.canteiroconectado.domain.usuario.Perfil;
+import br.com.canteiroconectado.domain.usuario.Usuario;
 import br.com.canteiroconectado.dto.request.LoginRequest;
 import br.com.canteiroconectado.dto.response.LoginResponse;
 import br.com.canteiroconectado.exception.BusinessException;

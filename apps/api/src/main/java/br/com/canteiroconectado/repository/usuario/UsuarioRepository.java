@@ -7,8 +7,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 
-import br.com.canteiroconectado.dominio.usuario.Usuario;
-import br.com.canteiroconectado.dominio.usuario.UsuarioSituacao;
+import br.com.canteiroconectado.domain.usuario.Usuario;
+import br.com.canteiroconectado.domain.usuario.UsuarioSituacao;
 
 public interface UsuarioRepository extends JpaRepository<Usuario, UUID>, JpaSpecificationExecutor<Usuario> {
 
@@ -23,7 +23,7 @@ public interface UsuarioRepository extends JpaRepository<Usuario, UUID>, JpaSpec
     Optional<Usuario> findFirstByAdministradorTrueOrderByCriadoEmAsc();
 
     @Query("""
-        select new br.com.canteiroconectado.dominio.usuario.UsuarioSituacao(
+        select new br.com.canteiroconectado.domain.usuario.UsuarioSituacao(
             u.ativo, u.perfil, u.administrador, u.canteiroId, u.precisaTrocarSenha)
         from Usuario u where u.id = :id
         """)

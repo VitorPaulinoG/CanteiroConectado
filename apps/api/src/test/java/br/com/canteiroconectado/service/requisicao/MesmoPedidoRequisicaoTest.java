@@ -15,8 +15,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import br.com.canteiroconectado.dominio.requisicao.Requisicao;
-import br.com.canteiroconectado.dominio.usuario.Perfil;
+import br.com.canteiroconectado.domain.requisicao.Requisicao;
+import br.com.canteiroconectado.domain.usuario.Perfil;
 import br.com.canteiroconectado.dto.request.ItemRequisicaoRequest;
 import br.com.canteiroconectado.service.requisicao.RequisicaoService.PedidoNormalizado;
 

@@ -14,7 +14,7 @@ import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
 import org.springframework.stereotype.Service;
 
 import br.com.canteiroconectado.config.JwtProperties;
-import br.com.canteiroconectado.dominio.usuario.Usuario;
+import br.com.canteiroconectado.domain.usuario.Usuario;
 
 @Service
 public class JwtService {

@@ -12,10 +12,10 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-import br.com.canteiroconectado.dominio.estoque.HistoricoQuery;
-import br.com.canteiroconectado.dominio.estoque.MotivoMovimentacao;
-import br.com.canteiroconectado.dominio.estoque.TipoMovimentacao;
-import br.com.canteiroconectado.dominio.item.Unidade;
+import br.com.canteiroconectado.domain.estoque.HistoricoQuery;
+import br.com.canteiroconectado.domain.estoque.MotivoMovimentacao;
+import br.com.canteiroconectado.domain.estoque.TipoMovimentacao;
+import br.com.canteiroconectado.domain.item.Unidade;
 import br.com.canteiroconectado.dto.response.MovimentacaoResponse;
 import br.com.canteiroconectado.util.Quantidades;
 

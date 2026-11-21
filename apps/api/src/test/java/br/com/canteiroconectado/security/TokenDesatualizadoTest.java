@@ -24,8 +24,8 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
-import br.com.canteiroconectado.dominio.usuario.Perfil;
-import br.com.canteiroconectado.dominio.usuario.Usuario;
+import br.com.canteiroconectado.domain.usuario.Perfil;
+import br.com.canteiroconectado.domain.usuario.Usuario;
 import br.com.canteiroconectado.repository.usuario.UsuarioRepository;
 import br.com.canteiroconectado.service.canteiro.CanteiroAcessoService;
 import br.com.canteiroconectado.support.Tokens;

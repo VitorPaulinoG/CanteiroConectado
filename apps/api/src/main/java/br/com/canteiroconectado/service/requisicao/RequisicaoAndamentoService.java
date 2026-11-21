@@ -11,11 +11,11 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import br.com.canteiroconectado.dominio.auditoria.AcaoAuditoria;
-import br.com.canteiroconectado.dominio.requisicao.Requisicao;
-import br.com.canteiroconectado.dominio.requisicao.RequisicaoEvento;
-import br.com.canteiroconectado.dominio.requisicao.StatusRequisicao;
-import br.com.canteiroconectado.dominio.usuario.Perfil;
+import br.com.canteiroconectado.domain.auditoria.AcaoAuditoria;
+import br.com.canteiroconectado.domain.requisicao.Requisicao;
+import br.com.canteiroconectado.domain.requisicao.RequisicaoEvento;
+import br.com.canteiroconectado.domain.requisicao.StatusRequisicao;
+import br.com.canteiroconectado.domain.usuario.Perfil;
 import br.com.canteiroconectado.dto.request.AprovarRequisicaoRequest;
 import br.com.canteiroconectado.dto.request.RecusarRequisicaoRequest;
 import br.com.canteiroconectado.dto.response.RequisicaoResponse;

@@ -24,11 +24,11 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
-import br.com.canteiroconectado.dominio.canteiro.Canteiro;
-import br.com.canteiroconectado.dominio.item.Item;
-import br.com.canteiroconectado.dominio.item.TipoItem;
-import br.com.canteiroconectado.dominio.item.Unidade;
-import br.com.canteiroconectado.dominio.usuario.Usuario;
+import br.com.canteiroconectado.domain.canteiro.Canteiro;
+import br.com.canteiroconectado.domain.item.Item;
+import br.com.canteiroconectado.domain.item.TipoItem;
+import br.com.canteiroconectado.domain.item.Unidade;
+import br.com.canteiroconectado.domain.usuario.Usuario;
 import br.com.canteiroconectado.support.Dados;
 import br.com.canteiroconectado.support.Tokens;
 

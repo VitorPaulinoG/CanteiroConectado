@@ -5,9 +5,9 @@ import java.util.UUID;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
-import br.com.canteiroconectado.dominio.estoque.MovimentacaoEstoque;
-import br.com.canteiroconectado.dominio.estoque.RegistrarMovimentacaoCommand;
-import br.com.canteiroconectado.dominio.estoque.TipoMovimentacao;
+import br.com.canteiroconectado.domain.estoque.MovimentacaoEstoque;
+import br.com.canteiroconectado.domain.estoque.RegistrarMovimentacaoCommand;
+import br.com.canteiroconectado.domain.estoque.TipoMovimentacao;
 import br.com.canteiroconectado.dto.request.RegistrarMovimentacaoRequest;
 import br.com.canteiroconectado.dto.response.MovimentacaoResponse;
 import br.com.canteiroconectado.exception.BusinessException;

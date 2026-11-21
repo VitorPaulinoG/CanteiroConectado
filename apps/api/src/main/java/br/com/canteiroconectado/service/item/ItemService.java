@@ -10,10 +10,10 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import br.com.canteiroconectado.dominio.auditoria.AcaoAuditoria;
-import br.com.canteiroconectado.dominio.item.Item;
-import br.com.canteiroconectado.dominio.item.ItemUso;
-import br.com.canteiroconectado.dominio.item.TipoItem;
+import br.com.canteiroconectado.domain.auditoria.AcaoAuditoria;
+import br.com.canteiroconectado.domain.item.Item;
+import br.com.canteiroconectado.domain.item.ItemUso;
+import br.com.canteiroconectado.domain.item.TipoItem;
 import br.com.canteiroconectado.dto.request.AtualizarItemRequest;
 import br.com.canteiroconectado.dto.request.CriarItemRequest;
 import br.com.canteiroconectado.dto.response.ItemResponse;

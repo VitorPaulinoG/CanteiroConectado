@@ -5,7 +5,7 @@ está no canteiro, vê o alerta de estoque mínimo, pede o que falta e acompanha
 
 ## Conferência automatizada
 
-O teste `apps/api/src/test/java/br/com/canteiroconectado/inicializacao/Jornada2Test.java` carrega os dados de
+O teste `apps/api/src/test/java/br/com/canteiroconectado/bootstrap/Jornada2Test.java` carrega os dados de
 demonstração (#173) e percorre a jornada pela API, na mesma ordem do app:
 
 | Passo | Tela | Chamada | Resultado esperado |

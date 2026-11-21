@@ -13,9 +13,9 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import br.com.canteiroconectado.dominio.estoque.MovimentacaoEstoque;
-import br.com.canteiroconectado.dominio.estoque.RegistrarMovimentacaoCommand;
-import br.com.canteiroconectado.dominio.estoque.SaldoEstoque;
+import br.com.canteiroconectado.domain.estoque.MovimentacaoEstoque;
+import br.com.canteiroconectado.domain.estoque.RegistrarMovimentacaoCommand;
+import br.com.canteiroconectado.domain.estoque.SaldoEstoque;
 import br.com.canteiroconectado.exception.BusinessException;
 import br.com.canteiroconectado.exception.ErrorCode;
 import br.com.canteiroconectado.repository.estoque.MovimentacaoEstoqueRepository;

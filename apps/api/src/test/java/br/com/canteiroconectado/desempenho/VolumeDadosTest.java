@@ -32,8 +32,8 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import br.com.canteiroconectado.dominio.canteiro.Canteiro;
-import br.com.canteiroconectado.dominio.usuario.Usuario;
+import br.com.canteiroconectado.domain.canteiro.Canteiro;
+import br.com.canteiroconectado.domain.usuario.Usuario;
 import br.com.canteiroconectado.support.Dados;
 import br.com.canteiroconectado.support.Tokens;
 

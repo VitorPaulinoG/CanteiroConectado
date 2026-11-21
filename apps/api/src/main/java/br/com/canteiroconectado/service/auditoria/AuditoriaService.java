@@ -13,8 +13,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import br.com.canteiroconectado.dominio.auditoria.AcaoAuditoria;
-import br.com.canteiroconectado.dominio.auditoria.LogAuditoria;
+import br.com.canteiroconectado.domain.auditoria.AcaoAuditoria;
+import br.com.canteiroconectado.domain.auditoria.LogAuditoria;
 import br.com.canteiroconectado.dto.response.EventoAuditoriaResponse;
 import br.com.canteiroconectado.dto.response.PaginaResponse;
 import br.com.canteiroconectado.exception.BusinessException;

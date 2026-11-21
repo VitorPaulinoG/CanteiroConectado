@@ -2,7 +2,7 @@ package br.com.canteiroconectado.dto.request;
 
 import java.util.UUID;
 
-import br.com.canteiroconectado.dominio.usuario.Perfil;
+import br.com.canteiroconectado.domain.usuario.Perfil;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Pattern;

@@ -2,8 +2,8 @@ package br.com.canteiroconectado.dto.request;
 
 import java.math.BigDecimal;
 
-import br.com.canteiroconectado.dominio.item.TipoItem;
-import br.com.canteiroconectado.dominio.item.Unidade;
+import br.com.canteiroconectado.domain.item.TipoItem;
+import br.com.canteiroconectado.domain.item.Unidade;
 
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Digits;

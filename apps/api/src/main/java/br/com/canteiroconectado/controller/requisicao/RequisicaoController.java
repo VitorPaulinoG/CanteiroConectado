@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.com.canteiroconectado.dominio.requisicao.StatusRequisicao;
+import br.com.canteiroconectado.domain.requisicao.StatusRequisicao;
 import br.com.canteiroconectado.dto.request.AprovarRequisicaoRequest;
 import br.com.canteiroconectado.dto.request.CriarRequisicaoRequest;
 import br.com.canteiroconectado.dto.request.RecusarRequisicaoRequest;

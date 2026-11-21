@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.com.canteiroconectado.dominio.estoque.TipoMovimentacao;
+import br.com.canteiroconectado.domain.estoque.TipoMovimentacao;
 import br.com.canteiroconectado.dto.request.EstornarMovimentacaoRequest;
 import br.com.canteiroconectado.dto.request.RegistrarMovimentacaoRequest;
 import br.com.canteiroconectado.dto.response.MovimentacaoResponse;

@@ -4,7 +4,7 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Component;
 
-import br.com.canteiroconectado.dominio.item.ItemUso;
+import br.com.canteiroconectado.domain.item.ItemUso;
 import br.com.canteiroconectado.repository.estoque.MovimentacaoEstoqueRepository;
 
 @Component

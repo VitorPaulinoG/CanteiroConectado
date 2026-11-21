@@ -32,11 +32,11 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import br.com.canteiroconectado.dominio.estoque.MotivoMovimentacao;
-import br.com.canteiroconectado.dominio.estoque.RegistrarMovimentacaoCommand;
-import br.com.canteiroconectado.dominio.estoque.TipoMovimentacao;
-import br.com.canteiroconectado.dominio.usuario.Perfil;
-import br.com.canteiroconectado.dominio.usuario.Usuario;
+import br.com.canteiroconectado.domain.estoque.MotivoMovimentacao;
+import br.com.canteiroconectado.domain.estoque.RegistrarMovimentacaoCommand;
+import br.com.canteiroconectado.domain.estoque.TipoMovimentacao;
+import br.com.canteiroconectado.domain.usuario.Perfil;
+import br.com.canteiroconectado.domain.usuario.Usuario;
 import br.com.canteiroconectado.service.estoque.MovimentacaoService;
 import br.com.canteiroconectado.support.Dados;
 import br.com.canteiroconectado.support.Requisicoes;

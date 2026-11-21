@@ -23,9 +23,9 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.transaction.annotation.Transactional;
 
-import br.com.canteiroconectado.dominio.canteiro.Canteiro;
-import br.com.canteiroconectado.dominio.item.Item;
-import br.com.canteiroconectado.dominio.usuario.Usuario;
+import br.com.canteiroconectado.domain.canteiro.Canteiro;
+import br.com.canteiroconectado.domain.item.Item;
+import br.com.canteiroconectado.domain.usuario.Usuario;
 import br.com.canteiroconectado.support.Dados;
 import br.com.canteiroconectado.support.Requisicoes;
 import br.com.canteiroconectado.support.Tokens;

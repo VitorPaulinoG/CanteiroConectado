@@ -2,10 +2,10 @@ package br.com.canteiroconectado.service.estoque;
 
 import org.springframework.stereotype.Component;
 
-import br.com.canteiroconectado.dominio.estoque.MotivoMovimentacao;
-import br.com.canteiroconectado.dominio.estoque.RegistrarMovimentacaoCommand;
-import br.com.canteiroconectado.dominio.estoque.TipoMovimentacao;
-import br.com.canteiroconectado.dominio.item.TipoItem;
+import br.com.canteiroconectado.domain.estoque.MotivoMovimentacao;
+import br.com.canteiroconectado.domain.estoque.RegistrarMovimentacaoCommand;
+import br.com.canteiroconectado.domain.estoque.TipoMovimentacao;
+import br.com.canteiroconectado.domain.item.TipoItem;
 import br.com.canteiroconectado.exception.BusinessException;
 import br.com.canteiroconectado.exception.ErrorCode;
 import br.com.canteiroconectado.service.colaborador.ColaboradorService;

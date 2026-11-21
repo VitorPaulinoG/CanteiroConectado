@@ -17,11 +17,11 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
 
-import br.com.canteiroconectado.dominio.canteiro.Canteiro;
-import br.com.canteiroconectado.dominio.estoque.SaldoEstoque;
-import br.com.canteiroconectado.dominio.item.Item;
-import br.com.canteiroconectado.dominio.item.ItemUso;
-import br.com.canteiroconectado.dominio.usuario.Usuario;
+import br.com.canteiroconectado.domain.canteiro.Canteiro;
+import br.com.canteiroconectado.domain.estoque.SaldoEstoque;
+import br.com.canteiroconectado.domain.item.Item;
+import br.com.canteiroconectado.domain.item.ItemUso;
+import br.com.canteiroconectado.domain.usuario.Usuario;
 import br.com.canteiroconectado.support.Dados;
 import br.com.canteiroconectado.support.Tokens;
 

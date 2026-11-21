@@ -18,11 +18,11 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-import br.com.canteiroconectado.dominio.item.Unidade;
-import br.com.canteiroconectado.dominio.requisicao.EscopoRequisicao;
-import br.com.canteiroconectado.dominio.requisicao.RequisicaoQuery;
-import br.com.canteiroconectado.dominio.requisicao.StatusRequisicao;
-import br.com.canteiroconectado.dominio.usuario.Perfil;
+import br.com.canteiroconectado.domain.item.Unidade;
+import br.com.canteiroconectado.domain.requisicao.EscopoRequisicao;
+import br.com.canteiroconectado.domain.requisicao.RequisicaoQuery;
+import br.com.canteiroconectado.domain.requisicao.StatusRequisicao;
+import br.com.canteiroconectado.domain.usuario.Perfil;
 import br.com.canteiroconectado.dto.response.EventoRequisicaoResponse;
 import br.com.canteiroconectado.dto.response.ItemRequisicaoResponse;
 import br.com.canteiroconectado.dto.response.RequisicaoResponse;

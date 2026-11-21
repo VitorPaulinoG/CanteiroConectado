@@ -10,10 +10,10 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import br.com.canteiroconectado.dominio.auditoria.AcaoAuditoria;
-import br.com.canteiroconectado.dominio.estoque.MotivoMovimentacao;
-import br.com.canteiroconectado.dominio.estoque.MovimentacaoEstoque;
-import br.com.canteiroconectado.dominio.estoque.RegistrarMovimentacaoCommand;
+import br.com.canteiroconectado.domain.auditoria.AcaoAuditoria;
+import br.com.canteiroconectado.domain.estoque.MotivoMovimentacao;
+import br.com.canteiroconectado.domain.estoque.MovimentacaoEstoque;
+import br.com.canteiroconectado.domain.estoque.RegistrarMovimentacaoCommand;
 import br.com.canteiroconectado.dto.request.EstornarMovimentacaoRequest;
 import br.com.canteiroconectado.dto.response.MovimentacaoResponse;
 import br.com.canteiroconectado.exception.BusinessException;

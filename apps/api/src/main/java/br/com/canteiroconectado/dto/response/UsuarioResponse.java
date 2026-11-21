@@ -3,8 +3,8 @@ package br.com.canteiroconectado.dto.response;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
-import br.com.canteiroconectado.dominio.usuario.Perfil;
-import br.com.canteiroconectado.dominio.usuario.Usuario;
+import br.com.canteiroconectado.domain.usuario.Perfil;
+import br.com.canteiroconectado.domain.usuario.Usuario;
 
 public record UsuarioResponse(
     UUID id,

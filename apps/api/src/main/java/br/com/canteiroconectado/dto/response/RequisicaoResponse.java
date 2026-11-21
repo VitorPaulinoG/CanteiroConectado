@@ -5,8 +5,8 @@ import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
 
-import br.com.canteiroconectado.dominio.requisicao.StatusRequisicao;
-import br.com.canteiroconectado.dominio.usuario.Perfil;
+import br.com.canteiroconectado.domain.requisicao.StatusRequisicao;
+import br.com.canteiroconectado.domain.usuario.Perfil;
 
 public record RequisicaoResponse(
     UUID id,

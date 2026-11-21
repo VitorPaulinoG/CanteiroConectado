@@ -5,7 +5,7 @@ import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import br.com.canteiroconectado.dominio.requisicao.RequisicaoEvento;
+import br.com.canteiroconectado.domain.requisicao.RequisicaoEvento;
 
 public interface RequisicaoEventoRepository extends JpaRepository<RequisicaoEvento, UUID> {
 

@@ -23,11 +23,11 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 
-import br.com.canteiroconectado.dominio.auditoria.AcaoAuditoria;
-import br.com.canteiroconectado.dominio.auditoria.LogAuditoria;
-import br.com.canteiroconectado.dominio.canteiro.Canteiro;
-import br.com.canteiroconectado.dominio.colaborador.Colaborador;
-import br.com.canteiroconectado.dominio.usuario.Usuario;
+import br.com.canteiroconectado.domain.auditoria.AcaoAuditoria;
+import br.com.canteiroconectado.domain.auditoria.LogAuditoria;
+import br.com.canteiroconectado.domain.canteiro.Canteiro;
+import br.com.canteiroconectado.domain.colaborador.Colaborador;
+import br.com.canteiroconectado.domain.usuario.Usuario;
 import br.com.canteiroconectado.exception.BusinessException;
 import br.com.canteiroconectado.exception.ErrorCode;
 import br.com.canteiroconectado.repository.auditoria.LogAuditoriaRepository;

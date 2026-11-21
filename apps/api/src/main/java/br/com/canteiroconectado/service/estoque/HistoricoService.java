@@ -8,8 +8,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import br.com.canteiroconectado.dominio.estoque.HistoricoQuery;
-import br.com.canteiroconectado.dominio.estoque.TipoMovimentacao;
+import br.com.canteiroconectado.domain.estoque.HistoricoQuery;
+import br.com.canteiroconectado.domain.estoque.TipoMovimentacao;
 import br.com.canteiroconectado.dto.response.MovimentacaoResponse;
 import br.com.canteiroconectado.dto.response.PaginaResponse;
 import br.com.canteiroconectado.exception.BusinessException;

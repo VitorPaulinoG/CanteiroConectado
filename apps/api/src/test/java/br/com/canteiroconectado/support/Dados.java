@@ -6,11 +6,11 @@ import java.util.UUID;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
-import br.com.canteiroconectado.dominio.canteiro.Canteiro;
-import br.com.canteiroconectado.dominio.colaborador.Colaborador;
-import br.com.canteiroconectado.dominio.item.Item;
-import br.com.canteiroconectado.dominio.item.TipoItem;
-import br.com.canteiroconectado.dominio.item.Unidade;
+import br.com.canteiroconectado.domain.canteiro.Canteiro;
+import br.com.canteiroconectado.domain.colaborador.Colaborador;
+import br.com.canteiroconectado.domain.item.Item;
+import br.com.canteiroconectado.domain.item.TipoItem;
+import br.com.canteiroconectado.domain.item.Unidade;
 import br.com.canteiroconectado.repository.canteiro.CanteiroRepository;
 import br.com.canteiroconectado.repository.colaborador.ColaboradorRepository;
 import br.com.canteiroconectado.repository.item.ItemRepository;

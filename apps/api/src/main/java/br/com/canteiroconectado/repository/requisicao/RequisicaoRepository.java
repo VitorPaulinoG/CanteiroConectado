@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 
-import br.com.canteiroconectado.dominio.requisicao.Requisicao;
+import br.com.canteiroconectado.domain.requisicao.Requisicao;
 
 import jakarta.persistence.LockModeType;
 

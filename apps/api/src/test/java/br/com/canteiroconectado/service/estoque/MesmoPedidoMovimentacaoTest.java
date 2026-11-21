@@ -13,10 +13,10 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import br.com.canteiroconectado.dominio.estoque.MotivoMovimentacao;
-import br.com.canteiroconectado.dominio.estoque.MovimentacaoEstoque;
-import br.com.canteiroconectado.dominio.estoque.RegistrarMovimentacaoCommand;
-import br.com.canteiroconectado.dominio.estoque.TipoMovimentacao;
+import br.com.canteiroconectado.domain.estoque.MotivoMovimentacao;
+import br.com.canteiroconectado.domain.estoque.MovimentacaoEstoque;
+import br.com.canteiroconectado.domain.estoque.RegistrarMovimentacaoCommand;
+import br.com.canteiroconectado.domain.estoque.TipoMovimentacao;
 
 @DisplayName("MovimentacaoService.mesmoConteudo")
 class MesmoPedidoMovimentacaoTest {

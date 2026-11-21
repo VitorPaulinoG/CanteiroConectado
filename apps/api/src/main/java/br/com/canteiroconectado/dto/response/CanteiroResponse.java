@@ -2,7 +2,7 @@ package br.com.canteiroconectado.dto.response;
 
 import java.util.UUID;
 
-import br.com.canteiroconectado.dominio.canteiro.Canteiro;
+import br.com.canteiroconectado.domain.canteiro.Canteiro;
 
 public record CanteiroResponse(UUID id, String nome, String endereco, boolean ativo) {
 

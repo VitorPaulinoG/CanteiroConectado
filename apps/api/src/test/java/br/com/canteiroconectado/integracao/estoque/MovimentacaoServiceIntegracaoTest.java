@@ -15,12 +15,12 @@ import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
 
-import br.com.canteiroconectado.dominio.canteiro.Canteiro;
-import br.com.canteiroconectado.dominio.estoque.MotivoMovimentacao;
-import br.com.canteiroconectado.dominio.estoque.RegistrarMovimentacaoCommand;
-import br.com.canteiroconectado.dominio.estoque.TipoMovimentacao;
-import br.com.canteiroconectado.dominio.item.Item;
-import br.com.canteiroconectado.dominio.usuario.Usuario;
+import br.com.canteiroconectado.domain.canteiro.Canteiro;
+import br.com.canteiroconectado.domain.estoque.MotivoMovimentacao;
+import br.com.canteiroconectado.domain.estoque.RegistrarMovimentacaoCommand;
+import br.com.canteiroconectado.domain.estoque.TipoMovimentacao;
+import br.com.canteiroconectado.domain.item.Item;
+import br.com.canteiroconectado.domain.usuario.Usuario;
 import br.com.canteiroconectado.exception.BusinessException;
 import br.com.canteiroconectado.service.estoque.MovimentacaoService;
 import br.com.canteiroconectado.support.Dados;

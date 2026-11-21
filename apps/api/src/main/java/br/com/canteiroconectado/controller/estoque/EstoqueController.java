@@ -9,8 +9,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.com.canteiroconectado.dominio.estoque.StatusEstoque;
-import br.com.canteiroconectado.dominio.item.TipoItem;
+import br.com.canteiroconectado.domain.estoque.StatusEstoque;
+import br.com.canteiroconectado.domain.item.TipoItem;
 import br.com.canteiroconectado.dto.response.DetalharEstoqueResponse;
 import br.com.canteiroconectado.dto.response.ItemEstoqueResponse;
 import br.com.canteiroconectado.dto.response.PaginaResponse;

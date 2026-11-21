@@ -12,7 +12,7 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 
-import br.com.canteiroconectado.dominio.usuario.UsuarioSituacao;
+import br.com.canteiroconectado.domain.usuario.UsuarioSituacao;
 import br.com.canteiroconectado.exception.BusinessException;
 import br.com.canteiroconectado.exception.ErrorCode;
 import br.com.canteiroconectado.repository.usuario.UsuarioRepository;

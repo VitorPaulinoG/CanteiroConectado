@@ -5,9 +5,9 @@ import java.util.UUID;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
-import br.com.canteiroconectado.dominio.canteiro.Canteiro;
-import br.com.canteiroconectado.dominio.usuario.Perfil;
-import br.com.canteiroconectado.dominio.usuario.Usuario;
+import br.com.canteiroconectado.domain.canteiro.Canteiro;
+import br.com.canteiroconectado.domain.usuario.Perfil;
+import br.com.canteiroconectado.domain.usuario.Usuario;
 import br.com.canteiroconectado.repository.canteiro.CanteiroRepository;
 import br.com.canteiroconectado.repository.usuario.UsuarioRepository;
 import br.com.canteiroconectado.security.JwtService;

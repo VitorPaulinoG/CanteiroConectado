@@ -3,9 +3,9 @@ package br.com.canteiroconectado.dto.response;
 import java.math.BigDecimal;
 import java.util.UUID;
 
-import br.com.canteiroconectado.dominio.item.Item;
-import br.com.canteiroconectado.dominio.item.TipoItem;
-import br.com.canteiroconectado.dominio.item.Unidade;
+import br.com.canteiroconectado.domain.item.Item;
+import br.com.canteiroconectado.domain.item.TipoItem;
+import br.com.canteiroconectado.domain.item.Unidade;
 import br.com.canteiroconectado.util.Quantidades;
 
 public record ItemResponse(

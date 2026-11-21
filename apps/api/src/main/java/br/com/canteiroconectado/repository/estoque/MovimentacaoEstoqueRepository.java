@@ -4,7 +4,7 @@ import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import br.com.canteiroconectado.dominio.estoque.MovimentacaoEstoque;
+import br.com.canteiroconectado.domain.estoque.MovimentacaoEstoque;
 
 public interface MovimentacaoEstoqueRepository extends JpaRepository<MovimentacaoEstoque, UUID> {
 

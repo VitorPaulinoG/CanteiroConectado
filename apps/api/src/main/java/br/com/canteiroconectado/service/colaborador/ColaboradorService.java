@@ -9,8 +9,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import br.com.canteiroconectado.dominio.auditoria.AcaoAuditoria;
-import br.com.canteiroconectado.dominio.colaborador.Colaborador;
+import br.com.canteiroconectado.domain.auditoria.AcaoAuditoria;
+import br.com.canteiroconectado.domain.colaborador.Colaborador;
 import br.com.canteiroconectado.dto.request.AtualizarColaboradorRequest;
 import br.com.canteiroconectado.dto.request.CriarColaboradorRequest;
 import br.com.canteiroconectado.dto.response.ColaboradorResponse;

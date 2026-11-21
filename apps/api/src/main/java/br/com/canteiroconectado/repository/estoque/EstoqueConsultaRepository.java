@@ -14,9 +14,9 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-import br.com.canteiroconectado.dominio.estoque.StatusEstoque;
-import br.com.canteiroconectado.dominio.item.TipoItem;
-import br.com.canteiroconectado.dominio.item.Unidade;
+import br.com.canteiroconectado.domain.estoque.StatusEstoque;
+import br.com.canteiroconectado.domain.item.TipoItem;
+import br.com.canteiroconectado.domain.item.Unidade;
 import br.com.canteiroconectado.dto.response.ItemEstoqueResponse;
 import br.com.canteiroconectado.util.Quantidades;
 

@@ -6,7 +6,7 @@ import java.util.UUID;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import br.com.canteiroconectado.dominio.canteiro.Canteiro;
+import br.com.canteiroconectado.domain.canteiro.Canteiro;
 
 public interface CanteiroRepository extends JpaRepository<Canteiro, UUID> {
 

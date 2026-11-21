@@ -12,9 +12,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import br.com.canteiroconectado.dominio.estoque.SaldoEstoque;
-import br.com.canteiroconectado.dominio.estoque.StatusEstoque;
-import br.com.canteiroconectado.dominio.item.TipoItem;
+import br.com.canteiroconectado.domain.estoque.SaldoEstoque;
+import br.com.canteiroconectado.domain.estoque.StatusEstoque;
+import br.com.canteiroconectado.domain.item.TipoItem;
 import br.com.canteiroconectado.dto.response.AlertasEstoqueResponse;
 import br.com.canteiroconectado.dto.response.DetalharEstoqueResponse;
 import br.com.canteiroconectado.dto.response.ItemEstoqueResponse;

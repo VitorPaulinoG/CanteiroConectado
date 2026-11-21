@@ -7,8 +7,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-import br.com.canteiroconectado.dominio.item.Item;
-import br.com.canteiroconectado.dominio.item.TipoItem;
+import br.com.canteiroconectado.domain.item.Item;
+import br.com.canteiroconectado.domain.item.TipoItem;
 
 public interface ItemRepository extends JpaRepository<Item, UUID> {
 
