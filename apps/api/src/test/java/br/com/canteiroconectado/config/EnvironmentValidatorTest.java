@@ -14,6 +14,7 @@ import org.springframework.mock.env.MockEnvironment;
 class EnvironmentValidatorTest {
 
     private static final String SEGREDO_VALIDO = "0123456789abcdef0123456789abcdef";
+    private static final String CHAVE_VALIDA = "MDEyMzQ1Njc4OWFiY2RlZjAxMjM0NTY3ODlhYmNkZWY=";
 
     private final EnvironmentValidator validador = new EnvironmentValidator();
 
@@ -25,7 +26,8 @@ class EnvironmentValidatorTest {
             .withProperty("canteiro.jwt.segredo", SEGREDO_VALIDO)
             .withProperty("canteiro.admin.nome", "Administrador")
             .withProperty("canteiro.admin.email", "admin@canteiro.test")
-            .withProperty("canteiro.admin.senha", "senha-forte-123");
+            .withProperty("canteiro.admin.senha", "senha-forte-123")
+            .withProperty("canteiro.senha-temporaria.chave", CHAVE_VALIDA);
     }
 
     @Nested
@@ -72,13 +74,25 @@ class EnvironmentValidatorTest {
                 .withProperty("canteiro.jwt.segredo", "")
                 .withProperty("canteiro.admin.nome", "")
                 .withProperty("canteiro.admin.email", "")
-                .withProperty("canteiro.admin.senha", "");
+                .withProperty("canteiro.admin.senha", "")
+                .withProperty("canteiro.senha-temporaria.chave", "");
 
             assertThatThrownBy(() -> validador.postProcessEnvironment(ambiente, new SpringApplication()))
                 .isInstanceOf(IllegalStateException.class)
                 .satisfies(erro -> assertThat(erro.getMessage())
                     .contains("BANCO_URL", "BANCO_USUARIO", "BANCO_SENHA", "JWT_SEGREDO",
-                        "ADMIN_NOME", "ADMIN_EMAIL", "ADMIN_SENHA"));
+                        "ADMIN_NOME", "ADMIN_EMAIL", "ADMIN_SENHA", "CHAVE_SENHA_TEMPORARIA"));
+        }
+
+        @Test
+        @DisplayName("deve falhar quando a chave da senha temporária não é Base64 de 32 bytes")
+        void deve_falhar_quando_chaveInvalida() {
+            MockEnvironment ambiente = ambienteCompleto();
+            ambiente.withProperty("canteiro.senha-temporaria.chave", "curta");
+
+            assertThatThrownBy(() -> validador.postProcessEnvironment(ambiente, new SpringApplication()))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessageContaining("CHAVE_SENHA_TEMPORARIA");
         }
 
         @Test

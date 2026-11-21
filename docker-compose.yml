@@ -30,5 +30,24 @@ services:
     mem_limit: 512m
     restart: unless-stopped
 
+  # Seed de desenvolvimento (apps/api/seed/seed.sql). Fica fora do `docker compose up` por estar no
+  # profile "seed"; roda sob demanda com: docker compose --profile seed run --rm seed
+  # Exige que a API já tenha subido ao menos uma vez (migrations do Flyway aplicadas).
+  seed:
+    image: postgres:16
+    profiles: ["seed"]
+    environment:
+      PGHOST: db
+      PGDATABASE: canteiroconectado
+      PGUSER: ${BANCO_USUARIO}
+      PGPASSWORD: ${BANCO_SENHA}
+    volumes:
+      - ./apps/api/seed:/seed:ro
+    command: ["psql", "-v", "ON_ERROR_STOP=1", "-f", "/seed/seed.sql"]
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: "no"
+
 volumes:
   db-dados:

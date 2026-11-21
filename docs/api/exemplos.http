@@ -1,0 +1,191 @@
+# Exemplos da API v1 no formato da extensão REST Client do VS Code (humao.rest-client).
+# Suba a API com os dados de demonstração (SPRING_PROFILES_ACTIVE=local,demo) e troque @senha pela DEMO_SENHA.
+# Rode de cima para baixo: cada bloco usa o token e os ids lidos pelos blocos anteriores.
+
+@api = http://localhost:8080/api/v1
+@senha = troque-pela-DEMO_SENHA
+@senhaAdmin = admin-local-123
+
+### Saúde e versão (público)
+GET {{api}}/ping
+
+### Login da Camila (GESTOR)
+# @name camila
+POST {{api}}/autenticacao/login
+Content-Type: application/json
+
+{"email": "camila@canteiro.demo", "senha": "{{senha}}"}
+
+### Login do Sebastião (ALMOXARIFE)
+# @name sebastiao
+POST {{api}}/autenticacao/login
+Content-Type: application/json
+
+{"email": "sebastiao@canteiro.demo", "senha": "{{senha}}"}
+
+### Login do administrador (ADMIN_EMAIL e ADMIN_SENHA)
+# @name admin
+POST {{api}}/autenticacao/login
+Content-Type: application/json
+
+{"email": "admin@canteiro.local", "senha": "{{senhaAdmin}}"}
+
+### Quem sou eu
+@tokenCamila = {{camila.response.body.$.token}}
+@tokenSebastiao = {{sebastiao.response.body.$.token}}
+@tokenAdmin = {{admin.response.body.$.token}}
+@aurora = {{sebastiao.response.body.$.usuario.canteiroId}}
+
+GET {{api}}/autenticacao/eu
+Authorization: Bearer {{tokenSebastiao}}
+
+### Canteiros que a Camila enxerga
+GET {{api}}/canteiros?ativo=true
+Authorization: Bearer {{tokenCamila}}
+
+### Estoque do Residencial Aurora, só os itens em alerta
+GET {{api}}/canteiros/{{aurora}}/estoque?status=ZERADO&status=ABAIXO_DO_MINIMO
+Authorization: Bearer {{tokenCamila}}
+
+### Busca por "furadeira"
+# @name busca
+GET {{api}}/canteiros/{{aurora}}/estoque?q=furadeira
+Authorization: Bearer {{tokenSebastiao}}
+
+### Detalhe da furadeira com as últimas movimentações
+@furadeira = {{busca.response.body.$.conteudo[0].itemId}}
+
+GET {{api}}/canteiros/{{aurora}}/estoque/{{furadeira}}
+Authorization: Bearer {{tokenSebastiao}}
+
+### Resumo do Início
+GET {{api}}/canteiros/{{aurora}}/estoque/resumo
+Authorization: Bearer {{tokenCamila}}
+
+### Colaboradores do canteiro
+# @name colaboradores
+GET {{api}}/colaboradores?canteiroId={{aurora}}&q=joão
+Authorization: Bearer {{tokenSebastiao}}
+
+### Jornada 1: saída da furadeira para o João (o id nasce no app; reenviar o mesmo corpo devolve 200)
+@joao = {{colaboradores.response.body.$.conteudo[0].id}}
+
+# @name saida
+POST {{api}}/canteiros/{{aurora}}/movimentacoes
+Authorization: Bearer {{tokenSebastiao}}
+Content-Type: application/json
+
+{
+  "id": "{{$guid}}",
+  "tipo": "SAIDA",
+  "motivo": "RETIRADA",
+  "itemId": "{{furadeira}}",
+  "quantidade": 1,
+  "colaboradorId": "{{joao}}",
+  "frenteObra": "Instalações elétricas"
+}
+
+### Estorno da saída lançada errado
+@saidaId = {{saida.response.body.$.id}}
+
+POST {{api}}/movimentacoes/{{saidaId}}/estorno
+Authorization: Bearer {{tokenSebastiao}}
+Content-Type: application/json
+
+{"id": "{{$guid}}", "motivo": "Lançada no item errado"}
+
+### Entrada por recebimento
+POST {{api}}/canteiros/{{aurora}}/movimentacoes
+Authorization: Bearer {{tokenSebastiao}}
+Content-Type: application/json
+
+{
+  "id": "{{$guid}}",
+  "tipo": "ENTRADA",
+  "motivo": "RECEBIMENTO",
+  "itemId": "{{furadeira}}",
+  "quantidade": 1,
+  "observacao": "NF 4410"
+}
+
+### Histórico do canteiro (GESTOR)
+GET {{api}}/movimentacoes?canteiroId={{aurora}}&tipo=SAIDA&pagina=0&tamanho=20
+Authorization: Bearer {{tokenCamila}}
+
+### Jornada 2: a Camila pede cimento
+# @name cimento
+GET {{api}}/canteiros/{{aurora}}/estoque?q=cimento
+Authorization: Bearer {{tokenCamila}}
+
+###
+# @name requisicao
+POST {{api}}/requisicoes
+Authorization: Bearer {{tokenCamila}}
+Content-Type: application/json
+
+{
+  "id": "{{$guid}}",
+  "canteiroId": "{{aurora}}",
+  "necessarioAte": "2099-12-31",
+  "frenteObra": "Laje do 3º andar",
+  "itens": [{"itemId": "{{cimento.response.body.$.conteudo[0].itemId}}", "quantidade": 40}]
+}
+
+### Requisições que o Sebastião tem para decidir
+@requisicaoId = {{requisicao.response.body.$.id}}
+
+GET {{api}}/requisicoes?canteiroId={{aurora}}&escopo=para-decidir
+Authorization: Bearer {{tokenSebastiao}}
+
+### O Sebastião aprova com previsão de chegada
+POST {{api}}/requisicoes/{{requisicaoId}}/aprovar
+Authorization: Bearer {{tokenSebastiao}}
+Content-Type: application/json
+
+{"previsaoChegada": "2099-12-30", "observacao": "Pedido feito ao fornecedor"}
+
+### O material chegou
+POST {{api}}/requisicoes/{{requisicaoId}}/atender
+Authorization: Bearer {{tokenSebastiao}}
+
+### Detalhe com o histórico da requisição
+GET {{api}}/requisicoes/{{requisicaoId}}
+Authorization: Bearer {{tokenCamila}}
+
+### Trilha de auditoria (GESTOR)
+GET {{api}}/auditoria?acao=MOVIMENTACAO_ESTORNADA
+Authorization: Bearer {{tokenCamila}}
+
+### Cadastro de item
+POST {{api}}/itens
+Authorization: Bearer {{tokenSebastiao}}
+Content-Type: application/json
+
+{"codigo": "MAT-{{$randomInt 1000 9999}}", "descricao": "Rejunte cinza 5kg", "unidade": "SACO", "tipo": "MATERIAL", "quantidadeMinima": 10}
+
+### Administrador: novo funcionário
+# @name funcionario
+POST {{api}}/usuarios
+Authorization: Bearer {{tokenAdmin}}
+Content-Type: application/json
+
+{"nome": "Rita Alves", "email": "rita.{{$randomInt 1000 9999}}@canteiro.demo", "perfil": "ALMOXARIFE", "canteiroId": "{{aurora}}"}
+
+### Administrador: senha temporária para entregar ao funcionário
+GET {{api}}/usuarios/{{funcionario.response.body.$.id}}/credencial-inicial
+Authorization: Bearer {{tokenAdmin}}
+
+### Erro de regra: saída acima do saldo (422 SALDO_INSUFICIENTE, com saldoAtual)
+POST {{api}}/canteiros/{{aurora}}/movimentacoes
+Authorization: Bearer {{tokenSebastiao}}
+Content-Type: application/json
+
+{
+  "id": "{{$guid}}",
+  "tipo": "SAIDA",
+  "motivo": "RETIRADA",
+  "itemId": "{{furadeira}}",
+  "quantidade": 99,
+  "colaboradorId": "{{joao}}",
+  "frenteObra": "Instalações elétricas"
+}

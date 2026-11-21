@@ -1,0 +1,217 @@
+import { QueryClientProvider } from '@tanstack/react-query';
+import * as SecureStore from 'expo-secure-store';
+import { router } from 'expo-router';
+import { act, renderRouter, screen } from 'expo-router/testing-library';
+import { PaperProvider } from 'react-native-paper';
+import { Text } from 'react-native';
+
+import { buscarCanteiro, listarCanteiros } from '@/shared/canteiro/api';
+import { SessaoContext, type EstadoSessao, type ValorSessao } from '@/shared/sessao';
+import { criarQueryClientDeTeste } from '@/test-utils/render';
+import { aurora } from '@/test-utils/sessao';
+import { appTheme } from '@/theme';
+
+import { Navegacao } from '../../app/_layout';
+import Abertura from '../../app/index';
+import AbasLayout from '../../app/(autenticado)/(abas)/_layout';
+import EstoqueRota from '../../app/(autenticado)/(abas)/estoque';
+import AreaAutenticadaLayout from '../../app/(autenticado)/_layout';
+
+jest.mock('@expo/vector-icons/MaterialCommunityIcons', () => 'MaterialCommunityIcons');
+jest.mock('@/features/estoque', () => {
+  const { Text: Texto } = jest.requireActual('react-native');
+  const { useState } = jest.requireActual('react');
+  const { useLocalSearchParams } = jest.requireActual('expo-router');
+  return {
+    EstoqueTela: function EstoqueFalso() {
+      const parametros = useLocalSearchParams();
+      const [filtroInicial] = useState(String(parametros.filtro ?? 'todos'));
+      return <Texto>{`estoque filtro ${filtroInicial}`}</Texto>;
+    },
+  };
+});
+jest.mock('@/shared/canteiro/api', () => ({
+  ...jest.requireActual('@/shared/canteiro/api'),
+  buscarCanteiro: jest.fn(),
+  listarCanteiros: jest.fn(),
+}));
+
+beforeEach(async () => {
+  (SecureStore as unknown as { __limpar: () => void }).__limpar();
+  jest.mocked(buscarCanteiro).mockResolvedValue(aurora);
+  jest.mocked(listarCanteiros).mockResolvedValue([aurora]);
+  await SecureStore.setItemAsync('canteiro.ativo.1', aurora.id);
+});
+
+const usuario = {
+  id: '1',
+  nome: 'Sebastião',
+  email: 's@obra.com',
+  perfil: 'ALMOXARIFE' as const,
+  administrador: false,
+  canteiroId: 'c1',
+  precisaTrocarSenha: false,
+};
+
+function rotas(estado: EstadoSessao) {
+  const queryClient = criarQueryClientDeTeste();
+  const valor: ValorSessao = {
+    estado,
+    entrar: jest.fn(),
+    sair: jest.fn(),
+    atualizarUsuario: jest.fn(),
+    adiarTroca: jest.fn(),
+  };
+  return {
+    _layout: () => (
+      <QueryClientProvider client={queryClient}>
+        <PaperProvider theme={appTheme}>
+          <SessaoContext.Provider value={valor}>
+            <Navegacao />
+          </SessaoContext.Provider>
+        </PaperProvider>
+      </QueryClientProvider>
+    ),
+    index: Abertura,
+    '(autenticacao)/login': () => <Text>tela de login</Text>,
+    '(autenticacao)/trocar-senha': () => <Text>tela de troca de senha</Text>,
+    '(autenticado)/_layout': AreaAutenticadaLayout,
+    '(autenticado)/(abas)/_layout': AbasLayout,
+    '(autenticado)/(abas)/inicio': () => <Text>tela de início</Text>,
+    '(autenticado)/(abas)/estoque': EstoqueRota,
+    '(autenticado)/(abas)/movimentar': () => <Text>tela de movimentar</Text>,
+    '(autenticado)/(abas)/requisicoes': () => <Text>tela de requisições</Text>,
+    '(autenticado)/(abas)/historico': () => <Text>tela de histórico</Text>,
+    '(autenticado)/(abas)/mais': () => <Text>tela mais</Text>,
+    '(autenticado)/canteiro': () => <Text>escolher canteiro</Text>,
+    sobre: () => <Text>sobre</Text>,
+  };
+}
+
+describe('Navegação por sessão (S01)', () => {
+  it('leva o usuário anônimo ao login', async () => {
+    await renderRouter(rotas({ status: 'anonimo' }));
+    expect(await screen.findByText('tela de login')).toBeTruthy();
+  });
+
+  it('leva o usuário autenticado ao início', async () => {
+    await renderRouter(rotas({ status: 'autenticado', usuario, trocaAdiada: false }));
+    expect(await screen.findByText('tela de início')).toBeTruthy();
+  });
+
+  it('não deixa o anônimo abrir a área autenticada', async () => {
+    await renderRouter(rotas({ status: 'anonimo' }), { initialUrl: '/inicio' });
+    expect(await screen.findByText('tela de login')).toBeTruthy();
+    expect(screen.queryByText('tela de início')).toBeNull();
+  });
+
+  it('leva à troca de senha quando ela é obrigatória', async () => {
+    await renderRouter(
+      rotas({
+        status: 'autenticado',
+        usuario: { ...usuario, precisaTrocarSenha: true },
+        trocaAdiada: false,
+      }),
+    );
+    expect(await screen.findByText('tela de troca de senha')).toBeTruthy();
+  });
+
+  it('não deixa abrir a área autenticada com a troca pendente', async () => {
+    await renderRouter(
+      rotas({
+        status: 'autenticado',
+        usuario: { ...usuario, precisaTrocarSenha: true },
+        trocaAdiada: false,
+      }),
+      { initialUrl: '/inicio' },
+    );
+    expect(await screen.findByText('tela de troca de senha')).toBeTruthy();
+    expect(screen.queryByText('tela de início')).toBeNull();
+  });
+
+  it('leva ao início quando o administrador adiou a troca', async () => {
+    await renderRouter(
+      rotas({
+        status: 'autenticado',
+        usuario: { ...usuario, precisaTrocarSenha: true },
+        trocaAdiada: true,
+      }),
+    );
+    expect(await screen.findByText('tela de início')).toBeTruthy();
+  });
+
+  it('mostra Movimentar e esconde Histórico para o ALMOXARIFE', async () => {
+    await renderRouter(rotas({ status: 'autenticado', usuario, trocaAdiada: false }));
+    await screen.findByText('tela de início');
+    for (const aba of ['Início', 'Estoque', 'Movimentar', 'Requisições', 'Mais']) {
+      expect(screen.getByLabelText(aba)).toBeTruthy();
+    }
+    expect(screen.queryByLabelText('Histórico')).toBeNull();
+  });
+
+  it('mostra Histórico e esconde Movimentar para o GESTOR', async () => {
+    await renderRouter(
+      rotas({
+        status: 'autenticado',
+        usuario: { ...usuario, perfil: 'GESTOR', canteiroId: null },
+        trocaAdiada: false,
+      }),
+    );
+    await screen.findByText('tela de início');
+    for (const aba of ['Início', 'Estoque', 'Requisições', 'Histórico', 'Mais']) {
+      expect(screen.getByLabelText(aba)).toBeTruthy();
+    }
+    expect(screen.queryByLabelText('Movimentar')).toBeNull();
+  });
+
+  it('não deixa o GESTOR abrir Movimentar pelo endereço', async () => {
+    await renderRouter(
+      rotas({
+        status: 'autenticado',
+        usuario: { ...usuario, perfil: 'GESTOR', canteiroId: null },
+        trocaAdiada: false,
+      }),
+      { initialUrl: '/movimentar' },
+    );
+    expect(await screen.findByText('tela de início')).toBeTruthy();
+    expect(screen.queryByText('tela de movimentar')).toBeNull();
+  });
+
+  it('leva o GESTOR sem canteiro escolhido para S05', async () => {
+    (SecureStore as unknown as { __limpar: () => void }).__limpar();
+    await renderRouter(
+      rotas({
+        status: 'autenticado',
+        usuario: { ...usuario, perfil: 'GESTOR', canteiroId: null },
+        trocaAdiada: false,
+      }),
+    );
+    expect(await screen.findByText('escolher canteiro')).toBeTruthy();
+    expect(screen.queryByText('tela de início')).toBeNull();
+  });
+
+  it('volta para S05 quando o canteiro escolhido foi desativado', async () => {
+    jest.mocked(listarCanteiros).mockResolvedValue([]);
+    await renderRouter(
+      rotas({
+        status: 'autenticado',
+        usuario: { ...usuario, perfil: 'GESTOR', canteiroId: null },
+        trocaAdiada: false,
+      }),
+    );
+    expect(await screen.findByText('escolher canteiro')).toBeTruthy();
+  });
+
+  it('reabre o Estoque com o filtro novo mesmo quando a aba já estava aberta', async () => {
+    const resultado = await renderRouter(
+      rotas({ status: 'autenticado', usuario, trocaAdiada: false }),
+      { initialUrl: '/estoque' },
+    );
+    expect(await screen.findByText('estoque filtro todos')).toBeTruthy();
+
+    await act(() => router.navigate('/estoque?filtro=alerta'));
+
+    expect(await screen.findByText('estoque filtro alerta')).toBeTruthy();
+    expect(resultado.getPathname()).toBe('/estoque');
+  });
+});

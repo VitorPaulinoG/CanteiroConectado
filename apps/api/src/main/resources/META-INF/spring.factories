@@ -1,1 +1,2 @@
-org.springframework.boot.EnvironmentPostProcessor=br.com.canteiroconectado.config.EnvironmentValidator
+org.springframework.boot.EnvironmentPostProcessor=br.com.canteiroconectado.config.ChaveLocalEnvironmentPostProcessor,\
+br.com.canteiroconectado.config.EnvironmentValidator
