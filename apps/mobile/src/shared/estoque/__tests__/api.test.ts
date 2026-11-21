@@ -11,10 +11,10 @@ describe('listarEstoque', () => {
       return { data: { conteudo: [], pagina: 0, tamanho: 20, totalElementos: 0, totalPaginas: 0 } };
     });
 
-    await listarEstoque('c1', { status: ['ZERADO', 'ABAIXO_DO_MINIMO'] }, 2);
+    await listarEstoque('c1', { status: ['ZERADO', 'ABAIXO_MINIMO'] }, 2);
 
     expect(url).toContain('/api/v1/canteiros/c1/estoque?');
-    expect(url).toContain('status=ZERADO&status=ABAIXO_DO_MINIMO');
+    expect(url).toContain('status=ZERADO&status=ABAIXO_MINIMO');
     expect(url).toContain('pagina=2');
     espiao.mockRestore();
   });
@@ -23,7 +23,7 @@ describe('listarEstoque', () => {
 describe('seloDoStatus', () => {
   it('traduz o status da API para o selo', () => {
     expect(seloDoStatus('ZERADO')).toBe('empty');
-    expect(seloDoStatus('ABAIXO_DO_MINIMO')).toBe('belowMinimum');
+    expect(seloDoStatus('ABAIXO_MINIMO')).toBe('belowMinimum');
     expect(seloDoStatus('NORMAL')).toBe('normal');
   });
 });

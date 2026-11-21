@@ -34,7 +34,7 @@ public class EstoqueController {
     public PaginaResponse<ItemEstoqueResponse> listar(
             @PathVariable UUID canteiroId,
             @RequestParam(required = false) String q,
-            @Parameter(description = "Repita para combinar, ex.: status=ZERADO&status=ABAIXO_DO_MINIMO")
+            @Parameter(description = "Repita para combinar, ex.: status=ZERADO&status=ABAIXO_MINIMO")
             @RequestParam(required = false) List<StatusEstoque> status,
             @RequestParam(required = false) TipoItem tipo,
             @RequestParam(required = false) Integer pagina,

@@ -94,7 +94,7 @@ public class AuditoriaConsultaRepository {
             sql.append(" AND l.acao = :acao");
         }
         if (filtro.inicio() != null) {
-            sql.append(" AND l.criado_em >= :de");
+            sql.append(" AND l.criado_em >= :inicio");
         }
         if (filtro.ate() != null) {
             sql.append(" AND l.criado_em < :ate");
@@ -106,7 +106,7 @@ public class AuditoriaConsultaRepository {
         return new MapSqlParameterSource()
             .addValue("usuarioId", filtro.usuarioId())
             .addValue("acao", filtro.acao() == null ? null : filtro.acao().name())
-            .addValue("de", filtro.inicio() == null ? null : OffsetDateTime.ofInstant(filtro.inicio(), ZoneOffset.UTC))
+            .addValue("inicio", filtro.inicio() == null ? null : OffsetDateTime.ofInstant(filtro.inicio(), ZoneOffset.UTC))
             .addValue("ate", filtro.ate() == null ? null : OffsetDateTime.ofInstant(filtro.ate(), ZoneOffset.UTC));
     }
 }

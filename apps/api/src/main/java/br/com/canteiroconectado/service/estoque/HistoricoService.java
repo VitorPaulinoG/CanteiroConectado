@@ -36,7 +36,7 @@ public class HistoricoService {
             UUID itemId, UUID colaboradorId, Integer pagina, Integer tamanho) {
         if (inicio != null && ate != null && !inicio.isBefore(ate)) {
             throw new BusinessException(ErrorCode.VALIDACAO_INVALIDA, "O começo do período deve ser antes do fim.")
-                .com("campo", "de");
+                .com("campo", "inicio");
         }
         HistoricoQuery filtro = new HistoricoQuery(acesso.resolver(canteiroId), inicio, ate, tipo, itemId,
             colaboradorId);

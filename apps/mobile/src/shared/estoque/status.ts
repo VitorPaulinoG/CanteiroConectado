@@ -4,7 +4,7 @@ import type { StatusEstoque } from './api';
 
 const PARA_SELO: Record<StatusEstoque, StockStatus> = {
   ZERADO: 'empty',
-  ABAIXO_DO_MINIMO: 'belowMinimum',
+  ABAIXO_MINIMO: 'belowMinimum',
   NORMAL: 'normal',
 };
 

@@ -187,13 +187,13 @@ class VolumeDadosTest {
         telas.put("S06 estoque, 1ª página", get("/api/v1/canteiros/" + c + "/estoque"));
         telas.put("S06 estoque, busca \"cimento\"", get("/api/v1/canteiros/" + c + "/estoque").param("q", "cimento"));
         telas.put("S06 estoque, só alertas", get("/api/v1/canteiros/" + c + "/estoque")
-            .param("status", "ZERADO", "ABAIXO_DO_MINIMO"));
+            .param("status", "ZERADO", "ABAIXO_MINIMO"));
         telas.put("S06 estoque, página 50", get("/api/v1/canteiros/" + c + "/estoque").param("pagina", "50"));
         telas.put("S07 detalhe do item", get("/api/v1/canteiros/" + c + "/estoque/" + item));
         telas.put("S04 resumo do Início", get("/api/v1/canteiros/" + c + "/estoque/resumo"));
         telas.put("S16 histórico, 1ª página", get("/api/v1/movimentacoes").param("canteiroId", c));
         telas.put("S16 histórico, últimos 7 dias", get("/api/v1/movimentacoes").param("canteiroId", c)
-            .param("de", semanaPassada).param("ate", hoje));
+            .param("inicio", semanaPassada).param("ate", hoje));
         telas.put("S16 histórico de um item", get("/api/v1/movimentacoes").param("canteiroId", c)
             .param("itemId", item.toString()));
         telas.put("S16 histórico de um colaborador", get("/api/v1/movimentacoes").param("canteiroId", c)

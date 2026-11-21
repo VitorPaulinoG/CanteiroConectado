@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 
 public enum StatusEstoque {
     ZERADO,
-    ABAIXO_DO_MINIMO,
+    ABAIXO_MINIMO,
     NORMAL;
 
     public static StatusEstoque of(BigDecimal saldo, BigDecimal minimo) {
@@ -12,7 +12,7 @@ public enum StatusEstoque {
             return ZERADO;
         }
         if (saldo.signum() > 0 && saldo.compareTo(minimo) < 0) {
-            return ABAIXO_DO_MINIMO;
+            return ABAIXO_MINIMO;
         }
         return NORMAL;
     }

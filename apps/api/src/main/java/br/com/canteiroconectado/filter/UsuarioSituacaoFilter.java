@@ -57,7 +57,7 @@ public class UsuarioSituacaoFilter extends OncePerRequestFilter {
         if (situacao.get().precisaTrocarSenha() && !situacao.get().administrador()
                 && !LIBERADAS_NA_TROCA.contains(requisicao.getMethod() + " " + requisicao.getRequestURI())) {
             resolvedor.resolveException(requisicao, resposta, null,
-                new BusinessException(ErrorCode.TROCA_DE_SENHA_OBRIGATORIA,
+                new BusinessException(ErrorCode.TROCA_SENHA_OBRIGATORIA,
                     "Troque a senha temporária para continuar."));
             return;
         }

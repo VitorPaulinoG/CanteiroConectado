@@ -13,8 +13,8 @@ demonstração (#173) e percorre a jornada pela API, na mesma ordem do app:
 | 1 | S02 | `POST /autenticacao/login` com `camila@canteiro.demo` | Token de GESTOR |
 | 2 | S05 | `GET /canteiros` | Residencial Aurora na lista |
 | 3 | S04 | `GET /canteiros/{aurora}/estoque/resumo` | 2 itens abaixo do mínimo e os três mais críticos |
-| 4 | S06 | `GET /canteiros/{aurora}/estoque?status=ZERADO&status=ABAIXO_DO_MINIMO` | "Cimento CP-II 50kg" na lista filtrada |
-| 5 | S07 | `GET /canteiros/{aurora}/estoque/{cimento}` | Saldo 30 saco, mínimo 50, status ABAIXO_DO_MINIMO |
+| 4 | S06 | `GET /canteiros/{aurora}/estoque?status=ZERADO&status=ABAIXO_MINIMO` | "Cimento CP-II 50kg" na lista filtrada |
+| 5 | S07 | `GET /canteiros/{aurora}/estoque/{cimento}` | Saldo 30 saco, mínimo 50, status ABAIXO_MINIMO |
 | 6 | S13 | `POST /requisicoes` com 40 sacos | Requisição PENDENTE em Minhas |
 | 7 | S04 (Sebastião) | `GET /canteiros/{aurora}/estoque/resumo` | 1 requisição para decidir |
 | 8 | S15 (Sebastião) | `POST /requisicoes/{id}/aprovar` com previsão | APROVADA |

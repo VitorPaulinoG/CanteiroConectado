@@ -44,7 +44,7 @@ GET {{api}}/canteiros?ativo=true
 Authorization: Bearer {{tokenCamila}}
 
 ### Estoque do Residencial Aurora, só os itens em alerta
-GET {{api}}/canteiros/{{aurora}}/estoque?status=ZERADO&status=ABAIXO_DO_MINIMO
+GET {{api}}/canteiros/{{aurora}}/estoque?status=ZERADO&status=ABAIXO_MINIMO
 Authorization: Bearer {{tokenCamila}}
 
 ### Busca por "furadeira"

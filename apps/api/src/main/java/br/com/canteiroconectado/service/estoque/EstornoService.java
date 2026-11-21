@@ -62,7 +62,7 @@ public class EstornoService {
         UUID id = IdCliente.ler(pedido.id());
         String motivo = MovimentacaoRegistroService.texto(pedido.motivo());
         if (motivo == null) {
-            throw new BusinessException(ErrorCode.MOTIVO_DO_ESTORNO_OBRIGATORIO,
+            throw new BusinessException(ErrorCode.MOTIVO_ESTORNO_OBRIGATORIO,
                 "Conte por que o lançamento está errado.").com("campo", "motivo");
         }
         MovimentacaoEstoque original = movimentacoes.findById(originalId)

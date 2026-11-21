@@ -114,7 +114,7 @@ class HistoricoTest {
             gravar(aurora, cimento, "SAIDA", "RETIRADA", joao, "2026-11-01T12:00:00Z");
 
             mockMvc.perform(historico().param("itemId", furadeira.getId().toString())
-                    .param("de", "2026-11-01T03:00:00Z").param("ate", "2026-11-02T03:00:00Z"))
+                    .param("inicio", "2026-11-01T03:00:00Z").param("ate", "2026-11-02T03:00:00Z"))
                 .andExpect(jsonPath("$.conteudo[*].id", contains(durante.toString(), noComeco.toString())));
         }
 
@@ -158,9 +158,9 @@ class HistoricoTest {
                 .andExpect(jsonPath("$.totalElementos").value(5))
                 .andExpect(jsonPath("$.totalPaginas").value(3))
                 .andExpect(jsonPath("$.conteudo[0].criadoEm").value("2026-11-01T12:00:00Z"));
-            mockMvc.perform(historico().param("de", "2026-11-02T00:00:00Z").param("ate", "2026-11-01T00:00:00Z"))
+            mockMvc.perform(historico().param("inicio", "2026-11-02T00:00:00Z").param("ate", "2026-11-01T00:00:00Z"))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.campo").value("de"));
+                .andExpect(jsonPath("$.campo").value("inicio"));
         }
     }
 

@@ -75,16 +75,16 @@ class Jornada2Test {
                 .andExpect(jsonPath("$[*].nome", hasItem(DemoDataLoader.CANTEIRO_PRINCIPAL)));
 
             mockMvc.perform(get("/api/v1/canteiros/" + aurora + "/estoque/resumo").header("Authorization", camila))
-                .andExpect(jsonPath("$.abaixoDoMinimo").value(2))
+                .andExpect(jsonPath("$.abaixoMinimo").value(2))
                 .andExpect(jsonPath("$.maisCriticos[*].descricao", hasItem("Argamassa AC-III 20kg")));
 
             mockMvc.perform(get("/api/v1/canteiros/" + aurora + "/estoque")
-                    .param("status", "ZERADO", "ABAIXO_DO_MINIMO")
+                    .param("status", "ZERADO", "ABAIXO_MINIMO")
                     .header("Authorization", camila))
                 .andExpect(jsonPath("$.conteudo[*].descricao", hasItem("Cimento CP-II 50kg")));
 
             mockMvc.perform(get("/api/v1/canteiros/" + aurora + "/estoque/" + cimento).header("Authorization", camila))
-                .andExpect(jsonPath("$.status").value("ABAIXO_DO_MINIMO"))
+                .andExpect(jsonPath("$.status").value("ABAIXO_MINIMO"))
                 .andExpect(jsonPath("$.saldo").value(30))
                 .andExpect(jsonPath("$.quantidadeMinima").value(50))
                 .andExpect(jsonPath("$.unidadeSimbolo").value("saco"));

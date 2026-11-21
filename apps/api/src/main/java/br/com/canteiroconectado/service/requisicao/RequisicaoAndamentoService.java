@@ -76,7 +76,7 @@ public class RequisicaoAndamentoService {
         UsuarioLogado usuario = UsuarioLogado.atual();
         String motivo = RequisicaoService.texto(pedido == null ? null : pedido.motivo());
         if (motivo == null || motivo.length() < TAMANHO_MINIMO_DO_MOTIVO) {
-            throw new BusinessException(ErrorCode.MOTIVO_DA_RECUSA_OBRIGATORIO,
+            throw new BusinessException(ErrorCode.MOTIVO_RECUSA_OBRIGATORIO,
                 "Conte o motivo da recusa (pelo menos " + TAMANHO_MINIMO_DO_MOTIVO + " caracteres).")
                 .com("campo", "motivo");
         }

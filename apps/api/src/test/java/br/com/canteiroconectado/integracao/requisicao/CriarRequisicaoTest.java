@@ -178,7 +178,7 @@ class CriarRequisicaoTest {
             }
             criar(camila, corpo(UUID.randomUUID().toString(), aurora.getId(), amanha,
                     vinteEUm.stream().collect(Collectors.joining(",")), ""))
-                .andExpect(jsonPath("$.codigo").value("LIMITE_DE_ITENS"));
+                .andExpect(jsonPath("$.codigo").value("LIMITE_ITENS"));
         }
 
         @Test

@@ -39,7 +39,7 @@ public class EstoqueConsultaRepository {
             SELECT e.*,
                    CASE
                        WHEN e.quantidade_minima > 0 AND e.saldo = 0 THEN 'ZERADO'
-                       WHEN e.saldo > 0 AND e.saldo < e.quantidade_minima THEN 'ABAIXO_DO_MINIMO'
+                       WHEN e.saldo > 0 AND e.saldo < e.quantidade_minima THEN 'ABAIXO_MINIMO'
                        ELSE 'NORMAL'
                    END AS status
             FROM estoque e
@@ -47,7 +47,7 @@ public class EstoqueConsultaRepository {
         """;
 
     private static final String ORDEM_DO_STATUS =
-        "CASE status WHEN 'ZERADO' THEN 0 WHEN 'ABAIXO_DO_MINIMO' THEN 1 ELSE 2 END";
+        "CASE status WHEN 'ZERADO' THEN 0 WHEN 'ABAIXO_MINIMO' THEN 1 ELSE 2 END";
 
     private final NamedParameterJdbcTemplate jdbc;
 
@@ -90,7 +90,7 @@ public class EstoqueConsultaRepository {
     public List<ItemEstoqueResponse> maisCriticos(UUID canteiroId, int limite) {
         return jdbc.query(ESTOQUE_CLASSIFICADO + """
             SELECT * FROM classificado
-            WHERE status IN ('ZERADO', 'ABAIXO_DO_MINIMO')
+            WHERE status IN ('ZERADO', 'ABAIXO_MINIMO')
             ORDER BY %s, saldo / quantidade_minima, lower(descricao)
             LIMIT :limite
             """.formatted(ORDEM_DO_STATUS),

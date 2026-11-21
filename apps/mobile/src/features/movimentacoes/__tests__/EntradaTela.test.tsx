@@ -36,7 +36,7 @@ const cimento = {
   tipo: 'MATERIAL' as const,
   quantidadeMinima: 50,
   saldo: 30,
-  status: 'ABAIXO_DO_MINIMO' as const,
+  status: 'ABAIXO_MINIMO' as const,
 };
 
 function montar() {

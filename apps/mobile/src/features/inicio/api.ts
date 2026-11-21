@@ -6,7 +6,7 @@ export type StatusDaMinhaRequisicao =
 
 export type Resumo = {
   zerados: number;
-  abaixoDoMinimo: number;
+  abaixoMinimo: number;
   maisCriticos: ItemEstoque[];
   requisicoesParaDecidir: number;
   minhasRequisicoes: Record<StatusDaMinhaRequisicao, number>;

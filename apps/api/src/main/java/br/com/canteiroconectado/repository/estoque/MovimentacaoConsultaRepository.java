@@ -76,7 +76,7 @@ public class MovimentacaoConsultaRepository {
     private static String condicoes(HistoricoQuery filtro) {
         StringBuilder sql = new StringBuilder(" WHERE m.canteiro_id = :canteiroId");
         if (filtro.inicio() != null) {
-            sql.append(" AND m.criado_em >= :de");
+            sql.append(" AND m.criado_em >= :inicio");
         }
         if (filtro.ate() != null) {
             sql.append(" AND m.criado_em < :ate");
@@ -96,7 +96,7 @@ public class MovimentacaoConsultaRepository {
     private static MapSqlParameterSource parametros(HistoricoQuery filtro) {
         return new MapSqlParameterSource()
             .addValue("canteiroId", filtro.canteiroId())
-            .addValue("de", filtro.inicio() == null ? null : OffsetDateTime.ofInstant(filtro.inicio(), ZoneOffset.UTC))
+            .addValue("inicio", filtro.inicio() == null ? null : OffsetDateTime.ofInstant(filtro.inicio(), ZoneOffset.UTC))
             .addValue("ate", filtro.ate() == null ? null : OffsetDateTime.ofInstant(filtro.ate(), ZoneOffset.UTC))
             .addValue("tipo", filtro.tipo() == null ? null : filtro.tipo().name())
             .addValue("itemId", filtro.itemId())

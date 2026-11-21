@@ -77,7 +77,7 @@ describe('AuditoriaTela (S18)', () => {
 
     await waitFor(() =>
       expect(listarAuditoria).toHaveBeenLastCalledWith(
-        { acao: 'LOGIN_FALHOU', de: expect.stringMatching(/Z$/) },
+        { acao: 'LOGIN_FALHOU', inicio: expect.stringMatching(/Z$/) },
         0,
       ),
     );
@@ -103,8 +103,8 @@ describe('filtroDaAuditoria', () => {
     expect(filtroDaAuditoria(null, 'tudo', agora)).toEqual({ acao: undefined });
     expect(filtroDaAuditoria('LOGIN_FALHOU', 'hoje', agora)).toEqual({
       acao: 'LOGIN_FALHOU',
-      de: new Date(2026, 10, 5).toISOString(),
+      inicio: new Date(2026, 10, 5).toISOString(),
     });
-    expect(filtroDaAuditoria(null, '7dias', agora).de).toBe(new Date(2026, 9, 30).toISOString());
+    expect(filtroDaAuditoria(null, '7dias', agora).inicio).toBe(new Date(2026, 9, 30).toISOString());
   });
 });

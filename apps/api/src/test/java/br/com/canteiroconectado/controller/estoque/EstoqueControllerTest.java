@@ -89,7 +89,7 @@ class EstoqueControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.totalElementos").value(5))
                 .andExpect(jsonPath("$.conteudo[*].status",
-                    contains("ZERADO", "ZERADO", "ABAIXO_DO_MINIMO", "NORMAL", "NORMAL")))
+                    contains("ZERADO", "ZERADO", "ABAIXO_MINIMO", "NORMAL", "NORMAL")))
                 .andExpect(jsonPath("$.conteudo[*].descricao", contains("Bloco " + marca, "Brita " + marca,
                     "Cimento CP-II " + marca, "Areia " + marca, "Furadeira " + marca)))
                 .andExpect(jsonPath("$.conteudo[3].saldo").value(0))
@@ -106,7 +106,7 @@ class EstoqueControllerTest {
             item("Furadeira", TipoItem.FERRAMENTA, "1", "0");
             item("Areia", TipoItem.MATERIAL, "0", "5");
 
-            mockMvc.perform(estoque(aurora.getId()).param("status", "ZERADO", "ABAIXO_DO_MINIMO")
+            mockMvc.perform(estoque(aurora.getId()).param("status", "ZERADO", "ABAIXO_MINIMO")
                     .header("Authorization", tokens.bearer(almoxarife)))
                 .andExpect(jsonPath("$.conteudo[*].descricao",
                     contains("Brita " + marca, "Furadeira " + marca, "Cimento CP-II " + marca)));

@@ -143,7 +143,7 @@ public class RequisicaoService {
                 .com("campo", "itens");
         }
         if (lista.size() > MAXIMO_DE_ITENS) {
-            throw new BusinessException(ErrorCode.LIMITE_DE_ITENS,
+            throw new BusinessException(ErrorCode.LIMITE_ITENS,
                 "Uma requisição aceita no máximo " + MAXIMO_DE_ITENS + " itens.").com("campo", "itens");
         }
         Set<UUID> vistos = new HashSet<>();

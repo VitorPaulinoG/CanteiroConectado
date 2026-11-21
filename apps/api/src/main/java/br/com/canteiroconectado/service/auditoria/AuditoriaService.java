@@ -44,7 +44,7 @@ public class AuditoriaService {
             Instant ate, Integer pagina, Integer tamanho) {
         if (inicio != null && ate != null && !inicio.isBefore(ate)) {
             throw new BusinessException(ErrorCode.VALIDACAO_INVALIDA, "O começo do período deve ser antes do fim.")
-                .com("campo", "de");
+                .com("campo", "inicio");
         }
         AuditoriaConsultaRepository.Filtro filtro = new AuditoriaConsultaRepository.Filtro(usuarioId, acao, inicio, ate);
         Pageable paginacao = Paginacao.of(pagina, tamanho);

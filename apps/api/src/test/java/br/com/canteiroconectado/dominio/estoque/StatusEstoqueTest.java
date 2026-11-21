@@ -20,8 +20,8 @@ class StatusEstoqueTest {
         @CsvSource({
             "0, 10, ZERADO",
             "0, 0.5, ZERADO",
-            "3, 10, ABAIXO_DO_MINIMO",
-            "9.999, 10, ABAIXO_DO_MINIMO",
+            "3, 10, ABAIXO_MINIMO",
+            "9.999, 10, ABAIXO_MINIMO",
             "10, 10, NORMAL",
             "15, 10, NORMAL",
             "0, 0, NORMAL",

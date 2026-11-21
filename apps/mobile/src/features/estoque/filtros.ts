@@ -10,7 +10,7 @@ export const FILTROS_DE_STATUS: { valor: FiltroDeStatus; rotulo: string }[] = [
 
 export function statusDoFiltro(filtro: FiltroDeStatus): StatusEstoque[] | undefined {
   if (filtro === 'alerta') {
-    return ['ZERADO', 'ABAIXO_DO_MINIMO'];
+    return ['ZERADO', 'ABAIXO_MINIMO'];
   }
   return filtro === 'zerados' ? ['ZERADO'] : undefined;
 }

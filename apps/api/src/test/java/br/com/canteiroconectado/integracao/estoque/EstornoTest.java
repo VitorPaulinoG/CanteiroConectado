@@ -171,7 +171,7 @@ class EstornoTest {
 
             estornar(sebastiao, entrada, UUID.randomUUID().toString(), "  ")
                 .andExpect(status().isUnprocessableContent())
-                .andExpect(jsonPath("$.codigo").value("MOTIVO_DO_ESTORNO_OBRIGATORIO"));
+                .andExpect(jsonPath("$.codigo").value("MOTIVO_ESTORNO_OBRIGATORIO"));
             estornar(tokens.gestor(), entrada, UUID.randomUUID().toString(), "Errado")
                 .andExpect(status().isForbidden());
             estornar(tokens.almoxarife(), entrada, UUID.randomUUID().toString(), "Errado")

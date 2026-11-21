@@ -21,7 +21,7 @@ jest.mock('expo-router', () => ({
 
 const comAlertas: Resumo = {
   zerados: 2,
-  abaixoDoMinimo: 3,
+  abaixoMinimo: 3,
   maisCriticos: [
     { ...furadeiraNoEstoque, itemId: 'i-brita', descricao: 'Brita', saldo: 0, status: 'ZERADO' },
     { ...furadeiraNoEstoque, itemId: 'i-areia', descricao: 'Areia', saldo: 0, status: 'ZERADO' },
@@ -86,7 +86,7 @@ describe('InicioTela (S04)', () => {
     await montar(almoxarife, {
       ...comAlertas,
       zerados: 0,
-      abaixoDoMinimo: 0,
+      abaixoMinimo: 0,
       maisCriticos: [],
       requisicoesParaDecidir: 0,
     });

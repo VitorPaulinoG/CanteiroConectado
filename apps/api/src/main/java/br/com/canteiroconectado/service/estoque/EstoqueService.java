@@ -54,7 +54,7 @@ public class EstoqueService {
     public AlertasEstoqueResponse alertas(UUID canteiroId, int quantosCriticos) {
         canteiros.buscar(canteiroId);
         Map<StatusEstoque, Long> contagem = consultas.contarPorStatus(canteiroId);
-        return new AlertasEstoqueResponse(contagem.get(StatusEstoque.ZERADO), contagem.get(StatusEstoque.ABAIXO_DO_MINIMO),
+        return new AlertasEstoqueResponse(contagem.get(StatusEstoque.ZERADO), contagem.get(StatusEstoque.ABAIXO_MINIMO),
             consultas.maisCriticos(canteiroId, quantosCriticos));
     }
 

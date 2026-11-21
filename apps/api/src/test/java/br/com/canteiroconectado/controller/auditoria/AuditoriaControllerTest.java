@@ -66,7 +66,7 @@ class AuditoriaControllerTest {
                     .content("{\"email\":\"" + camila.getEmail() + "\",\"senha\":\"senha-errada-1\"}"))
                 .andExpect(status().isUnauthorized());
 
-            mockMvc.perform(get("/api/v1/auditoria").param("acao", "LOGIN_FALHOU").param("de", inicio.toString())
+            mockMvc.perform(get("/api/v1/auditoria").param("acao", "LOGIN_FALHOU").param("inicio", inicio.toString())
                     .header("Authorization", tokens.bearer(admin)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.totalElementos").value(1))
@@ -84,7 +84,7 @@ class AuditoriaControllerTest {
                     .header("Authorization", tokens.bearer(admin)))
                 .andExpect(status().isOk());
 
-            mockMvc.perform(get("/api/v1/auditoria").param("acao", "SENHA_REDEFINIDA").param("de", inicio.toString())
+            mockMvc.perform(get("/api/v1/auditoria").param("acao", "SENHA_REDEFINIDA").param("inicio", inicio.toString())
                     .header("Authorization", tokens.bearer(tokens.gestor())))
                 .andExpect(jsonPath("$.conteudo[0].usuarioNome").value(admin.getNome()))
                 .andExpect(jsonPath("$.conteudo[0].entidade").value("usuario"))
@@ -107,7 +107,7 @@ class AuditoriaControllerTest {
             entityManager.flush();
 
             mockMvc.perform(get("/api/v1/auditoria").param("usuarioId", admin.getId().toString())
-                    .param("de", inicio.toString()).header("Authorization", tokens.bearer(camila)))
+                    .param("inicio", inicio.toString()).header("Authorization", tokens.bearer(camila)))
                 .andExpect(jsonPath("$.totalElementos").value(2))
                 .andExpect(jsonPath("$.conteudo[*].usuarioNome", everyItem(is(admin.getNome()))))
                 .andExpect(jsonPath("$.conteudo[0].acao").value("CREDENCIAL_CONSULTADA"))
@@ -117,10 +117,10 @@ class AuditoriaControllerTest {
         @Test
         @DisplayName("deve recusar período invertido")
         void deve_recusar_quando_periodoInvertido() throws Exception {
-            mockMvc.perform(get("/api/v1/auditoria").param("de", "2026-11-02T00:00:00Z").param("ate", "2026-11-01T00:00:00Z")
+            mockMvc.perform(get("/api/v1/auditoria").param("inicio", "2026-11-02T00:00:00Z").param("ate", "2026-11-01T00:00:00Z")
                     .header("Authorization", tokens.bearer(camila)))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.campo").value("de"));
+                .andExpect(jsonPath("$.campo").value("inicio"));
         }
     }
 

@@ -1,7 +1,7 @@
 import { api, type Pagina } from '@/shared/api';
 import type { TipoItem, Unidade } from '@/shared/item';
 
-export type StatusEstoque = 'ZERADO' | 'ABAIXO_DO_MINIMO' | 'NORMAL';
+export type StatusEstoque = 'ZERADO' | 'ABAIXO_MINIMO' | 'NORMAL';
 
 export type ItemEstoque = {
   itemId: string;

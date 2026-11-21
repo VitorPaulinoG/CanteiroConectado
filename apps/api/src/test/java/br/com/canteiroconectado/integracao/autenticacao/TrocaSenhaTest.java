@@ -129,7 +129,7 @@ class TrocaSenhaTest {
                 .andExpect(jsonPath("$.precisaTrocarSenha").value(true));
             mockMvc.perform(get("/api/v1/qualquer-recurso").header("Authorization", tokens.bearer(funcionario)))
                 .andExpect(status().isForbidden())
-                .andExpect(jsonPath("$.codigo").value("TROCA_DE_SENHA_OBRIGATORIA"));
+                .andExpect(jsonPath("$.codigo").value("TROCA_SENHA_OBRIGATORIA"));
         }
 
         @Test

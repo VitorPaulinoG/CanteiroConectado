@@ -10,7 +10,7 @@ em [`exemplos.http`](exemplos.http). Os códigos de erro estão em [`codigos-err
   `Authorization: Bearer <token>`. São públicos só o login, o `GET /ping`, o `/actuator/health` e, fora de `prod`,
   o Swagger.
 - **Troca obrigatória:** enquanto o funcionário não troca a senha temporária, só `GET /autenticacao/eu` e
-  `POST /autenticacao/trocar-senha` respondem; o resto devolve 403 `TROCA_DE_SENHA_OBRIGATORIA`.
+  `POST /autenticacao/trocar-senha` respondem; o resto devolve 403 `TROCA_SENHA_OBRIGATORIA`.
 - **Canteiro:** o ALMOXARIFE só acessa o próprio canteiro (403 `ACESSO_NEGADO` nos outros). O GESTOR acessa todos e
   informa o canteiro nas consultas.
 - **Erros:** Problem Details (RFC 9457) com `codigo` estável, `detail` em português, `requestId` e, quando o erro é
@@ -46,7 +46,7 @@ em [`exemplos.http`](exemplos.http). Os códigos de erro estão em [`codigos-err
 | `GET /canteiros/{id}/estoque/{itemId}` | Todos, no próprio canteiro | Detalhe do item com as últimas movimentações |
 | `GET /canteiros/{id}/estoque/resumo` | Todos, no próprio canteiro | Contadores do Início |
 | `POST /canteiros/{id}/movimentacoes` | ALMOXARIFE do canteiro | Registrar entrada ou saída |
-| `GET /movimentacoes` | GESTOR | Histórico (`canteiroId`, `de`, `ate`, `tipo`, `itemId`, `colaboradorId`) |
+| `GET /movimentacoes` | GESTOR | Histórico (`canteiroId`, `inicio`, `ate`, `tipo`, `itemId`, `colaboradorId`) |
 | `GET /movimentacoes/{id}` | Todos, no próprio canteiro | Detalhe da movimentação |
 | `POST /movimentacoes/{id}/estorno` | ALMOXARIFE do canteiro | Corrigir um lançamento |
 | `POST /requisicoes` | Todos, no próprio canteiro | Criar requisição |
@@ -54,6 +54,6 @@ em [`exemplos.http`](exemplos.http). Os códigos de erro estão em [`codigos-err
 | `POST /requisicoes/{id}/aprovar`, `/recusar` | O outro perfil | ALMOXARIFE decide as do GESTOR e vice-versa |
 | `POST /requisicoes/{id}/atender` | ALMOXARIFE do canteiro | Marcar a aprovada como atendida |
 | `POST /requisicoes/{id}/cancelar` | Quem criou | Cancelar enquanto pendente |
-| `GET /auditoria` | GESTOR | Trilha de auditoria (`usuarioId`, `acao`, `de`, `ate`) |
+| `GET /auditoria` | GESTOR | Trilha de auditoria (`usuarioId`, `acao`, `inicio`, `ate`) |
 
 A matriz completa, perfil por perfil, é testada em `MatrizPermissoesTest`.

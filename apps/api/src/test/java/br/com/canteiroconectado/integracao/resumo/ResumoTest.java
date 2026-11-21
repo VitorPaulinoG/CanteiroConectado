@@ -92,7 +92,7 @@ class ResumoTest {
                     .header("Authorization", tokens.bearer(camila)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.zerados").value(2))
-                .andExpect(jsonPath("$.abaixoDoMinimo").value(3))
+                .andExpect(jsonPath("$.abaixoMinimo").value(3))
                 .andExpect(jsonPath("$.maisCriticos", hasSize(3)))
                 .andExpect(jsonPath("$.maisCriticos[*].descricao", contains("Areia", "Brita", "Bloco")));
         }
@@ -105,7 +105,7 @@ class ResumoTest {
             mockMvc.perform(get("/api/v1/canteiros/" + aurora.getId() + "/estoque/resumo")
                     .header("Authorization", tokens.bearer(sebastiao)))
                 .andExpect(jsonPath("$.zerados").value(0))
-                .andExpect(jsonPath("$.abaixoDoMinimo").value(0))
+                .andExpect(jsonPath("$.abaixoMinimo").value(0))
                 .andExpect(jsonPath("$.maisCriticos", hasSize(0)));
         }
     }

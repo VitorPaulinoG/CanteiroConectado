@@ -84,8 +84,8 @@ export function FiltrosModal({ visivel, canteiroId, filtros, aoMudar, aoLimpar, 
               <View style={styles.data}>
                 <CampoData
                   rotulo="De"
-                  valor={filtros.de}
-                  aoMudar={(de) => aoMudar({ de })}
+                  valor={filtros.inicio}
+                  aoMudar={(inicio) => aoMudar({ inicio })}
                   opcional
                 />
               </View>
@@ -94,7 +94,7 @@ export function FiltrosModal({ visivel, canteiroId, filtros, aoMudar, aoLimpar, 
                   rotulo="Até"
                   valor={filtros.ate}
                   aoMudar={(ate) => aoMudar({ ate })}
-                  minimo={filtros.de ?? undefined}
+                  minimo={filtros.inicio ?? undefined}
                   dica={filtros.ate === hoje() ? 'Inclui o dia de hoje' : undefined}
                   opcional
                 />

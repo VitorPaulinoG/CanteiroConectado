@@ -62,7 +62,7 @@ public class MovimentacaoController {
     public PaginaResponse<MovimentacaoResponse> historico(
             @RequestParam(required = false) UUID canteiroId,
             @Parameter(description = "Começo do período, inclusive, em UTC (ISO-8601)")
-            @RequestParam(name = "de", required = false) Instant inicio,
+            @RequestParam(required = false) Instant inicio,
             @Parameter(description = "Fim do período, exclusive, em UTC (ISO-8601)")
             @RequestParam(required = false) Instant ate,
             @RequestParam(required = false) TipoMovimentacao tipo,

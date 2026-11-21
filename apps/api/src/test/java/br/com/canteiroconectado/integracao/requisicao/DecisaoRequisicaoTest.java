@@ -196,7 +196,7 @@ class DecisaoRequisicaoTest {
 
             decidir(camila, id, "recusar", corpo)
                 .andExpect(status().isUnprocessableContent())
-                .andExpect(jsonPath("$.codigo").value("MOTIVO_DA_RECUSA_OBRIGATORIO"));
+                .andExpect(jsonPath("$.codigo").value("MOTIVO_RECUSA_OBRIGATORIO"));
         }
     }
 }
