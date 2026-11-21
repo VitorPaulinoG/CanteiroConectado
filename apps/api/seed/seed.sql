@@ -10,7 +10,11 @@
 --                Beltrano (GESTOR, sem canteiro)        — beltrano@canteiro.local
 --   * Colaboradores: 5 por canteiro.
 --   * Itens: 40 no catálogo (20 FERRAMENTA com código FER-xxx e 20 MATERIAL com código MAT-xxx).
---     Nenhum saldo nem movimentação é criado: o estoque começa zerado.
+--   * Estoque (V6): movimentações de RECEBIMENTO/RETIRADA e saldos para alguns itens nos dois canteiros
+--     (o MAT-002 do Canteiro XPTO fica abaixo do mínimo, para exercitar o alerta de estoque baixo).
+--   * Requisições (V7): 3 no Canteiro XPTO (PENDENTE, APROVADA e ATENDIDA), com itens, eventos e sequência.
+--     Movimentações e requisições usam IDs determinísticos e são inseridas só se ainda não existirem
+--     (são imutáveis/históricas, então não são sobrescritas); saldos existentes também não são alterados.
 --
 -- Todos os usuários tocados aqui ficam ativos, desbloqueados e sem troca de senha obrigatória.
 --
@@ -55,7 +59,13 @@ BEGIN
     IF to_regclass('public.usuario') IS NULL
         OR to_regclass('public.canteiro') IS NULL
         OR to_regclass('public.colaborador') IS NULL
-        OR to_regclass('public.item') IS NULL THEN
+        OR to_regclass('public.item') IS NULL
+        OR to_regclass('public.saldo_estoque') IS NULL
+        OR to_regclass('public.movimentacao_estoque') IS NULL
+        OR to_regclass('public.requisicao') IS NULL
+        OR to_regclass('public.item_requisicao') IS NULL
+        OR to_regclass('public.requisicao_sequencia') IS NULL
+        OR to_regclass('public.requisicao_evento') IS NULL THEN
         RAISE EXCEPTION 'Tabelas não encontradas: suba a API ao menos uma vez para o Flyway aplicar as migrations antes do seed.';
     END IF;
 END;
@@ -204,5 +214,111 @@ ON CONFLICT ((lower(codigo))) DO UPDATE
        tipo              = EXCLUDED.tipo,
        quantidade_minima = EXCLUDED.quantidade_minima,
        ativo             = TRUE;
+
+-- -------------------------------------------------------------------------------------------------
+-- Estoque: movimentações (V6). saldo_apos já vem calculado; o saldo final de cada item é o da
+-- movimentação mais recente. IDs determinísticos (md5 da chave) para a idempotência.
+-- -------------------------------------------------------------------------------------------------
+
+CREATE TEMP TABLE seed_mov ON COMMIT DROP AS
+SELECT m.chave, c.id AS canteiro_id, i.id AS item_id, m.tipo, m.motivo, m.quantidade, m.saldo_apos,
+       col.id AS colaborador_id, m.frente_obra, m.observacao, m.registrado_por_email,
+       now() - (m.dias_atras * interval '1 day') AS criado_em
+  FROM (VALUES
+        -- Canteiro XPTO (registrado pelo almoxarife Fulano)
+        ('xpto-mat001-rec', 'canteiro xpto', 'MAT-001', 'ENTRADA', 'RECEBIMENTO', 100, 100, NULL,            NULL,        'Recebimento inicial',     'fulano@canteiro.local', 20),
+        ('xpto-mat001-ret', 'canteiro xpto', 'MAT-001', 'SAIDA',   'RETIRADA',      30,  70, 'joão da silva', 'Fundação',  NULL,                      'fulano@canteiro.local', 10),
+        ('xpto-mat002-rec', 'canteiro xpto', 'MAT-002', 'ENTRADA', 'RECEBIMENTO',   40,  40, NULL,            NULL,        'Recebimento inicial',     'fulano@canteiro.local', 20),
+        ('xpto-mat002-ret', 'canteiro xpto', 'MAT-002', 'SAIDA',   'RETIRADA',      25,  15, 'maria souza',   'Alvenaria', NULL,                      'fulano@canteiro.local',  8),
+        ('xpto-mat004-rec', 'canteiro xpto', 'MAT-004', 'ENTRADA', 'RECEBIMENTO',   20,  20, NULL,            NULL,        'Recebimento inicial',     'fulano@canteiro.local', 20),
+        ('xpto-mat006-rec', 'canteiro xpto', 'MAT-006', 'ENTRADA', 'RECEBIMENTO', 3000,3000, NULL,            NULL,        'Recebimento inicial',     'fulano@canteiro.local', 20),
+        ('xpto-mat006-ret', 'canteiro xpto', 'MAT-006', 'SAIDA',   'RETIRADA',    1200,1800, 'josé santos',   'Alvenaria', NULL,                      'fulano@canteiro.local',  5),
+        ('xpto-mat008-rec', 'canteiro xpto', 'MAT-008', 'ENTRADA', 'RECEBIMENTO',  500, 500, NULL,            NULL,        'Recebimento inicial',     'fulano@canteiro.local', 20),
+        ('xpto-mat011-rec', 'canteiro xpto', 'MAT-011', 'ENTRADA', 'RECEBIMENTO',   60,  60, NULL,            NULL,        'Recebimento inicial',     'fulano@canteiro.local', 20),
+        ('xpto-mat015-rec', 'canteiro xpto', 'MAT-015', 'ENTRADA', 'RECEBIMENTO',   10,  10, NULL,            NULL,        'Recebimento inicial',     'fulano@canteiro.local', 20),
+        ('xpto-fer001-rec', 'canteiro xpto', 'FER-001', 'ENTRADA', 'RECEBIMENTO',    8,   8, NULL,            NULL,        'Recebimento inicial',     'fulano@canteiro.local', 20),
+        ('xpto-fer001-ret', 'canteiro xpto', 'FER-001', 'SAIDA',   'RETIRADA',       3,   5, 'pedro lima',    'Carpintaria', NULL,                    'fulano@canteiro.local',  3),
+        ('xpto-fer001-dev', 'canteiro xpto', 'FER-001', 'ENTRADA', 'DEVOLUCAO',      1,   6, 'pedro lima',    'Carpintaria', NULL,                    'fulano@canteiro.local',  1),
+        ('xpto-fer003-rec', 'canteiro xpto', 'FER-003', 'ENTRADA', 'RECEBIMENTO',    6,   6, NULL,            NULL,        'Recebimento inicial',     'fulano@canteiro.local', 20),
+        ('xpto-fer011-rec', 'canteiro xpto', 'FER-011', 'ENTRADA', 'RECEBIMENTO',    2,   2, NULL,            NULL,        'Recebimento inicial',     'fulano@canteiro.local', 20),
+        -- Canteiro ABC (registrado pelo gestor Beltrano)
+        ('abc-mat001-rec',  'canteiro abc',  'MAT-001', 'ENTRADA', 'RECEBIMENTO',   50,  50, NULL,            NULL,        'Recebimento inicial',     'beltrano@canteiro.local', 15),
+        ('abc-mat005-rec',  'canteiro abc',  'MAT-005', 'ENTRADA', 'RECEBIMENTO',   12,  12, NULL,            NULL,        'Recebimento inicial',     'beltrano@canteiro.local', 15),
+        ('abc-fer003-rec',  'canteiro abc',  'FER-003', 'ENTRADA', 'RECEBIMENTO',    4,   4, NULL,            NULL,        'Recebimento inicial',     'beltrano@canteiro.local', 15)
+       ) AS m (chave, canteiro_nome, item_codigo, tipo, motivo, quantidade, saldo_apos, colaborador_nome,
+               frente_obra, observacao, registrado_por_email, dias_atras)
+  JOIN canteiro c ON lower(c.nome) = m.canteiro_nome
+  JOIN item i ON lower(i.codigo) = lower(m.item_codigo)
+  LEFT JOIN colaborador col ON col.canteiro_id = c.id AND lower(col.nome) = m.colaborador_nome;
+
+INSERT INTO movimentacao_estoque (id, canteiro_id, item_id, tipo, motivo, quantidade, saldo_apos,
+                                  colaborador_id, frente_obra, observacao, registrado_por, criado_em)
+SELECT md5('seed:mov:' || m.chave)::uuid, m.canteiro_id, m.item_id, m.tipo, m.motivo, m.quantidade,
+       m.saldo_apos, m.colaborador_id, m.frente_obra, m.observacao, u.id, m.criado_em
+  FROM seed_mov m
+  JOIN usuario u ON lower(u.email) = m.registrado_por_email
+ON CONFLICT (id) DO NOTHING;
+
+-- Saldo = saldo_apos da movimentação mais recente de cada (canteiro, item). Não sobrescreve saldos existentes.
+INSERT INTO saldo_estoque (canteiro_id, item_id, quantidade)
+SELECT DISTINCT ON (m.canteiro_id, m.item_id) m.canteiro_id, m.item_id, m.saldo_apos
+  FROM seed_mov m
+ ORDER BY m.canteiro_id, m.item_id, m.criado_em DESC
+ON CONFLICT (canteiro_id, item_id) DO NOTHING;
+
+-- -------------------------------------------------------------------------------------------------
+-- Requisições (V7) do Canteiro XPTO: solicitadas pelo almoxarife Fulano, decididas pelo gestor Beltrano.
+-- -------------------------------------------------------------------------------------------------
+
+INSERT INTO requisicao (id, numero, canteiro_id, solicitante_id, solicitante_perfil, frente_obra, observacao,
+                        necessario_ate, status, decidido_por, decidido_em, observacao_decisao,
+                        previsao_chegada, criado_em)
+SELECT md5('seed:req:' || r.numero)::uuid, r.numero, c.id, fulano.id, 'ALMOXARIFE', r.frente_obra, r.observacao,
+       current_date + r.prazo_dias, r.status,
+       CASE WHEN r.status <> 'PENDENTE' THEN beltrano.id END,
+       CASE WHEN r.status <> 'PENDENTE' THEN now() - ((r.dias_atras - 1) * interval '1 day') END,
+       r.observacao_decisao, r.previsao_chegada, now() - (r.dias_atras * interval '1 day')
+  FROM (VALUES
+        (1, 'Fundação',  'Reposição de cimento',      7, 'PENDENTE', NULL,                  NULL::date,                  3),
+        (2, 'Alvenaria', 'Cal para o reboco externo', 5, 'APROVADA', 'Compra autorizada.',  current_date + 3,            6),
+        (3, 'Alvenaria', 'Tubos para a rede de esgoto', -2, 'ATENDIDA', 'Atendida pelo almoxarifado central.', NULL::date, 12)
+       ) AS r (numero, frente_obra, observacao, prazo_dias, status, observacao_decisao, previsao_chegada, dias_atras)
+  JOIN canteiro c ON lower(c.nome) = 'canteiro xpto'
+  JOIN usuario fulano   ON lower(fulano.email)   = 'fulano@canteiro.local'
+  JOIN usuario beltrano ON lower(beltrano.email) = 'beltrano@canteiro.local'
+ON CONFLICT DO NOTHING;
+
+INSERT INTO item_requisicao (id, requisicao_id, item_id, quantidade, ordem)
+SELECT md5('seed:itemreq:' || ir.numero || ':' || ir.codigo)::uuid, md5('seed:req:' || ir.numero)::uuid,
+       i.id, ir.quantidade, ir.ordem
+  FROM (VALUES (1, 'MAT-001', 50, 1),
+               (1, 'MAT-004', 10, 2),
+               (2, 'MAT-002', 40, 1),
+               (3, 'MAT-011', 30, 1),
+               (3, 'MAT-012', 50, 2)
+       ) AS ir (numero, codigo, quantidade, ordem)
+  JOIN item i ON lower(i.codigo) = lower(ir.codigo)
+ WHERE EXISTS (SELECT 1 FROM requisicao WHERE id = md5('seed:req:' || ir.numero)::uuid)
+ON CONFLICT DO NOTHING;
+
+-- Histórico de status (imutável). Toda requisição nasce PENDENTE por Fulano; as decididas ganham evento do Beltrano.
+INSERT INTO requisicao_evento (id, requisicao_id, status, usuario_id, observacao, criado_em)
+SELECT md5('seed:evt:' || e.numero || ':' || e.status)::uuid, md5('seed:req:' || e.numero)::uuid, e.status, u.id,
+       e.observacao, now() - (e.dias_atras * interval '1 day')
+  FROM (VALUES (1, 'PENDENTE', 'fulano@canteiro.local',   NULL,                  3),
+               (2, 'PENDENTE', 'fulano@canteiro.local',   NULL,                  6),
+               (2, 'APROVADA', 'beltrano@canteiro.local', 'Compra autorizada.',  5),
+               (3, 'PENDENTE', 'fulano@canteiro.local',   NULL,                  12),
+               (3, 'APROVADA', 'beltrano@canteiro.local', NULL,                  11),
+               (3, 'ATENDIDA', 'beltrano@canteiro.local', 'Atendida pelo almoxarifado central.', 9)
+       ) AS e (numero, status, email, observacao, dias_atras)
+  JOIN usuario u ON lower(u.email) = e.email
+ WHERE EXISTS (SELECT 1 FROM requisicao WHERE id = md5('seed:req:' || e.numero)::uuid)
+ON CONFLICT (id) DO NOTHING;
+
+-- Sequência de numeração por canteiro (nunca diminui).
+INSERT INTO requisicao_sequencia (canteiro_id, ultimo)
+SELECT c.id, 3 FROM canteiro c WHERE lower(c.nome) = 'canteiro xpto'
+ON CONFLICT (canteiro_id) DO UPDATE SET ultimo = GREATEST(requisicao_sequencia.ultimo, EXCLUDED.ultimo);
 
 COMMIT;
