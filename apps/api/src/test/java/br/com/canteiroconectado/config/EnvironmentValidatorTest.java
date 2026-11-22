@@ -66,7 +66,6 @@ class EnvironmentValidatorTest {
         @Test
         @DisplayName("deve listar todas as variáveis ausentes quando várias faltam")
         void deve_listarTodas_quando_variasAusentes() {
-            // Como no application.yml real: cada variável ausente chega como texto vazio.
             MockEnvironment ambiente = new MockEnvironment()
                 .withProperty("canteiro.banco.url", "")
                 .withProperty("canteiro.banco.usuario", "")

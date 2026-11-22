@@ -12,12 +12,6 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.Profiles;
 
-/**
- * No perfil {@code local}, sorteia uma {@code CHAVE_SENHA_TEMPORARIA} quando ela não foi
- * definida, para a API subir sem configuração. Como a chave muda a cada subida, as senhas
- * temporárias cifradas antes deixam de poder ser lidas; basta redefinir a senha do funcionário.
- * Roda antes do {@link EnvironmentValidator}.
- */
 public class ChaveLocalEnvironmentPostProcessor implements EnvironmentPostProcessor, Ordered {
 
     static final String PROPRIEDADE = "canteiro.senha-temporaria.chave";

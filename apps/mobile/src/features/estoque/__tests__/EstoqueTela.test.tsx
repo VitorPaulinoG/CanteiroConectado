@@ -28,7 +28,7 @@ const cimento: ItemEstoque = {
   tipo: 'MATERIAL',
   quantidadeMinima: 50,
   saldo: 30,
-  status: 'ABAIXO_DO_MINIMO',
+  status: 'ABAIXO_MINIMO',
 };
 
 function pagina(conteudo: ItemEstoque[], numero = 0, totalPaginas = 1) {
@@ -73,7 +73,7 @@ describe('EstoqueTela (S06)', () => {
 
     expect(listarEstoque).toHaveBeenLastCalledWith(
       'c-aurora',
-      { q: undefined, status: ['ZERADO', 'ABAIXO_DO_MINIMO'] },
+      { q: undefined, status: ['ZERADO', 'ABAIXO_MINIMO'] },
       0,
     );
     expect(await screen.findByText('Tudo certo por aqui.')).toBeTruthy();
@@ -87,7 +87,7 @@ describe('EstoqueTela (S06)', () => {
     await screen.findByText('Cimento CP-II 50kg');
     expect(listarEstoque).toHaveBeenCalledWith(
       'c-aurora',
-      { q: undefined, status: ['ZERADO', 'ABAIXO_DO_MINIMO'] },
+      { q: undefined, status: ['ZERADO', 'ABAIXO_MINIMO'] },
       0,
     );
   });

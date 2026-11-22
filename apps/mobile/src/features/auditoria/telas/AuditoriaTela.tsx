@@ -46,7 +46,7 @@ export function filtroDaAuditoria(
     if (periodo === '7dias') {
       inicio.setDate(inicio.getDate() - 6);
     }
-    filtro.de = inicio.toISOString();
+    filtro.inicio = inicio.toISOString();
   }
   return filtro;
 }

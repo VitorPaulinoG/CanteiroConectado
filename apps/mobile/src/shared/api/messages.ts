@@ -11,7 +11,7 @@ export const MENSAGENS_POR_CODIGO: Record<string, string> = {
   CREDENCIAIS_INVALIDAS: 'E-mail ou senha incorretos.',
   USUARIO_INATIVO: 'Este usuário está desativado. Fale com o administrador.',
   CONTA_BLOQUEADA: 'Conta bloqueada por excesso de tentativas.',
-  TROCA_DE_SENHA_OBRIGATORIA: 'Troque a senha temporária para continuar.',
+  TROCA_SENHA_OBRIGATORIA: 'Troque a senha temporária para continuar.',
   SENHA_ATUAL_INCORRETA: 'A senha atual está incorreta.',
   SENHA_IGUAL_A_ATUAL: 'A nova senha deve ser diferente da atual.',
   CANTEIRO_DUPLICADO: 'Já existe um canteiro com este nome.',
@@ -35,13 +35,13 @@ export const MENSAGENS_POR_CODIGO: Record<string, string> = {
   ID_INVALIDO: 'O registro chegou sem identificação válida. Abra o formulário de novo.',
   MOTIVO_INVALIDO: 'Este motivo não vale para este tipo de movimentação.',
   REQUISICAO_SEM_ITENS: 'Adicione pelo menos um item.',
-  LIMITE_DE_ITENS: 'Uma requisição aceita no máximo 20 itens.',
+  LIMITE_ITENS: 'Uma requisição aceita no máximo 20 itens.',
   ITEM_REPETIDO: 'Este item já está na requisição.',
   DATA_NO_PASSADO: 'A data não pode ser anterior a hoje.',
-  MOTIVO_DA_RECUSA_OBRIGATORIO: 'Conte o motivo da recusa (pelo menos 5 caracteres).',
+  MOTIVO_RECUSA_OBRIGATORIO: 'Conte o motivo da recusa (pelo menos 5 caracteres).',
   JA_ESTORNADA: 'Esta movimentação já foi estornada.',
   ESTORNO_NAO_ESTORNAVEL: 'Um estorno não pode ser estornado.',
-  MOTIVO_DO_ESTORNO_OBRIGATORIO: 'Conte por que o lançamento está errado.',
+  MOTIVO_ESTORNO_OBRIGATORIO: 'Conte por que o lançamento está errado.',
 };
 
 export const MENSAGEM_PADRAO = MENSAGENS_POR_CODIGO.ERRO_INESPERADO;

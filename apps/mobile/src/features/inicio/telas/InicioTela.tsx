@@ -62,7 +62,7 @@ export function InicioTela() {
 function Conteudo({ resumo }: { resumo: Resumo }) {
   const router = useRouter();
   const theme = useAppTheme();
-  const emAlerta = resumo.zerados + resumo.abaixoDoMinimo;
+  const emAlerta = resumo.zerados + resumo.abaixoMinimo;
 
   return (
     <>
@@ -116,7 +116,7 @@ function Conteudo({ resumo }: { resumo: Resumo }) {
             <>
               <Text variant="titleMedium">
                 {plural(resumo.zerados, 'zerado', 'zerados')} ·{' '}
-                {plural(resumo.abaixoDoMinimo, 'abaixo do mínimo', 'abaixo do mínimo')}
+                {plural(resumo.abaixoMinimo, 'abaixo do mínimo', 'abaixo do mínimo')}
               </Text>
               {resumo.maisCriticos.map((item) => (
                 <List.Item

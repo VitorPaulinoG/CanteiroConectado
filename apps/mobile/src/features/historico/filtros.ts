@@ -5,7 +5,7 @@ export type Periodo = 'tudo' | 'hoje' | '7dias' | 'personalizado';
 
 export type FiltrosDoHistorico = {
   periodo: Periodo;
-  de: string | null;
+  inicio: string | null;
   ate: string | null;
   tipo: TipoMovimentacao | null;
   item: { itemId: string; descricao: string } | null;
@@ -14,7 +14,7 @@ export type FiltrosDoHistorico = {
 
 export const FILTROS_VAZIOS: FiltrosDoHistorico = {
   periodo: 'tudo',
-  de: null,
+  inicio: null,
   ate: null,
   tipo: null,
   item: null,
@@ -22,7 +22,7 @@ export const FILTROS_VAZIOS: FiltrosDoHistorico = {
 };
 
 export type ParametrosDoHistorico = {
-  de?: string;
+  inicio?: string;
   ate?: string;
   tipo?: TipoMovimentacao;
   itemId?: string;
@@ -42,18 +42,18 @@ function diasDepois(data: Date, dias: number): Date {
 }
 
 export function intervaloDoPeriodo(
-  filtros: Pick<FiltrosDoHistorico, 'periodo' | 'de' | 'ate'>,
+  filtros: Pick<FiltrosDoHistorico, 'periodo' | 'inicio' | 'ate'>,
   agora: Date = new Date(),
-): { de?: Date; ate?: Date } {
+): { inicio?: Date; ate?: Date } {
   const hoje = inicioDoDia(agora);
   switch (filtros.periodo) {
     case 'hoje':
-      return { de: hoje, ate: diasDepois(hoje, 1) };
+      return { inicio: hoje, ate: diasDepois(hoje, 1) };
     case '7dias':
-      return { de: diasDepois(hoje, -6), ate: diasDepois(hoje, 1) };
+      return { inicio: diasDepois(hoje, -6), ate: diasDepois(hoje, 1) };
     case 'personalizado':
       return {
-        de: filtros.de ? paraData(filtros.de) : undefined,
+        inicio: filtros.inicio ? paraData(filtros.inicio) : undefined,
         ate: filtros.ate ? diasDepois(paraData(filtros.ate), 1) : undefined,
       };
     default:
@@ -65,9 +65,9 @@ export function paraParametros(
   filtros: FiltrosDoHistorico,
   agora: Date = new Date(),
 ): ParametrosDoHistorico {
-  const { de, ate } = intervaloDoPeriodo(filtros, agora);
+  const { inicio, ate } = intervaloDoPeriodo(filtros, agora);
   return {
-    de: de?.toISOString(),
+    inicio: inicio?.toISOString(),
     ate: ate?.toISOString(),
     tipo: filtros.tipo ?? undefined,
     itemId: filtros.item?.itemId,

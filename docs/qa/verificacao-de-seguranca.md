@@ -8,11 +8,11 @@ automatizado impede que ele volte a falhar. Nenhum achado foi crítico. Os risco
 | --- | --- | --- |
 | Nenhum segredo versionado | Ok | Busca no histórico de todas as branches (abaixo) |
 | `JWT_SEGREDO` com 32 bytes ou mais | Ok | `JwtProperties` impede a subida com menos; `EnvironmentValidatorTest` |
-| Mensagens de erro sem detalhe interno | Ok | `GlobalExceptionHandlerTest`, `PerfilDeProducaoTest` |
+| Mensagens de erro sem detalhe interno | Ok | `GlobalExceptionHandlerTest`, `PerfilProducaoTest` |
 | Logs sem senha nem token | Ok | `LogsSemSegredoTest` |
-| Swagger em produção | Desligado | `PerfilDeProducaoTest` |
-| Senha temporária apagada depois da troca | Ok | `TrocaDeSenhaTest` |
-| Acesso entre canteiros e entre perfis | Ok | `MatrizDePermissoesTest`, `CoberturaDaMatrizTest` |
+| Swagger em produção | Desligado | `PerfilProducaoTest` |
+| Senha temporária apagada depois da troca | Ok | `TrocaSenhaTest` |
+| Acesso entre canteiros e entre perfis | Ok | `MatrizPermissoesTest`, `CoberturaMatrizTest` |
 | Dependências | Dependabot configurado; `npm audit` com 4 altas fora do APK | Abaixo |
 
 ## Segredos
@@ -40,22 +40,22 @@ automatizado impede que ele volte a falhar. Nenhum achado foi crítico. Os risco
 ## Swagger
 
 Decisão: desligado no perfil `prod` (`springdoc.api-docs.enabled` e `springdoc.swagger-ui.enabled` em `false`).
-O contrato fica documentado em `docs/api` e no Swagger local. `PerfilDeProducaoTest` sobe a API no perfil `prod` e
+O contrato fica documentado em `docs/api` e no Swagger local. `PerfilProducaoTest` sobe a API no perfil `prod` e
 confere 404 em `/v3/api-docs`, `/swagger-ui.html` e `/swagger-ui/index.html`. Sem a configuração, o mesmo teste
 recebe 200.
 
 ## Senha temporária
 
 A senha temporária fica cifrada com AES-GCM (`CHAVE_SENHA_TEMPORARIA`) até o primeiro acesso, para o administrador
-poder reexibi-la. Na troca de senha, o campo vira `NULL` (`TrocaDeSenhaTest` confere) e a credencial inicial passa
+poder reexibi-la. Na troca de senha, o campo vira `NULL` (`TrocaSenhaTest` confere) e a credencial inicial passa
 a responder `CREDENCIAL_JA_TROCADA`.
 
 ## Acesso entre canteiros e perfis
 
-`MatrizDePermissoesTest` chama cada endpoint com o ALMOXARIFE do canteiro, o ALMOXARIFE de outro canteiro, o GESTOR
-e o administrador. Também confere 401 sem token. `CoberturaDaMatrizTest` falha se surgir um endpoint fora da
+`MatrizPermissoesTest` chama cada endpoint com o ALMOXARIFE do canteiro, o ALMOXARIFE de outro canteiro, o GESTOR
+e o administrador. Também confere 401 sem token. `CoberturaMatrizTest` falha se surgir um endpoint fora da
 matriz. O token antigo deixa de valer quando o usuário é desativado ou quando muda o perfil, o canteiro ou a
-administração (`TokenDesatualizadoTest`, `UsuarioControllerTest`, `TrocaDeSenhaTest`). Cinco senhas erradas
+administração (`TokenDesatualizadoTest`, `UsuarioControllerTest`, `TrocaSenhaTest`). Cinco senhas erradas
 bloqueiam a conta por 15 minutos.
 
 ## Dependências

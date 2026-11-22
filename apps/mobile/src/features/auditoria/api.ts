@@ -38,7 +38,7 @@ export type EventoDeAuditoria = {
   criadoEm: string;
 };
 
-export type FiltroDaAuditoria = { acao?: AcaoAuditoria; de?: string; ate?: string };
+export type FiltroDaAuditoria = { acao?: AcaoAuditoria; inicio?: string; ate?: string };
 
 export const chavesAuditoria = {
   lista: (filtro: FiltroDaAuditoria) => ['auditoria', filtro] as const,

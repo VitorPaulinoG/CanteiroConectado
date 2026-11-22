@@ -18,15 +18,14 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.jayway.jsonpath.JsonPath;
+import br.com.canteiroconectado.domain.usuario.Usuario;
+import br.com.canteiroconectado.support.Tokens;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.read.ListAppender;
-
-import br.com.canteiroconectado.support.Tokens;
-import br.com.canteiroconectado.usuario.Usuario;
+import com.jayway.jsonpath.JsonPath;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -69,7 +68,7 @@ class LogsSemSegredoTest {
 
     @Test
     @DisplayName("não deve registrar a senha nem o token em nenhum log, mesmo em DEBUG, no login certo, errado e no uso do token")
-    void naoDeve_registrarSenhaNemToken_quando_loginEUsoDoToken() throws Exception {
+    void naoDeve_registrarSenhaNemToken_quando_loginEUsoToken() throws Exception {
         Usuario usuario = tokens.almoxarife();
         String senhaErrada = "senha-errada-que-nao-pode-vazar-7";
 

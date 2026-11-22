@@ -6,7 +6,7 @@ Segurança e Auditoria, e Programação Mobile.
 
 Como ler:
 
-- Os testes da API ficam em `apps/api/src/test/java/br/com/canteiroconectado`, no pacote da funcionalidade.
+- Os testes da API ficam em `apps/api/src/test/java/br/com/canteiroconectado`; os testes de unidade espelham o pacote da classe testada e os de cenário ficam em `integracao/<funcionalidade>`.
   Os do app ficam em `apps/mobile/src/**/__tests__` (nome terminado em `.test`).
 - "Figma (pendência manual)" e "Tarefa manual" estão detalhados em [pendências manuais](pendencias-manuais.md).
 - Os PRs a partir do #196 estão empilhados, em cadeia. Cada um aponta para o anterior e traz no corpo como
@@ -16,33 +16,33 @@ Como ler:
 
 | Jornada | Passos | Testes da API | Testes do app |
 | --- | --- | --- | --- |
-| 1. Sebastião (ALMOXARIFE) entrega uma furadeira ao João na frente Instalações elétricas | Login, Movimentar, Saída, escolhe item e colaborador, confirma, comprovante | `SaidaTest`, `MovimentacaoControllerTest`, `CargaDeDemonstracaoTest` (2 furadeiras na busca) | `LoginTela.test`, `MovimentarTela.test`, `SaidaTela.test`, `Comprovante.test` |
-| 2. Camila (GESTOR) vê o cimento abaixo do mínimo e pede material | Início com alerta, estoque filtrado, detalhe, nova requisição, acompanha a decisão | `Jornada2Test`, `ResumoTest`, `CriarRequisicaoTest`, `DecisaoDeRequisicaoTest` | `InicioTela.test`, `EstoqueTela.test`, `DetalheItemTela.test`, `NovaRequisicaoTela.test`, `DetalheRequisicaoTela.test` |
+| 1. Sebastião (ALMOXARIFE) entrega uma furadeira ao João na frente Instalações elétricas | Login, Movimentar, Saída, escolhe item e colaborador, confirma, comprovante | `SaidaTest`, `MovimentacaoControllerTest`, `DemoDataLoaderTest` (2 furadeiras na busca) | `LoginTela.test`, `MovimentarTela.test`, `SaidaTela.test`, `Comprovante.test` |
+| 2. Camila (GESTOR) vê o cimento abaixo do mínimo e pede material | Início com alerta, estoque filtrado, detalhe, nova requisição, acompanha a decisão | `Jornada2Test`, `ResumoTest`, `CriarRequisicaoTest`, `DecisaoRequisicaoTest` | `InicioTela.test`, `EstoqueTela.test`, `DetalheItemTela.test`, `NovaRequisicaoTela.test`, `DetalheRequisicaoTela.test` |
 
 ## Requisitos não funcionais
 
 | Requisito | Como o projeto atende | Issues | Testes ou evidência |
 | --- | --- | --- | --- |
 | Autenticação | E-mail e senha devolvem um JWT HS256 de 12 horas; sem token, 401 em Problem Details | #97, #104 | `AutenticacaoControllerTest`, `SegurancaTest` |
-| Autorização por perfil e por canteiro | `@PreAuthorize` nos services e `CanteiroAcessoService`; o app esconde o que o perfil não pode, e a API revalida | #104, #105, #106, #108 | `MatrizDePermissoesTest` (38 endpoints × 4 perfis), `CoberturaDaMatrizTest`, `CanteiroAcessoServiceTest`, `SomentePerfil.test` |
-| Token desatualizado deixa de valer | O filtro confere a cada requisição se o usuário está ativo e se perfil, canteiro e administração continuam iguais | #104, #112 | `TokenDesatualizadoTest`, `UsuarioControllerTest`, `TrocaDeSenhaTest` |
+| Autorização por perfil e por canteiro | `@PreAuthorize` nos services e `CanteiroAcessoService`; o app esconde o que o perfil não pode, e a API revalida | #104, #105, #106, #108 | `MatrizPermissoesTest` (38 endpoints × 4 perfis), `CoberturaMatrizTest`, `CanteiroAcessoServiceTest`, `SomentePerfil.test` |
+| Token desatualizado deixa de valer | O filtro confere a cada requisição se o usuário está ativo e se perfil, canteiro e administração continuam iguais | #104, #112 | `TokenDesatualizadoTest`, `UsuarioControllerTest`, `TrocaSenhaTest` |
 | Bloqueio após senhas erradas | 5 erros bloqueiam por 15 minutos; o login certo zera o contador | #98 | `AutenticacaoServiceTest`, `AutenticacaoControllerTest`, `LoginTela.test` |
-| Senhas | Política de 8 caracteres com letra e número; hash BCrypt; senha temporária cifrada com AES-GCM e apagada na troca | #101, #113 | `PoliticaDeSenhaTest`, `CifradorSenhaTemporariaTest`, `CredencialInicialTest`, `TrocaDeSenhaTest` |
-| Segredos fora do código | Toda configuração vem do ambiente; em `prod`, nenhuma variável obrigatória tem padrão e a API não sobe sem ela | #69, #113, #173, #175 | `EnvExampleTest`, `EnvironmentValidatorTest`, `DemoDataInitializerTest`, `PerfilDeProducaoTest` |
+| Senhas | Política de 8 caracteres com letra e número; hash BCrypt; senha temporária cifrada com AES-GCM e apagada na troca | #101, #113 | `SenhaValidatorTest`, `SenhaTemporariaCipherTest`, `CredencialInicialTest`, `TrocaSenhaTest` |
+| Segredos fora do código | Toda configuração vem do ambiente; em `prod`, nenhuma variável obrigatória tem padrão e a API não sobe sem ela | #69, #113, #173, #175 | `EnvExampleTest`, `EnvironmentValidatorTest`, `DemoDataInitializerTest`, `PerfilProducaoTest` |
 | Livro de movimentações imutável | Trigger `bloquear_alteracao()` impede `UPDATE` e `DELETE`; correção só por estorno | #73, #127, #159 | `BloquearAlteracaoTest`, `SaldoEstoqueRepositoryTest`, `EstornoTest` |
 | Trilha de auditoria | Eventos obrigatórios gravados na mesma transação da ação, com autor e `requestId`; consulta pelo GESTOR (S18) | #162, #164 | `EventosObrigatoriosTest`, `AuditoriaControllerTest`, `AuditoriaTela.test` |
-| Saldo consistente | Saldo travado na transação, `CHECK` contra negativo, `saldo_apos` em cada linha | #127, #128, #130 | `BloqueioDoSaldoTest`, `SaidasSimultaneasTest`, `InvarianteDoSaldoTest`, `MovimentacaoServiceTest` |
-| Reenviar não duplica | O `id` do registro nasce no app; o mesmo pedido devolve o já gravado, outro conteúdo dá `ID_JA_UTILIZADO` | #165, #166, #145, #159 | `AplicarUmaVezIntegracaoTest`, `GravacoesSimultaneasTest`, `RequisicoesSimultaneasTest`, `EstornosSimultaneosTest`, `MesmoPedidoDeMovimentacaoTest`, `MesmoPedidoDeRequisicaoTest` |
+| Saldo consistente | Saldo travado na transação, `CHECK` contra negativo, `saldo_apos` em cada linha | #127, #128, #130 | `BloqueioSaldoTest`, `SaidasSimultaneasTest`, `InvarianteSaldoTest`, `MovimentacaoServiceTest` |
+| Reenviar não duplica | O `id` do registro nasce no app; o mesmo pedido devolve o já gravado, outro conteúdo dá `ID_JA_UTILIZADO` | #165, #166, #145, #159 | `AplicarUmaVezIntegracaoTest`, `GravacoesSimultaneasTest`, `RequisicoesSimultaneasTest`, `EstornosSimultaneosTest`, `MesmoPedidoMovimentacaoTest`, `MesmoPedidoRequisicaoTest` |
 | Timeout, retry e estados de envio | Axios com 15 s; nova tentativa automática quando não há resposta, segura porque o `id` vem do app; o envio mostra Enviando, Salvo ou Tentar de novo | #84, #85, #167, #168 | `client.test`, `queryClient.test`, `envio.test`, `FaixaEstadoEnvio.test`, `SaidaTela.test` |
 | Servidor acordando | O app avisa e repete enquanto o Render sai do modo de espera | #94 | `AvisoServidor.test`, `acordarServidor.test` |
 | Logs rastreáveis e sem segredo | `requestId` e `usuarioId` em toda linha; linha de acesso sem query string; nenhuma senha ou token | #74, #175 | `RequestIdFilterTest`, `SegurancaTest`, `LogsSemSegredoTest` |
-| Erros padronizados | Problem Details com `codigo` estável; o app traduz o código em mensagem; sem detalhe interno | #75, #85, #175 | `GlobalExceptionHandlerTest`, `PerfilDeProducaoTest`, `errors.test` |
-| Swagger só fora de produção | Swagger local; em `prod` responde 404 | #76, #175 | `PerfilDeProducaoTest` |
-| Desempenho | Nenhuma tela com N+1; listas abaixo de 30 ms com 2 mil itens e 10 mil movimentações | #176 | `ConsultasPorRequisicaoTest`, `VolumeDeDadosTest`, [desempenho](qa/desempenho.md) |
-| Datas e fuso | API em UTC; "hoje" nas regras é o dia de São Paulo | #145, #156 | `CriarRequisicaoTest`, `DecisaoDeRequisicaoTest`, `HistoricoTest`, `filtros.test` |
+| Erros padronizados | Problem Details com `codigo` estável; o app traduz o código em mensagem; sem detalhe interno | #75, #85, #175 | `GlobalExceptionHandlerTest`, `PerfilProducaoTest`, `errors.test` |
+| Swagger só fora de produção | Swagger local; em `prod` responde 404 | #76, #175 | `PerfilProducaoTest` |
+| Desempenho | Nenhuma tela com N+1; listas abaixo de 30 ms com 2 mil itens e 10 mil movimentações | #176 | `ConsultasPorRequisicaoTest`, `VolumeDadosTest`, [desempenho](qa/desempenho.md) |
+| Datas e fuso | API em UTC; "hoje" nas regras é o dia de São Paulo | #145, #156 | `CriarRequisicaoTest`, `DecisaoRequisicaoTest`, `HistoricoTest`, `filtros.test` |
 | Integração contínua | Workflows da API (com Postgres e relatório de cobertura) e do app (lint, tipos, testes, APK) | #91, #92, #171 | `.github/workflows`, artefato `relatorios-api` |
 | APK instalável | Perfil `preview` do EAS gera APK | #93 | README, "Como gerar, baixar e instalar o APK" |
-| Dados de demonstração e reinício | Perfil `demo` monta as jornadas pelos services; procedimento para zerar o banco da Neon | #173, #174 | `CargaDeDemonstracaoTest`, `Jornada2Test`, [reinício do banco](reinicio-do-banco.md) |
+| Dados de demonstração e reinício | Perfil `demo` monta as jornadas pelos services; procedimento para zerar o banco da Neon | #173, #174 | `DemoDataLoaderTest`, `Jornada2Test`, [reinício do banco](reinicio-do-banco.md) |
 | Dependências atualizadas | Dependabot semanal para Maven e npm; `npm audit` revisado | #175 | `.github/dependabot.yml`, [verificação de segurança](qa/verificacao-de-seguranca.md) |
 
 ## O que o projeto demonstra por disciplina
@@ -239,7 +239,7 @@ Como ler:
 
 | Tarefa | Issue | PR | Testes ou evidência |
 | --- | --- | --- | --- |
-| Endpoint de troca de senha | #101 | #206 | PoliticaDeSenhaTest, TrocaDeSenhaTest |
+| Endpoint de troca de senha | #101 | #206 | SenhaValidatorTest, TrocaSenhaTest |
 | Prototipar S03 | #102 | — | Figma (pendência manual) |
 | Implementar S03 e a guarda de primeiro acesso | #103 | #209 | TrocarSenhaTela.test, navegacao.test, validations.test |
 
@@ -249,7 +249,7 @@ Como ler:
 | --- | --- | --- | --- |
 | Configurar segurança e autorização | #104 | #205 | SegurancaTest |
 | Conferir o canteiro | #105 | #207 | CanteiroAcessoServiceTest |
-| Testes da matriz de permissões | #106 | #254 | AdminInitializerIntegracaoTest, MatrizDePermissoesTest |
+| Testes da matriz de permissões | #106 | #254 | AdminInitializerIntegracaoTest, MatrizPermissoesTest |
 | Prototipar as abas por perfil e S19 | #107 | — | Figma (pendência manual) |
 | Implementar abas por perfil e S19 | #108 | #210 | MaisTela.test, SomentePerfil.test, navegacao.test, rotulos.test |
 
@@ -267,8 +267,8 @@ Como ler:
 
 | Tarefa | Issue | PR | Testes ou evidência |
 | --- | --- | --- | --- |
-| Endpoints de usuários | #112 | #212 | CanteiroControllerTest, GeradorSenhaTemporariaTest, UsuarioControllerTest |
-| Senha temporária cifrada | #113 | #213 | ChaveLocalEnvironmentPostProcessorTest, CifradorSenhaTemporariaTest, CredencialInicialTest, EnvironmentValidatorTest |
+| Endpoints de usuários | #112 | #212 | CanteiroControllerTest, SenhaTemporariaGeneratorTest, UsuarioControllerTest |
+| Senha temporária cifrada | #113 | #213 | ChaveLocalEnvironmentPostProcessorTest, SenhaTemporariaCipherTest, CredencialInicialTest, EnvironmentValidatorTest |
 | Prototipar S24 e S25 | #114 | — | Figma (pendência manual) |
 | Implementar S24 e S25 | #115 | #216 | FuncionarioFormTela.test, FuncionariosTela.test, validations.test |
 
@@ -311,7 +311,7 @@ Como ler:
 
 | Tarefa | Issue | PR | Testes ou evidência |
 | --- | --- | --- | --- |
-| Entidades e repositórios | #127 | #222 | BloqueioDoSaldoTest, SaldoEstoqueRepositoryTest |
+| Entidades e repositórios | #127 | #222 | BloqueioSaldoTest, SaldoEstoqueRepositoryTest |
 | MovimentacaoService transacional | #128 | #224 | MovimentacaoServiceIntegracaoTest, MovimentacaoServiceTest |
 | Endpoint de escrita e testes | #129 | #227 | MovimentacaoControllerTest, SaidasSimultaneasTest |
 
@@ -339,7 +339,7 @@ Como ler:
 | Tarefa | Issue | PR | Testes ou evidência |
 | --- | --- | --- | --- |
 | Consulta de estoque | #137 | #223 | EstoqueControllerTest, StatusEstoqueTest |
-| Detalhe do item | #138 | #230 | DetalheDoItemTest |
+| Detalhe do item | #138 | #230 | DetalheItemTest |
 | Prototipar S06 e S07 | #139 | — | Figma (pendência manual) |
 | Implementar S06 e S07 | #140 | #232 | DetalheItemTela.test, EstoqueTela.test |
 
@@ -366,7 +366,7 @@ Como ler:
 
 | Tarefa | Issue | PR | Testes ou evidência |
 | --- | --- | --- | --- |
-| Consultas | #148 | #239 | ConsultaDeRequisicoesTest |
+| Consultas | #148 | #239 | ConsultaRequisicoesTest |
 | Prototipar S12 e S14 | #149 | — | Figma (pendência manual) |
 | Implementar S12 e S14 | #150 | #244 | DetalheRequisicaoTela.test, NovaRequisicaoTela.test, RequisicoesTela.test, useAtualizarAoFocar.test |
 
@@ -374,7 +374,7 @@ Como ler:
 
 | Tarefa | Issue | PR | Testes ou evidência |
 | --- | --- | --- | --- |
-| Endpoints de decisão | #151 | #240 | DecisaoDeRequisicaoTest |
+| Endpoints de decisão | #151 | #240 | DecisaoRequisicaoTest |
 | Prototipar S15 | #152 | — | Figma (pendência manual) |
 | Implementar a decisão | #153 | #245 | DecisaoModal.test, validations.test |
 
@@ -417,7 +417,7 @@ Como ler:
 
 | Tarefa | Issue | PR | Testes ou evidência |
 | --- | --- | --- | --- |
-| Tratar o `id` do cliente | #165 | #225 | AplicarUmaVezIntegracaoTest, IdDoClienteTest, MovimentacaoServiceTest |
+| Tratar o `id` do cliente | #165 | #225 | AplicarUmaVezIntegracaoTest, IdClienteTest, MovimentacaoServiceTest |
 | Testes | #166 | #226 | GravacoesSimultaneasTest, MovimentacaoServiceTest |
 
 **E12-H2 · Timeout, retry e estados de envio no app** (#53)
@@ -440,22 +440,22 @@ Como ler:
 
 | Tarefa | Issue | PR | Testes ou evidência |
 | --- | --- | --- | --- |
-| Completar os testes da API | #171 | #258 | CoberturaDaMatrizTest, InvarianteDoSaldoTest, MatrizDePermissoesTest, MesmoPedidoDeMovimentacaoTest, MesmoPedidoDeRequisicaoTest, RegrasDoAndamentoTest, TokenDesatualizadoTest |
+| Completar os testes da API | #171 | #258 | CoberturaMatrizTest, InvarianteSaldoTest, MatrizPermissoesTest, MesmoPedidoMovimentacaoTest, MesmoPedidoRequisicaoTest, RegrasAndamentoTest, TokenDesatualizadoTest |
 | Completar os testes do app | #172 | #259 | Comprovante.test, LoginTela.test, NovaRequisicaoTela.test, SaidaTela.test, validations.test |
 
 **E13-H2 · Dados de demonstração realistas** (#57)
 
 | Tarefa | Issue | PR | Testes ou evidência |
 | --- | --- | --- | --- |
-| Carga de demonstração | #173 | #255 | CargaDeDemonstracaoTest, DemoDataInitializerTest |
+| Carga de demonstração | #173 | #255 | DemoDataLoaderTest, DemoDataInitializerTest |
 | Procedimento de reinício | #174 | #257 | `docs/reinicio-do-banco.md` |
 
 **E13-H3 · Revisão de segurança e de desempenho** (#58)
 
 | Tarefa | Issue | PR | Testes ou evidência |
 | --- | --- | --- | --- |
-| Lista de verificação de segurança | #175 | #260 | LogsSemSegredoTest, PerfilDeProducaoTest |
-| Revisão de desempenho | #176 | #261 | ConsultasPorRequisicaoTest, VolumeDeDadosTest |
+| Lista de verificação de segurança | #175 | #260 | LogsSemSegredoTest, PerfilProducaoTest |
+| Revisão de desempenho | #176 | #261 | ConsultasPorRequisicaoTest, VolumeDadosTest |
 
 **E13-H4 · Teste de uso com pessoas parecidas com as personas** (#59)
 

@@ -22,36 +22,31 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.transaction.annotation.Transactional;
 
-import br.com.canteiroconectado.auditoria.AcaoAuditoria;
-import br.com.canteiroconectado.auditoria.AuditoriaService;
-import br.com.canteiroconectado.canteiro.Canteiro;
-import br.com.canteiroconectado.colaborador.Colaborador;
-import br.com.canteiroconectado.estoque.MotivoMovimentacao;
-import br.com.canteiroconectado.estoque.MovimentacaoService;
-import br.com.canteiroconectado.estoque.NovaMovimentacao;
-import br.com.canteiroconectado.estoque.TipoMovimentacao;
-import br.com.canteiroconectado.item.Item;
-import br.com.canteiroconectado.item.TipoItem;
-import br.com.canteiroconectado.item.Unidade;
-import br.com.canteiroconectado.support.ContadorDeConsultas;
+import br.com.canteiroconectado.domain.auditoria.AcaoAuditoria;
+import br.com.canteiroconectado.domain.canteiro.Canteiro;
+import br.com.canteiroconectado.domain.colaborador.Colaborador;
+import br.com.canteiroconectado.domain.estoque.MotivoMovimentacao;
+import br.com.canteiroconectado.domain.estoque.RegistrarMovimentacaoCommand;
+import br.com.canteiroconectado.domain.estoque.TipoMovimentacao;
+import br.com.canteiroconectado.domain.item.Item;
+import br.com.canteiroconectado.domain.item.TipoItem;
+import br.com.canteiroconectado.domain.item.Unidade;
+import br.com.canteiroconectado.domain.usuario.Perfil;
+import br.com.canteiroconectado.domain.usuario.Usuario;
+import br.com.canteiroconectado.repository.usuario.UsuarioRepository;
+import br.com.canteiroconectado.service.auditoria.AuditoriaService;
+import br.com.canteiroconectado.service.estoque.MovimentacaoService;
+import br.com.canteiroconectado.support.ContadorConsultas;
 import br.com.canteiroconectado.support.Dados;
 import br.com.canteiroconectado.support.Requisicoes;
 import br.com.canteiroconectado.support.Tokens;
-import br.com.canteiroconectado.usuario.Perfil;
-import br.com.canteiroconectado.usuario.Usuario;
-import br.com.canteiroconectado.usuario.UsuarioRepository;
 
 import jakarta.persistence.EntityManager;
 
-/**
- * Confere que as listas principais fazem o mesmo número de consultas com 1 e com 15 linhas na
- * página. Se alguma passar a buscar um dado por linha (N+1), o número cresce com a página e o
- * teste falha mostrando os SQL.
- */
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
-@Import({Tokens.class, Dados.class, Requisicoes.class, ContadorDeConsultas.class})
+@Import({Tokens.class, Dados.class, Requisicoes.class, ContadorConsultas.class})
 @DisplayName("Consultas por requisição (N+1)")
 class ConsultasPorRequisicaoTest {
 
@@ -77,7 +72,7 @@ class ConsultasPorRequisicaoTest {
     private AuditoriaService auditoria;
 
     @Autowired
-    private ContadorDeConsultas contador;
+    private ContadorConsultas contador;
 
     @Autowired
     private UsuarioRepository usuarios;
@@ -102,7 +97,7 @@ class ConsultasPorRequisicaoTest {
         prefixo = Dados.unico("N1");
     }
 
-    private List<String> consultasDe(Usuario usuario, MockHttpServletRequestBuilder pedido) throws Exception {
+    private List<String> consultasExecutadas(Usuario usuario, MockHttpServletRequestBuilder pedido) throws Exception {
         entityManager.flush();
         entityManager.clear();
         contador.iniciar();
@@ -113,11 +108,11 @@ class ConsultasPorRequisicaoTest {
     private void conferirSemNMaisUm(Usuario usuario, MockHttpServletRequestBuilder pedido, Runnable acrescentar)
             throws Exception {
         acrescentar.run();
-        List<String> comUma = consultasDe(usuario, pedido);
+        List<String> comUma = consultasExecutadas(usuario, pedido);
         for (int i = 1; i < MUITAS; i++) {
             acrescentar.run();
         }
-        List<String> comMuitas = consultasDe(usuario, pedido);
+        List<String> comMuitas = consultasExecutadas(usuario, pedido);
 
         assertThat(comMuitas).as("as consultas não podem crescer com a página").hasSameSizeAs(comUma);
         assertThat(comUma.size()).as("nenhuma tela passa de %d consultas", MAXIMO_POR_REQUISICAO)
@@ -125,13 +120,13 @@ class ConsultasPorRequisicaoTest {
     }
 
     private UUID entrada(Item item, String quantidade) {
-        return movimentacoes.aplicar(new NovaMovimentacao(UUID.randomUUID(), canteiro.getId(), item.getId(),
+        return movimentacoes.aplicar(new RegistrarMovimentacaoCommand(UUID.randomUUID(), canteiro.getId(), item.getId(),
             TipoMovimentacao.ENTRADA, MotivoMovimentacao.RECEBIMENTO, new BigDecimal(quantidade), null, null, null,
             null, almoxarife.getId())).getId();
     }
 
     private void saidaPara(Item item) {
-        movimentacoes.aplicar(new NovaMovimentacao(UUID.randomUUID(), canteiro.getId(), item.getId(),
+        movimentacoes.aplicar(new RegistrarMovimentacaoCommand(UUID.randomUUID(), canteiro.getId(), item.getId(),
             TipoMovimentacao.SAIDA, MotivoMovimentacao.RETIRADA, BigDecimal.ONE, colaborador.getId(), "Fundação",
             null, null, almoxarife.getId()));
     }
@@ -150,7 +145,7 @@ class ConsultasPorRequisicaoTest {
 
         @Test
         @DisplayName("detalhe do item com as últimas movimentações (S07)")
-        void detalheDoItem() throws Exception {
+        void detalheItem() throws Exception {
             Item furadeira = dados.ferramenta();
             entrada(furadeira, "100");
             conferirSemNMaisUm(almoxarife, get("/api/v1/canteiros/" + canteiro.getId() + "/estoque/"
@@ -176,7 +171,7 @@ class ConsultasPorRequisicaoTest {
 
     @Nested
     @DisplayName("requisições")
-    class RequisicoesDoCanteiro {
+    class RequisicoesCanteiro {
 
         @Test
         @DisplayName("lista de requisições com os itens de cada uma (S12)")

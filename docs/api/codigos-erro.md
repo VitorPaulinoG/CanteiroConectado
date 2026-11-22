@@ -20,7 +20,7 @@ Fonte: `br.com.canteiroconectado.exception.ErrorCode`.
 | `SENHA_ATUAL_INCORRETA` | 422 | Na troca de senha, a senha atual informada não confere. |
 | `SENHA_FRACA` | 422 | A nova senha tem menos de 8 caracteres, não tem letra ou não tem número. O `detail` diz qual regra falhou. |
 | `SENHA_IGUAL_A_ATUAL` | 422 | A nova senha é igual à atual. |
-| `TROCA_DE_SENHA_OBRIGATORIA` | 403 | Funcionário com senha temporária chamou um endpoint diferente de `GET /autenticacao/eu` e `POST /autenticacao/trocar-senha`. |
+| `TROCA_SENHA_OBRIGATORIA` | 403 | Funcionário com senha temporária chamou um endpoint diferente de `GET /autenticacao/eu` e `POST /autenticacao/trocar-senha`. |
 | `CANTEIRO_DUPLICADO` | 409 | Já existe um canteiro com o mesmo nome (sem diferenciar maiúsculas). O corpo traz `campo: "nome"`. |
 | `CANTEIRO_INATIVO` | 422 | Tentativa de gravar dados (movimentação, colaborador, requisição, usuário) num canteiro desativado. |
 | `EMAIL_JA_CADASTRADO` | 409 | Já existe um funcionário com o mesmo e-mail (sem diferenciar maiúsculas). O corpo traz `campo: "email"`. |
@@ -43,16 +43,16 @@ Fonte: `br.com.canteiroconectado.exception.ErrorCode`.
 | `OBSERVACAO_OBRIGATORIA` | 422 | Ajuste (de entrada ou de saída) sem observação explicando o motivo. O corpo traz `campo: "observacao"`. |
 | `DEVOLUCAO_SO_FERRAMENTA` | 422 | Entrada por devolução de um item do tipo material. O corpo traz `campo: "itemId"`. |
 | `REQUISICAO_SEM_ITENS` | 422 | Requisição sem nenhum item. O corpo traz `campo: "itens"`. |
-| `LIMITE_DE_ITENS` | 422 | Requisição com mais de 20 itens. |
+| `LIMITE_ITENS` | 422 | Requisição com mais de 20 itens. |
 | `ITEM_REPETIDO` | 422 | O mesmo item aparece em duas linhas da requisição. O corpo traz `campo: "itens[i].itemId"`. |
 | `DATA_NO_PASSADO` | 422 | Data de necessidade (ou previsão de chegada) anterior a hoje, no fuso de São Paulo. O corpo traz o `campo`. |
 | `AUTOAPROVACAO_PROIBIDA` | 403 | Quem criou a requisição tentou aprová-la ou recusá-la. |
 | `REQUISICAO_NAO_PENDENTE` | 409 | A requisição já foi decidida, atendida ou cancelada, então não pode ser decidida nem cancelada. Ao cancelar uma aprovada, a mensagem diz quem aprovou. O corpo traz o `status` atual. |
 | `REQUISICAO_NAO_APROVADA` | 409 | Só requisições aprovadas podem ser marcadas como atendidas. O corpo traz o `status` atual. |
-| `MOTIVO_DA_RECUSA_OBRIGATORIO` | 422 | Recusa sem motivo ou com menos de 5 caracteres. O corpo traz `campo: "motivo"`. |
+| `MOTIVO_RECUSA_OBRIGATORIO` | 422 | Recusa sem motivo ou com menos de 5 caracteres. O corpo traz `campo: "motivo"`. |
 | `JA_ESTORNADA` | 409 | A movimentação já tem estorno; cada uma só pode ser estornada uma vez. |
 | `ESTORNO_NAO_ESTORNAVEL` | 422 | Tentativa de estornar um estorno. |
-| `MOTIVO_DO_ESTORNO_OBRIGATORIO` | 422 | Estorno sem o motivo. O corpo traz `campo: "motivo"`. |
+| `MOTIVO_ESTORNO_OBRIGATORIO` | 422 | Estorno sem o motivo. O corpo traz `campo: "motivo"`. |
 | `ERRO_INESPERADO` | 500 | Falha não prevista. O cliente recebe mensagem genérica, sem stack trace; o detalhe completo fica no log, correlacionado pelo `requestId`. |
 
 Códigos específicos de regra de negócio (ex.: `SALDO_INSUFICIENTE`, `ITEM_INATIVO`) são adicionados

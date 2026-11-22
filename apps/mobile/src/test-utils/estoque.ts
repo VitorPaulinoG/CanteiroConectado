@@ -56,5 +56,5 @@ export const cimentoNoEstoque: ItemEstoque = {
   tipo: 'MATERIAL',
   quantidadeMinima: 50,
   saldo: 30,
-  status: 'ABAIXO_DO_MINIMO',
+  status: 'ABAIXO_MINIMO',
 };

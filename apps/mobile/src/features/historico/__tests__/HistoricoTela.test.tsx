@@ -67,7 +67,7 @@ describe('HistoricoTela (S16)', () => {
     expect(listarHistorico).toHaveBeenCalledWith(
       'c-aurora',
       {
-        de: undefined,
+        inicio: undefined,
         ate: undefined,
         tipo: undefined,
         itemId: undefined,
@@ -90,7 +90,7 @@ describe('HistoricoTela (S16)', () => {
       expect(listarHistorico).toHaveBeenLastCalledWith(
         'c-aurora',
         expect.objectContaining({
-          de: expect.stringMatching(/Z$/),
+          inicio: expect.stringMatching(/Z$/),
           ate: expect.stringMatching(/Z$/),
         }),
         0,
@@ -100,7 +100,7 @@ describe('HistoricoTela (S16)', () => {
     await waitFor(() =>
       expect(listarHistorico).toHaveBeenLastCalledWith(
         'c-aurora',
-        expect.objectContaining({ de: undefined, ate: undefined }),
+        expect.objectContaining({ inicio: undefined, ate: undefined }),
         0,
       ),
     );
@@ -161,7 +161,7 @@ describe('HistoricoTela (S16)', () => {
     await screen.findByText('Limpar filtros');
     expect(listarHistorico).toHaveBeenLastCalledWith(
       'c-aurora',
-      expect.objectContaining({ de: expect.any(String) }),
+      expect.objectContaining({ inicio: expect.any(String) }),
       0,
     );
   });
