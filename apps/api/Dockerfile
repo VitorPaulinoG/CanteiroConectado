@@ -1,5 +1,5 @@
 # Etapa 1: build com JDK 21 e Maven (via wrapper, mesma versão do desenvolvimento local).
-FROM eclipse-temurin:21-jdk AS build
+FROM eclipse-temurin:24-jdk AS build
 WORKDIR /build
 
 # Dependências primeiro: esta camada só é refeita quando o pom.xml muda.
@@ -12,7 +12,7 @@ COPY src/ src/
 RUN ./mvnw -B -q -DskipTests package
 
 # Etapa 2: JRE enxuto, sem código-fonte nem cache do Maven, com usuário sem privilégios.
-FROM eclipse-temurin:21-jre-alpine
+FROM eclipse-temurin:24-jre-alpine
 RUN addgroup -S canteiro && adduser -S -G canteiro canteiro
 WORKDIR /app
 COPY --from=build --chown=canteiro:canteiro /build/target/*.jar app.jar
