@@ -37,6 +37,7 @@ import br.com.canteiroconectado.domain.item.Unidade;
 import br.com.canteiroconectado.domain.usuario.Usuario;
 import br.com.canteiroconectado.repository.auditoria.LogAuditoriaRepository;
 import br.com.canteiroconectado.repository.item.ItemRepository;
+import br.com.canteiroconectado.support.Dados;
 import br.com.canteiroconectado.support.Tokens;
 
 @SpringBootTest
@@ -224,21 +225,23 @@ class ItemControllerTest {
         @Test
         @DisplayName("deve listar para qualquer perfil filtrando tipo e situação")
         void deve_filtrar_quando_tipoEAtivo() throws Exception {
-            cimento();
-            Item furadeira = itens.saveAndFlush(new Item("FER-0012", "Furadeira de impacto 700W", Unidade.UN,
+            String marca = Dados.unico("Filtro");
+            itens.saveAndFlush(new Item(Dados.unico("MAT"), marca + " cimento CP-II 50kg", Unidade.SACO,
+                TipoItem.MATERIAL, new BigDecimal("50")));
+            Item furadeira = itens.saveAndFlush(new Item("FER-0012", marca + " furadeira de impacto 700W", Unidade.UN,
                 TipoItem.FERRAMENTA, BigDecimal.ONE));
-            Item inativa = itens.saveAndFlush(new Item("FER-0099", "Furadeira antiga", Unidade.UN,
+            Item inativa = itens.saveAndFlush(new Item("FER-0099", marca + " furadeira antiga", Unidade.UN,
                 TipoItem.FERRAMENTA, BigDecimal.ZERO));
             inativa.setAtivo(false);
 
-            mockMvc.perform(get("/api/v1/itens").param("tipo", "FERRAMENTA").param("ativo", "true")
+            mockMvc.perform(get("/api/v1/itens").param("q", marca).param("tipo", "FERRAMENTA").param("ativo", "true")
                     .header("Authorization", tokens.bearer(tokens.almoxarife())))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.conteudo[*].codigo", contains("FER-0012")));
             mockMvc.perform(get("/api/v1/itens/" + furadeira.getId())
                     .header("Authorization", tokens.bearer(tokens.gestor())))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.descricao").value("Furadeira de impacto 700W"));
+                .andExpect(jsonPath("$.descricao").value(marca + " furadeira de impacto 700W"));
         }
     }
 
