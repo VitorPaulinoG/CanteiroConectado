@@ -1,6 +1,8 @@
-import type { ReactNode } from 'react';
+import { BottomTabBarHeightContext } from 'expo-router/tabs';
+import { useContext, type ReactNode } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Appbar, Text } from 'react-native-paper';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useAppTheme } from '@/theme';
 
@@ -24,6 +26,8 @@ export function TelaComCabecalho({
   children,
 }: Props) {
   const theme = useAppTheme();
+  const { bottom } = useSafeAreaInsets();
+  const dentroDasAbas = useContext(BottomTabBarHeightContext) !== undefined;
 
   return (
     <View style={[styles.tela, { backgroundColor: theme.colors.background }]}>
@@ -54,7 +58,12 @@ export function TelaComCabecalho({
         />
         {acoes}
       </Appbar.Header>
-      <View style={styles.tela}>{children}</View>
+      <View
+        testID="conteudo-da-tela"
+        style={[styles.tela, { marginBottom: dentroDasAbas ? 0 : bottom }]}
+      >
+        {children}
+      </View>
     </View>
   );
 }

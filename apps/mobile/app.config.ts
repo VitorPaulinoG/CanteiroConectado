@@ -4,7 +4,7 @@ const config: ExpoConfig = {
   name: 'Canteiro Conectado',
   slug: 'canteiroconectado',
   owner: 'vitorpaulinogs-team',
-  version: '1.0.0',
+  version: '1.0.1',
   orientation: 'portrait',
   scheme: 'canteiroconectado',
   userInterfaceStyle: 'light',
