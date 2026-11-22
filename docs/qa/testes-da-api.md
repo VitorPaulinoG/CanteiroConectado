@@ -5,6 +5,11 @@
 cobertura total no resumo do job e publica os relatórios dos testes e da cobertura no artefato `relatorios-api`
 (14 dias).
 
+Os testes não usam o banco do app: o `BancoTesteEnvironmentPostProcessor` (só no classpath de teste) troca o
+banco de `BANCO_URL` por um de mesmo nome com sufixo `_test` no mesmo servidor (`canteiroconectado_test`) e o
+cria na primeira execução. Assim o seed e os dados de uso local não alteram os resultados, e os testes não
+deixam registros no banco que o app usa.
+
 ## Revisão de novembro de 2026
 
 Total: 531 testes. Cobertura por pacote, com os pacotes de regra em destaque:
