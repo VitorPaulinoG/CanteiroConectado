@@ -5,8 +5,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-import jakarta.validation.Validation;
-import jakarta.validation.ValidatorFactory;
 import org.springframework.boot.EnvironmentPostProcessor;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.config.ConfigDataEnvironmentPostProcessor;
@@ -21,6 +19,9 @@ import org.springframework.validation.ObjectError;
 import org.springframework.validation.Validator;
 import org.springframework.validation.beanvalidation.SpringValidatorAdapter;
 
+import jakarta.validation.Validation;
+import jakarta.validation.ValidatorFactory;
+
 public class EnvironmentValidator implements EnvironmentPostProcessor, Ordered {
 
     private static final Map<String, Class<?>> PROPRIEDADES = new LinkedHashMap<>();
@@ -29,11 +30,12 @@ public class EnvironmentValidator implements EnvironmentPostProcessor, Ordered {
         PROPRIEDADES.put("canteiro.banco", DbProperties.class);
         PROPRIEDADES.put("canteiro.jwt", JwtProperties.class);
         PROPRIEDADES.put("canteiro.admin", AdminProperties.class);
+        PROPRIEDADES.put("canteiro.senha-temporaria", SenhaTemporariaProperties.class);
     }
 
     @Override
     public int getOrder() {
-        return ConfigDataEnvironmentPostProcessor.ORDER + 1;
+        return ConfigDataEnvironmentPostProcessor.ORDER + 2;
     }
 
     @Override

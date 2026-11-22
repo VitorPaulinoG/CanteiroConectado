@@ -1,0 +1,56 @@
+version: 2
+updates:
+  - package-ecosystem: maven
+    directory: /apps/api
+    target-branch: develop
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    groups:
+      spring:
+        patterns: ['org.springframework*']
+
+  - package-ecosystem: npm
+    directory: /apps/mobile
+    target-branch: develop
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    ignore:
+      - dependency-name: 'expo'
+        update-types: ['version-update:semver-major']
+      - dependency-name: 'expo-*'
+        update-types: ['version-update:semver-major']
+      - dependency-name: '@expo/*'
+        update-types: ['version-update:semver-major']
+      - dependency-name: 'jest-expo'
+        update-types: ['version-update:semver-major']
+      - dependency-name: 'eslint-config-expo'
+        update-types: ['version-update:semver-major']
+      - dependency-name: 'react'
+        update-types: ['version-update:semver-major', 'version-update:semver-minor']
+      - dependency-name: 'react-dom'
+        update-types: ['version-update:semver-major', 'version-update:semver-minor']
+      - dependency-name: 'react-native'
+        update-types: ['version-update:semver-major', 'version-update:semver-minor']
+      - dependency-name: 'react-native-*'
+        update-types: ['version-update:semver-major']
+      - dependency-name: '@react-native-community/*'
+        update-types: ['version-update:semver-major']
+    groups:
+      expo:
+        patterns: ['expo', 'expo-*', '@expo/*', 'jest-expo', 'eslint-config-expo']
+
+  - package-ecosystem: github-actions
+    directory: /
+    target-branch: develop
+    schedule:
+      interval: monthly
+
+  - package-ecosystem: docker
+    directory: /apps/api
+    target-branch: develop
+    schedule:
+      interval: monthly
