@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { ScrollView, StyleSheet } from 'react-native';
 import { List } from 'react-native-paper';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { buscarPing, paraAppError } from '@/shared/api';
 import { ErrorState, LoadingState } from '@/shared';
@@ -10,12 +11,13 @@ import { useAppTheme } from '@/theme';
 
 export function SobreTela() {
   const theme = useAppTheme();
+  const { bottom } = useSafeAreaInsets();
   const ping = useQuery({ queryKey: ['ping'], queryFn: () => buscarPing(), staleTime: 0 });
 
   return (
     <ScrollView
       style={{ backgroundColor: theme.colors.background }}
-      contentContainerStyle={styles.conteudo}
+      contentContainerStyle={[styles.conteudo, { paddingBottom: 8 + bottom }]}
     >
       <List.Section>
         <List.Subheader>Aplicativo</List.Subheader>
